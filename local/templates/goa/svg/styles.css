@@ -1,0 +1,33 @@
+.svg-phone {
+	fill: #7b7b7b;
+}
+
+.svg-weather {
+	fill: #ffffff;
+}
+
+.svg-idea {
+	fill: #ffffff;
+}
+
+.svg-turn {
+	cursor: pointer;
+}
+.svg-turn__path {
+	fill: #7aca6b;
+}
+.svg-turn:hover .svg-turn__path {
+	fill: #53a642;
+}
+
+.svg-trip {
+	fill: #333333;
+}
+
+.svg-faceless {
+	fill: #9b9b9b;
+}
+
+.svg-instagram {
+	fill: #ffffff;
+}
