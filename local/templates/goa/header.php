@@ -133,7 +133,7 @@ IncludeTemplateLangFile(__FILE__);
 									false
 								);
 								?>
-								<?$APPLICATION->IncludeComponent("bitrix:photo.random", ".default", Array(
+								<?$APPLICATION->IncludeComponent("goa:element.random", ".default", Array(
 									"CACHE_GROUPS" => "Y",	// Учитывать права доступа
 										"CACHE_TIME" => "180",	// Время кеширования (сек.)
 										"CACHE_TYPE" => "A",	// Тип кеширования
@@ -141,6 +141,8 @@ IncludeTemplateLangFile(__FILE__);
 										"IBLOCKS" => array(	// Инфоблок
 											0 => "3",
 										),
+										"FIELDS" => array("PREVIEW_TEXT"),
+										"COUNT" => 1,
 										"IBLOCK_TYPE" => "info",	// Тип инфоблока
 										"PARENT_SECTION" => "",	// ID раздела
 									),

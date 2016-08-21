@@ -57,11 +57,8 @@ if(!empty($arIBlockFilter) && $this->StartResultCache(false, ($arParams["CACHE_G
 		return;
 	}
 	//SELECT
-	$arSelect = array(
-		"ID",
-		"NAME",
-		"PREVIEW_TEXT",
-	);
+	$arSelect = array("ID", "NAME");
+	$arSelect = array_merge($arSelect, $arParams["FIELDS"]);
 	//WHERE
 	$arFilter = array(
 		"IBLOCK_ID" => $arParams["IBLOCKS"],
@@ -79,16 +76,22 @@ if(!empty($arIBlockFilter) && $this->StartResultCache(false, ($arParams["CACHE_G
 		"RAND"=>"ASC",
 	);
 	//EXECUTE
-	$rsIBlockElement = CIBlockElement::GetList($arSort, $arFilter, false, false, $arSelect);
+	$rsIBlockElement = CIBlockElement::GetList($arSort, $arFilter, false, array("nTopCount" => $arParams["COUNT"]), $arSelect);
 	$rsIBlockElement->SetUrlTemplates($arParams["DETAIL_URL"]);
-	if($arResult = $rsIBlockElement->GetNext())
-	{
+	while($arItem = $rsIBlockElement->Fetch()) {
+		if(!empty($arItem["PREVIEW_PICTURE"])) {
+			$arItem["PREVIEW_PICTURE"] = CFile::GetFileArray($arItem["PREVIEW_PICTURE"]);
+		}
+		if(!empty($arItem["DETAIL_PICTURE"])) {
+			$arItem["DETAIL_PICTURE"] = CFile::GetFileArray($arItem["DETAIL_PICTURE"]);
+		}
+		$arResult["LIST"][] = $arItem;
+	}
+	if(count($arResult["LIST"])) {
 		$this->SetResultCacheKeys(array(
 		));
 		$this->IncludeComponentTemplate();
-	}
-	else
-	{
+	} else {
 		$this->AbortResultCache();
 	}
 }

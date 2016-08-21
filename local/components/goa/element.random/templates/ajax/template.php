@@ -11,8 +11,9 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $frame = $this->createFrame()->begin('');
+$arItem = $arResult["LIST"][0];
 ?>
-<?=$arResult["PREVIEW_TEXT"]?>
+<?=$arItem["PREVIEW_TEXT"]?>
 <?
 $frame->end();
 ?>

@@ -40,6 +40,18 @@ $arComponentParameters = array(
 			"TYPE" => "STRING",
 			"DEFAULT" => '',
 		),
+		"FIELDS" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage("IBLOCK_FIELDS"),
+			"TYPE" => "LIST",
+			"DEFAULT" => '',
+		),
+		"COUNT" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage("COUNT"),
+			"TYPE" => "STRING",
+			"DEFAULT" => '1',
+		),
 		"DETAIL_URL" => CIBlockParameters::GetPathTemplateParam(
 			"DETAIL",
 			"DETAIL_URL",
