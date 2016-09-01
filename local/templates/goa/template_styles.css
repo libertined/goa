@@ -313,6 +313,7 @@ a:hover {
   display: inline-block;
   vertical-align: middle;
   width: 100%;
+  font-size: initial;
 }
 .row {
   margin: 0px 0px;
@@ -875,6 +876,25 @@ a:hover {
 }
 .right-side__top5 img {
   width: 100%;
+}
+.right-side__top5-hover-wrap {
+  background: url("img/top5_bg.png") repeat 0px 0px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: none;
+}
+.right-side__top5:hover .right-side__top5-hover-wrap {
+  display: block;
+}
+.right-side__top5-hover {
+  color: #fff;
+  font-size: 15px;
+  line-height: 22px;
+  text-transform: uppercase;
 }
 .right-side__top5-pos {
   position: absolute;

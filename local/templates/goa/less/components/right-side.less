@@ -98,7 +98,29 @@
 			width: 100%;
 		}
 	}
-	
+
+  	&__top5-hover-wrap {
+		background: url("@{img-path}top5_bg.png") repeat 0px 0px;
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		text-align: center;
+	  	display: none;
+  	}
+
+  	&__top5:hover &__top5-hover-wrap {
+	  	display: block;
+  	}
+
+  	&__top5-hover {
+	  	color: #fff;
+	  	font-size: 15px;
+	  	line-height: 22px;
+	  	text-transform: uppercase;
+	}
+
 	&__top5-pos {
 		position: absolute;
 		bottom: 0px;
