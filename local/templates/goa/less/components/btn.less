@@ -1,0 +1,71 @@
+.btn {
+	display: inline-block;
+	color: #fff;
+	line-height: 53px;
+	height: 55px;
+	font-family: @font-family-regular;
+	font-size: 15px;
+	text-transform: uppercase;
+	border: solid 1px @color-red;
+	padding: 0px 40px;
+	background: @color-red;
+	cursor: pointer;
+	text-decoration: none;
+	text-align: center;
+	.box-sizing(border-box);
+	vertical-align: top;
+  
+	&:hover {
+		background: #fc381d;//darken(@color-red, 5%);
+		color: #fff;
+		border: solid 1px darken(@color-red, 5%);
+		text-decoration: none;
+	}
+	
+	&--blue {
+		background: @color-biruza;
+		border: solid 1px @color-biruza;
+		
+		&:hover {
+			background: darken(@color-biruza, 5%);
+			border: solid 1px darken(@color-biruza, 5%);
+		}
+	}
+	
+	&--grey {
+		background: @color-grey-light;
+		border: solid 1px @color-grey-light;
+		color: @text-color-base;
+		
+		&:hover {
+			background: darken(@color-grey-light, 5%);
+			border: solid 1px darken(@color-grey-light, 5%);
+			color: @text-color-base;
+		}
+	}
+	
+	&--fill {
+		width: 100%;
+		padding: 0px;
+	}
+	
+	&--lowercase {
+		text-transform: initial;
+		font-size: 18px;
+	}
+	
+	&--big {
+		line-height: 94px;
+		height: 96px;
+		font-family: @font-family-scada;
+		font-size: 38px;
+		padding: 0px 70px;
+		background: @color-red-dark;
+		color: #fff;
+		
+		&:hover {
+			background: darken(@color-red-dark, 5%);
+			border: solid 1px darken(@color-red-dark, 5%);
+		}
+	}
+}

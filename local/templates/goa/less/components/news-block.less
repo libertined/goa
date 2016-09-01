@@ -1,0 +1,42 @@
+.news-block {
+	display: block;
+	padding: 30px;
+	background: #fff;
+	
+	&__date {
+		color: @color-grey;
+		font-size: 14px;
+		line-height: 20px;
+		margin-bottom: 20px;
+	}
+	
+	&__title {
+		font-family: Scada;
+		font-size: 24px;
+		line-height: 29px;
+		margin-bottom: 15px;
+	}
+	
+	&__text {
+		color: @color-grey;
+		font-size: 15px;
+		line-height: 22px;
+	}
+	
+	&__img {
+		text-align: right;
+		width: 100%;
+		overflow: hidden;
+		
+		& img {
+			display: inline-block;
+			vertical-align: top;
+			width: 100%;
+			max-width: 180px;
+		}
+	}
+	
+	&:hover &__title {
+		color: @color-red;
+	}
+}

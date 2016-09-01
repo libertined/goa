@@ -1,0 +1,133 @@
+.filter {
+	&__categories {
+		margin: -7px;
+	}
+	
+	&__category-item {
+		display: inline-block;
+		vertical-align: top;
+		background: @color-grey-light;
+		margin: 7px;
+		padding: 17px 30px;
+		font-family: OpenSansLight;
+		font-size: 14px;
+		line-height: 20px;
+		color: @color-grey;
+		cursor: pointer;
+		position: relative;
+		
+		&:hover {
+			//background: darken(@color-grey-light, 5%);
+			//color: @text-color-base;
+			background: #fff;
+			color: @color-grey;
+		}
+	}
+	
+	&--category-active {
+		background: @color-red;
+		color: #fff;
+		
+		&:hover {
+			background: darken(@color-red, 5%);
+			color: #fff;
+		}
+	}
+	
+	&__category-close {
+		width: 13px;
+		height: 13px;
+		position: absolute;
+		top: 4px;
+		right: 4px;
+		
+		& object {
+			width: 13px;
+			height: 13px;
+		}
+	}
+	
+	&__clear {
+		display: block;
+		.clearfix();
+		cursor: pointer;
+		color: @color-grey;
+		
+		&:hover {
+			color: @text-color-base;
+		}
+	}
+	
+	&__clear-icon {
+		width: 18px;
+		height: 18px;
+		float: left;
+			
+		& object {
+			width: 18px;
+			height: 18px;
+		}
+	}
+	
+	&__clear-text {
+		float: left;
+		margin-left: 10px;
+		font-size: 14px;
+		line-height: 18px;
+	}
+	
+	&__result {
+		font-family: OpenSansSemibold;
+		color: @color-grey;
+		font-size: 15px;
+		line-height: 22px;
+		
+		& span {
+			color: @text-color-base;
+		}
+	}
+	
+	&__option {
+		
+	}
+	
+	&__option-title {
+		display: inline-block;
+		vertical-align: top;
+		margin-right: 20px;
+		font-size: 15px;
+		line-height: 22px;
+	}
+	
+	&__option-body {
+		display: inline-block;
+		vertical-align: top;
+	}
+	
+	&__option-item {
+		position: relative;
+		display: inline-block;
+		vertical-align: top;
+		margin-right: 30px;
+	}
+	
+	&__option-name {
+		padding-right: 20px;
+		color: @color-grey;
+		font-size: 15px;
+		line-height: 22px;
+	}
+	
+	&__option-close {
+		position: absolute;
+		top: 0px;
+		right: 0px;
+		width: 11px;
+		height: 22px;
+		
+		& object {
+			width: 11px;
+			height: 11px;
+		}
+	}
+}

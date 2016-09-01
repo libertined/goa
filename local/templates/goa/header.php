@@ -121,8 +121,8 @@ IncludeTemplateLangFile(__FILE__);
 				<?endif;?>
 
 				<div class="row">
-					<div class="row__inner">
-						<div class="col-12-3">
+					<div class="row__inner col-adaptive-row">
+						<div class="col-12-3 col-adaptive-1024">
 							<section class="left-side">
 								<? $APPLICATION->IncludeComponent("bitrix:menu", "sub_menu", Array(
 									"ROOT_MENU_TYPE" => "left",	// Тип меню для первого уровня
@@ -156,28 +156,35 @@ IncludeTemplateLangFile(__FILE__);
 									),
 									false
 								);?>
+
 								<div class="left-side__block left-side--block-yellow">
-									<div class="left-side__header">Погода в Гоа <div class="left-side__header-icon">
-											<object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/weather.svg">Your browser does not support SVGs</object>
-										</div></div>
+									<div class="left-side__header">Погода в Гоа <div class="left-side__header-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/weather.svg">Your browser does not support SVGs</object></div></div>
 									<div class="left-side__body">
-										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/prognoz.jpg" style="margin: 0 auto;" />
+										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/prognoz.jpg" style="margin: 0 auto; max-width: 100%;" />
 									</div>
 								</div>
 
 								<div class="row">
 									<div class="row__inner">
-										<div class="col-12-6"><a href="http://vkontakte.ru/club5779993" class="btn btn--blue btn--fill btn--lowercase">Вконтакте</a></div>
-										<div class="col-12-6"><a href="http://www.facebook.com/tvoygoa/" class="btn btn--grey btn--fill btn--lowercase">Facebook</a></div>
+										<div class="col-12-6"><a href="http://vkontakte.ru/club5779993" class="btn btn--blue btn--fill btn--lowercase js-tab-btn" data-tab="tab-vk">Вконтакте</a></div>
+										<div class="col-12-6"><a href="http://www.facebook.com/tvoygoa/" class="btn btn--grey btn--fill btn--lowercase js-tab-btn" data-tab="tab-fb">Facebook</a></div>
 									</div>
 								</div>
 
-								<div class="left-side__block left-side--block-yellow">
+								<div class="left-side__block left-side--block-yellow js-tab" data-tab="tab-vk">
 									<div class="left-side__body">
-										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_instg.jpg" style="margin: 0 auto;" />
+										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_instg.jpg" style="margin: 0 auto; max-width: 100%;" />
+									</div>
+								</div>
+
+								<div class="left-side__block left-side--block-yellow js-tab none" data-tab="tab-fb">
+									<div class="left-side__body">
+										fb
+										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_instg.jpg" style="margin: 0 auto; max-width: 100%;" />
 									</div>
 								</div>
 							</section>
 						</div>
-						<div class="col-12-9">
+
+						<div class="col-12-9 col-adaptive-1024">
 							<div class="right-side">

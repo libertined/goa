@@ -1,0 +1,51 @@
+.slider-exs {
+	padding-bottom: 90px;
+	
+	&__item {
+		width: 100%;
+		
+		& img {
+			width: 100%;
+		}
+	}
+	
+	.bxslider_exs_1,
+	.bxslider_exs_2 {
+		background: @color-grey-light;
+		overflow: hidden;
+		width: 100%;
+	}
+	
+	&__open {
+		position: relative;
+		z-index: 1;
+		.clearfix();
+		margin-top: 30px;
+		cursor: pointer;
+		display: inline-block;
+		vertical-align: top;
+	}
+	
+	&__open-icon {
+		float: left;
+		width: 16px;
+		height: 16px;
+		
+		& object {
+			width: 16px;
+			height: 16px;
+		}
+	}
+	
+	&__open-text {
+		float: left;
+		font-size: 14px;
+		line-height: 16px;
+		color: @color-grey;
+		margin-left: 10px;
+	}
+	
+	&__open:hover &__open-text {
+		color: @text-color-base;
+	}
+}

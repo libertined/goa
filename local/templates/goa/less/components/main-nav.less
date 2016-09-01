@@ -1,0 +1,24 @@
+.main-nav {
+	.clearfix();
+  
+	&__item {
+		display: block;
+		float: left;
+		margin: 0px 15px;
+
+		& a {
+			display: block;
+			text-transform: uppercase;
+			font-size: 14px;
+			line-height: 90px;
+			color: @text-color-base;
+		}
+	}
+
+	&__item:hover,
+	&--item-current {
+		& a {
+			color: @color-green;
+		}
+	}
+}

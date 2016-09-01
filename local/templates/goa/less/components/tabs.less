@@ -1,0 +1,50 @@
+.tabs {
+	&__list {
+		display: table;
+		width: 100%;
+	}
+	
+	&__item {
+		display: table-cell;
+		width: 20%;
+		
+		&:nth-child(2) {
+			width: 40%;
+		}
+	}
+	
+	.right-side ul&__list {
+		margin: 0px;
+		padding: 0px;
+	}
+	
+	.right-side ul li&__item {
+		margin: 0px;
+		padding: 0px;
+		position: inherit;
+		
+		&:after {
+			display: none;
+		}
+	}
+	
+	&__item-link {
+		display: block;
+		line-height: 55px;
+		background: #fff;
+		text-align: center;
+		
+		&:hover {
+			background: @color-grey-light;
+		}
+	}
+	
+	&--item-active &__item-link {
+		background: @color-red;
+		color: #fff;
+		
+		&:hover {
+			background: @color-red;
+		}
+	}
+}

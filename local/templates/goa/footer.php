@@ -4,6 +4,16 @@
           </div>
         </div>
       </div>
+
+      <div class="instagram">
+        <div class="page-content-inner page-content-inner--w1300">
+          <div class="instagram__header">@tvoygoa</div>
+          <div class="instagram__body">
+            <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_tvgoa.jpg" style="margin: 0 auto; max-width: 100%;">
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -42,19 +52,16 @@
           <div class="col-12-4">
             <div class="page-footer__title">Присоединяйтесь к нам</div>
             <div class="page-footer__socials">
-              <a href="" class="page-footer__social-item page-footer--social-ig">
-                <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
-              <a href="" class="page-footer__social-item page-footer--social-fb">
-                <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
-              <a href="" class="page-footer__social-item page-footer--social-vk">
-                <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
+              <a href="" class="page-footer__social-item page-footer--social-ig"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
+              <a href="" class="page-footer__social-item page-footer--social-fb"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
+              <a href="" class="page-footer__social-item page-footer--social-vk"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
             </div>
           </div>
 
           <div class="col-12-4">
             <div class="page-footer__dev-wrap">
-              <div class="page-footer__dev"><span>Разработка -</span> AE! studio</div>
-              <div class="page-footer__dev"><span>Дизайн от</span> Pixeljam</div>
+              <div class="page-footer__dev"><span>Разработка -</span> <a href="">AE! studio</a></div>
+              <div class="page-footer__dev"><span>Дизайн от</span> <a href="">Pixeljam</a></div>
             </div>
           </div>
         </div>
@@ -67,5 +74,8 @@
     </div>
   </div>
 </footer>
+
+<a class="scrollTop-btn js-scrollTop" href="#"></a>
+
 </body>
 </html>

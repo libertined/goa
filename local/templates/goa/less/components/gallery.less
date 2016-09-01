@@ -1,0 +1,58 @@
+.gallery {
+	width: 100%;
+	height: auto;
+	display: none;
+	
+	&__wrap {
+		width: 100%;
+		height: auto;
+	}
+	
+	&__slide {
+		width: 100%;
+		height: auto;
+	}
+	
+	&__slide-img {
+		width: 100%;
+		height: auto;
+		overflow: hidden;
+		
+		& img {
+			width: 100%;
+		}
+	}
+	
+	&__slide-text {
+		color: #fff;
+		text-align: center;
+		line-height: 23px;
+		overflow: hidden;
+		height: 23px;
+		margin: 20px 0px;
+	}
+	
+	&__pager {
+		text-align: center;
+	}
+	
+	&__pager-item {
+		display: inline-block;
+		vertical-align: top;
+		position: relative;
+		width: 70px;
+		height: 70px;
+		margin: 2px;
+		overflow: hidden;
+		
+		& img {
+			height: 100%;
+		}
+		
+		&.active, &:hover {
+			width: 66px;
+			height: 66px;
+			border: solid 2px @color-red;
+		}
+	}
+}

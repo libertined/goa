@@ -1,0 +1,32 @@
+.program-table {
+	&__header {
+		background: @color-green-light;
+		font-family: @font-family-scada;
+		font-size: 24px;
+		line-height: 30px;
+		padding: 17px 40px;
+		text-transform: uppercase;
+	}
+	
+	&__line {
+		background: #fff;
+		font-size: 16px;
+		line-height: 22px;
+		padding: 17px 40px;
+		border-bottom: solid 1px @bg-base;
+		display: table;
+		width: 100%;
+		.box-sizing(border-box);
+	}
+	
+	&__time {
+		display: table-cell;
+		width: 20%;
+	}
+	
+	&__text {
+		display: table-cell;
+		width: 80%;
+		padding-left: 30px;
+	}
+}

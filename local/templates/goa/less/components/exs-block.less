@@ -1,0 +1,55 @@
+.exs-block {
+	display: block;
+	padding: 30px;
+	background: #fff;
+	
+	&__title {
+		font-family: Scada;
+		font-size: 24px;
+		line-height: 29px;
+		margin-bottom: 15px;
+	}
+	
+	&__text {
+		color: @color-grey;
+		font-size: 15px;
+		line-height: 22px;
+	}
+	
+	&__img {
+		text-align: left;
+		width: 100%;
+		overflow: hidden;
+		
+		& img {
+			display: inline-block;
+			vertical-align: top;
+			width: 100%;
+			max-width: 300px;
+		}
+	}
+	
+	&:hover &__title {
+		color: @color-red;
+	}
+	
+	&__categories {
+		margin: -5px;
+		margin-top: 10px;
+	}
+	
+	&__categories-item {
+		display: inline-block;
+		vertical-align: top;
+		margin: 5px;
+		font-size: 13px;
+		line-height: 31px;
+		border: solid 2px @color-grey-light;
+		color: @color-grey;
+		padding: 0px 15px;
+		
+		&:hover {
+			border: solid 2px @color-grey;
+		}
+	}
+}

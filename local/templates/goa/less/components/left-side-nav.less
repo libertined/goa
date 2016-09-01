@@ -1,0 +1,32 @@
+.left-side-nav {
+	&__list {
+		background: #dce1e6;
+		padding: 30px 40px;
+	}
+	
+	&__item {
+		font-size: 17px;
+		line-height: 20px;
+		
+		
+		& a {
+			display: block;
+			padding: 8px 0px;
+			color: @text-color-base;
+			
+			&:hover {
+				color: @color-green-dark;
+			}
+		}
+	}
+	
+	&--item-active {
+		& a {
+			font-family: OpenSansSemibold;
+			
+			&:hover {
+				color: @text-color-base;
+			}
+		}
+	}
+}

@@ -1,0 +1,145 @@
+.right-side {
+	padding: 50px;
+	padding-right: 40px;
+	
+	& h2 {
+		font-family: Scada;
+		font-size: 38px;
+		line-height: 42px;
+		margin-bottom: 20px;
+	}
+	
+	& h3 {
+		font-family: Scada;
+		font-size: 24px;
+		line-height: 28px;
+		margin-bottom: 15px;
+	}
+	
+	& p {
+		font-size: 15px;
+		line-height: 22px;
+		margin: 20px 0px;
+	}
+	
+	& p a {
+		position: relative;
+		
+		&:after {
+			content: "";
+			display: block;
+			position: absolute;
+			bottom: -1px;
+			left: 0px;
+			height: 1px;
+			width: 100%;
+			background: #ff7866;
+		}
+		
+		&:hover {
+			color: #ff7866;
+		}
+	}
+	
+	ul {
+		font-size: 15px;
+		line-height: 22px;
+		margin: 20px 0px;
+		padding-left: 40px;
+		
+		li {
+			margin: 10px 0px;
+			position: relative;
+			padding-left: 20px;
+			
+			&:after {
+				content: "";
+				display: block;
+				position: absolute;
+				top: 10px;
+				left: 0px;
+				width: 4px;
+				height: 4px;
+				background: @text-color-base;
+				.border-radius(2px);
+				
+			}
+		}
+	}
+	
+	ol {
+		font-size: 15px;
+		line-height: 22px;
+		margin: 20px 0px;
+		padding-left: 50px;
+		list-style-type: decimal;
+		list-style-position: outside;
+		
+		li {
+			margin: 10px 0px;
+			padding-left: 10px;
+		}
+	}
+	
+	&__red {
+		color: @color-red;
+	}
+	
+	&__top5-wrap {
+		position: relative;
+	}
+	
+	&__top5 {
+		display: block;
+		position: relative;
+		z-index: 1;
+		
+		& img {
+			width: 100%;
+		}
+	}
+	
+	&__top5-pos {
+		position: absolute;
+		bottom: 0px;
+		width: 100%;
+		left: 0px;
+	}
+	
+	&__share {
+		.clearfix();
+	}
+	
+	&__share-title {
+		float: left;
+		margin-right: 15px;
+		font-size: 15px;
+		line-height: 31px;
+	}
+	
+	&__share-body {
+		float: left;
+	}
+	
+	&__cards {
+		margin: 0px -10px;
+	}
+	
+	&__card {
+		display: inline-block;
+		vertical-align: top;
+		margin: 0px 10px;
+		
+		& img {
+			
+		}
+	}
+}
+
+//------------------- < 1024 ------------------//
+@media only screen and (max-width: (@width-content-normal - 1)) {
+	.right-side {
+		padding: 0px @padd-mobile;
+		padding-bottom: 50px;
+	}
+}

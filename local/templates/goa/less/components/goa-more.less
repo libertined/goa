@@ -1,0 +1,44 @@
+.goa-more {
+	display: block;
+	text-align: center;
+	
+	&__img {
+		height: 161px;
+		max-height: 161px;
+		max-width: 100%;
+	}
+	
+	&__svg {
+		height: 161px;
+		width: 100%;
+		max-width: 300px;
+	}
+	
+	&__svg-path {
+		fill: @color-biruza;
+	}
+	
+	&__svg-stroke {
+		fill: none;
+		stroke: @color-biruza;
+	}
+	
+	&__text {
+		font-size: 24px;
+		line-height: 29px;
+		font-family: Scada;
+		margin-top: 20px;
+	}
+	
+	&:hover &__svg-path {
+		fill: @color-yellow;
+	}
+	
+	&:hover &__svg-stroke {
+		stroke: @color-yellow;
+	}
+	
+	&:hover &__text {
+		color: @color-yellow;
+	}
+}

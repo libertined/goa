@@ -1,0 +1,27 @@
+.gallery-block {
+	display: block;
+	padding: 20px;
+	background: #fff;
+	
+	&__img {
+		width: 100%;
+		overflow: hidden;
+		
+		& img {
+			width: 100%;
+		}
+	}
+	
+	&__title {
+		font-family: OpenSansSemibold;
+		font-size: 17px;
+		line-height: 25px;
+		margin-top: 15px;
+		height: 75px;
+		overflow: hidden;
+	}
+	
+	&:hover &__title {
+		color: @color-red;
+	}
+}

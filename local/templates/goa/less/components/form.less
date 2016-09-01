@@ -1,0 +1,152 @@
+.form {
+	&--yellow {
+		background: @color-yellow;
+		padding: 30px;
+	}
+	
+	&--grey {
+		background: @color-grey-light;
+		padding: 30px;
+	}
+	
+	&__header {
+		font-family: Scada;
+		font-size: 38px;
+		line-height: 42px;
+		margin-bottom: 40px;
+		text-align: center;
+	}
+	
+	&__wrap {
+		.clearfix();
+	}
+	
+	&--w670 &__wrap {
+		max-width: 670px;
+	}
+	
+	&--center &__wrap {
+		margin: 0 auto;
+	}
+	
+	&__title {
+		float: left;
+		font-size: 15px;
+		line-height: 22px;
+		padding: 9px 0px;
+		width: 40%;
+		padding-right: 30px;
+		.box-sizing(border-box);
+	}
+	
+	&__field {
+		float: left;
+		width: 60%;
+		max-width: 400px;
+		position: relative;
+	}
+	
+	&--field-date {
+		max-width: 200px;
+	}
+	
+	&__input {
+		font-size: 15px;
+		line-height: 15px;
+		width: 100%;
+		border: none;
+		background: #fff;
+		display: block;
+		height: 40px;
+		padding: 0 20px;
+		font-family: @font-family-regular;
+		.box-sizing(border-box);
+		color: @color-grey;
+	}
+	
+	.form__textarea {
+		font-size: 15px;
+		line-height: 22px;
+		width: 100%;
+		border: none;
+		background: #fff;
+		display: block;
+		height: 120px;
+		padding: 20px;
+		font-family: @font-family-regular;
+		.box-sizing(border-box);
+		resize: none;
+		color: @color-grey;
+	}
+	
+	&__icon {
+		position: absolute;
+		top: 10px;
+		right: 12px;
+		width: 18px;
+		height: 20px;
+		
+		& object {
+			width: 18px;
+			height: 20px;
+		}
+	}
+	
+	&__counter {
+		.clearfix();
+	}
+	
+	&__counter-btn {
+		float: left;
+		width: 40px;
+		height: 40px;
+		background: #fff;
+		padding: 12px;
+		.box-sizing(border-box);
+		cursor: pointer;
+		
+		& object {
+			width: 16px;
+			height: 16px;
+		}
+	}
+	
+	&--counter-minus {
+		
+	}
+	
+	&--counter-plus {
+		
+	}
+	
+	&--input-counter {
+		float: left;
+		width: 40px;
+		padding: 0px;
+		text-align: center;
+		margin: 0px 1px;
+	}
+	
+	&__file {
+		background: #bcc6cc;
+		padding: 15px;
+	}
+	
+	&__file-icon {
+		width: 35px;
+		height: 27px;
+		margin: 0 auto;
+		margin-bottom: 15px;
+		
+		& object {
+			width: 35px;
+			height: 27px;
+		}
+	}
+	
+	&__file-text {
+		font-size: 14px;
+		line-height: 17px;
+		text-align: center;
+	}
+}

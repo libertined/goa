@@ -1,0 +1,107 @@
+.page-footer {
+	background: @color-green-light;
+	margin-top: -(@footer-height);
+	height: 400px;
+	
+	&__top {
+		height: 335px;
+	}
+	
+	&__title {
+		font-family: @font-family-semibold;
+		font-size: 20px;
+		padding-top: 44px;
+		margin-bottom: 30px;
+	}
+	
+	&__contact {
+		.clearfix();
+		margin-bottom: 20px;
+	}
+	
+	&__contact-title {
+		float: left;
+		width: 70px;
+		color: @color-green-dark;
+		line-height: 22px;
+	}
+	
+	&__contact-text {
+		float: left;
+		line-height: 22px;
+		
+		& p {
+			
+		}
+	}
+	
+	&--contact-link {
+		border-bottom: solid 1px @color-green-dark;
+		
+		&:hover {
+			color: @color-green-dark;
+		}
+	}
+	
+	&__socials {
+		.clearfix();
+	}
+	
+	&__social-item {
+		display: block;
+		width: 55px;
+		height: 55px;
+		background: @color-green;
+		float: left;
+		margin-right: 15px;
+		text-align: center;
+		
+		&:hover {
+			background: @color-green-dark;
+		}
+		
+		& object {
+			height: 21px;
+			padding: 17px 0px;
+		}
+	}
+	
+	&--social-ig {
+		
+	}
+	
+	&--social-fb {
+		
+	}
+	
+	&--social-vk {
+		
+	}
+	
+	&__dev-wrap {
+		text-align: right;
+		padding-top: 207px;
+	}
+	
+	&__dev {
+		line-height: 22px;
+		
+		& span {
+			color: @color-green-dark;
+		}
+		
+		& a:hover {
+			text-decoration: underline;
+		}
+	}
+	
+	&__copyright {
+		background: @color-green;
+		height: 65px;
+	}
+	
+	&__copyright-inner {
+		line-height: 15px;
+		padding: 25px 0px;
+	}
+}

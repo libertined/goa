@@ -1,0 +1,67 @@
+.left-side {
+	padding-bottom: 50px;
+	
+	&__block {
+		
+	}
+	
+	&__header {
+		padding: 20px 15px;
+		padding-left: 65px;
+		font-family: OpenSansSemibold;
+		font-size: 20px;
+		line-height: 25px;
+		color: #fff;
+		position: relative;
+	}
+	
+	&__header-icon {
+		position: absolute;
+		width: 24px;
+		height: 65px;
+		top: 0px;
+		left: 15px;
+		
+		& object {
+			width: 24px;
+			height: 65px;
+		}
+	}
+	
+	&--block-green &__header {
+		background: @color-green;
+	}
+	
+	&--block-yellow &__header {
+		background: @color-yellow;
+	}
+	
+	&__body {
+		padding: 25px 15px;
+	}
+	
+	&--block-green &__body {
+		background: @color-green-light;
+	}
+	
+	&--block-yellow &__body {
+		background: #fff;
+	}
+	
+	&__body-text {
+		line-height: 22px;
+		padding: 0px 25px;
+	}
+	
+	&__body-refresh {
+		width: 16px;
+		height: 20px;
+		margin-top: 30px;
+		float: right;
+		
+		& object {
+			width: 16px;
+			height: 20px;
+		}
+	}
+}

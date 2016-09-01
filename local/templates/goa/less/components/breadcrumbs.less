@@ -1,0 +1,27 @@
+.breadcrumbs {
+	background: #fff;
+	padding: 24px 0px;
+	
+	&__item {
+		color: @color-grey;
+		display: inline;
+		font-size: 15px;
+		line-height: 22px;
+		
+		a&:hover {
+			color: @text-color-base;
+		}
+	}
+	
+	&--item-main {
+		color: @color-red-dark;
+		
+		a&:hover {
+			color: darken(@color-red-dark, 10%);
+		}
+	}
+	
+	&--item-separate {
+		padding: 0px 15px;
+	}
+}
