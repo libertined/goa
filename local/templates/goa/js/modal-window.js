@@ -1,16 +1,16 @@
-//************ Модальные окна BEGIN *******************//
+//************ РњРѕРґР°Р»СЊРЅС‹Рµ РѕРєРЅР° BEGIN *******************//
 $(document).ready( function() {
-	//Генерация подложки для модального окна
+	//Р“РµРЅРµСЂР°С†РёСЏ РїРѕРґР»РѕР¶РєРё РґР»СЏ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°
 	$("body").prepend("<div class='modal-shadow'></div>");
-	
-	//Инициализация окна
+
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕРєРЅР°
 	$(".modal-window").each(function() {
-	  	$(this).prepend("<a href='' class='closemodal'></a>");
-	  	$(this).addClass("js-window");
-	    modalresizer();
+		$(this).prepend("<a href='' class='closemodal'></a>");
+		$(this).addClass("js-window");
+		modalresizer();
 	});
-	
-	//Открытие окна
+
+	//РћС‚РєСЂС‹С‚РёРµ РѕРєРЅР°
 	$(document).on("click", ".openmodal", function (e) {
 		e.preventDefault();
 		var btn = $(this);
@@ -19,31 +19,31 @@ $(document).ready( function() {
 		slide_id = $(this).attr("data-slide");
 		openmodal(modal_id, slide_id);
 	});
-	
-	//Закрытие модального окна
+
+	//Р—Р°РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°
 	$("body").on("click", ".closemodal, .modal-shadow", function(event) {
-	    $(".modal-window, .modal-shadow").animate({
+		$(".modal-window, .modal-shadow").animate({
 			opacity: 0
 		}, 500, function() {
 			$(".modal-window, .modal-shadow").removeClass("js-active");
 		});
 		event.preventDefault();
-  	});
-  	
-	//Функция отложенного конечного действия
+	});
+
+	//Р¤СѓРЅРєС†РёСЏ РѕС‚Р»РѕР¶РµРЅРЅРѕРіРѕ РєРѕРЅРµС‡РЅРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
 	var waitForFinalEvent = (function () {
-  		var timers = {};
-  		return function (callback, ms, uniqueId) {
-    		if (!uniqueId) {
-      			uniqueId = "Don't call this twice without a uniqueId";
-    		}
-	    	if (timers[uniqueId]) {
-	      		clearTimeout (timers[uniqueId]);
-	    	}
-	    	timers[uniqueId] = setTimeout(callback, ms);
-  		};
+		var timers = {};
+		return function (callback, ms, uniqueId) {
+			if (!uniqueId) {
+				uniqueId = "Don't call this twice without a uniqueId";
+			}
+			if (timers[uniqueId]) {
+				clearTimeout (timers[uniqueId]);
+			}
+			timers[uniqueId] = setTimeout(callback, ms);
+		};
 	})();
-	//При ресайзе окна
+	//РџСЂРё СЂРµСЃР°Р№Р·Рµ РѕРєРЅР°
 	$(window).resize(function () {
 		waitForFinalEvent(function(){
 			modalresizer();
@@ -51,17 +51,17 @@ $(document).ready( function() {
 	});
 });
 
-//Открытие окна
+//РћС‚РєСЂС‹С‚РёРµ РѕРєРЅР°
 function openmodal(artic, slide_id) {
-	modalresizer();    
-  	$("#" + artic).addClass("js-active");  	
-  	$("#" + artic).animate({
-    	opacity: 1
-  	}, 500, function() {
+	modalresizer();
+	$("#" + artic).addClass("js-active");
+	$("#" + artic).animate({
+		opacity: 1
+	}, 500, function() {
 		if(artic=="modal-gallery") {
 			$("#" + artic).css("opacity","0");
 			$(".gallery").css("display", "block");
-			
+
 			if($('.bxslider_gallery').length>0) {
 				if(typeof slidergal !== "undefined") {
 					$("#" + artic).css("opacity","1");
@@ -91,26 +91,26 @@ function openmodal(artic, slide_id) {
 			}
 		}
 	});
-  	$(".modal-shadow").addClass("js-active");
-  	$(".modal-shadow").animate({
-    	opacity: 1
-  	}, 500);
+	$(".modal-shadow").addClass("js-active");
+	$(".modal-shadow").animate({
+		opacity: 1
+	}, 500);
 }
-//Делаем окно адаптивным
+//Р”РµР»Р°РµРј РѕРєРЅРѕ Р°РґР°РїС‚РёРІРЅС‹Рј
 function modalresizer() {
-    $(".modal-window").each(function() {
-    	if( $(this).innerHeight() > $(window).height() ) {
-        	$(this).addClass("js-window-absolut");
-            var toppos = $(window).scrollTop();
-            $(this).css({"top" : toppos });
-        } else {
-            $(this).removeClass("js-window-absolut");
-	      	var getheight = $(window).height();
-	      	var getmodalheight = $(this).innerHeight();
-	      	var gtx = getheight - getmodalheight;
-	      	gtx = gtx / 2;
-            $(this).css({"top" : gtx });
-        } 
-    });  
+	$(".modal-window").each(function() {
+		if( $(this).innerHeight() > $(window).height() ) {
+			$(this).addClass("js-window-absolut");
+			var toppos = $(window).scrollTop();
+			$(this).css({"top" : toppos });
+		} else {
+			$(this).removeClass("js-window-absolut");
+			var getheight = $(window).height();
+			var getmodalheight = $(this).innerHeight();
+			var gtx = getheight - getmodalheight;
+			gtx = gtx / 2;
+			$(this).css({"top" : gtx });
+		}
+	});
 }
-//************ Модальные окна END *******************//
+//************ РњРѕРґР°Р»СЊРЅС‹Рµ РѕРєРЅР° END *******************//

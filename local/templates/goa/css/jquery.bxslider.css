@@ -49,6 +49,7 @@
 .slider-main .bx-wrapper .bx-controls-auto {
 	z-index: 2;
 	bottom: 27px;
+	width: 40%;
 }
 
 .slider-exs .bx-wrapper .bx-pager,
@@ -143,7 +144,7 @@
 
 .slider-main .bx-controls-direction {
 	height: 70px;
-	width: 100%;
+	width: 40%;
 	background: #fab95f;
 	position: absolute;
     bottom: 0;

@@ -14,7 +14,8 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset = \Bitrix\Main\Page\Asset::getInstance();
 
 	$oAsset->addCss(SITE_TEMPLATE_PATH."/css/jquery.bxslider.css");
-	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-3.1.0.min.js');
+
+	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-1.11.2.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.bxslider.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/scripts.js');
 
@@ -52,8 +53,7 @@ IncludeTemplateLangFile(__FILE__);
 					?>
 					<div class="page-header__phone">
 						<div class="page-header__phone-icon">
-							<object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/phone.svg">
-								Your browser does not  support  SVGs</object>
+							<object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/phone.svg">Your browser does not  support  SVGs</object>
 						</div>
 						<div class="page-header__phone-num" onclick="location.href='tel:+918888717922'"><span>IN. </span>+91 8888 71 79 22</div>
 						<div class="page-header__phone-num" onclick="location.href='tel:+79817717922'"><span>RU. </span>+7 981 771 79 22</div>
@@ -84,34 +84,42 @@ IncludeTemplateLangFile(__FILE__);
 				);?>
 			<?endif;?>
 			<div class="page-content-inner">
-				<? if ($page == '/index.php'):?>
+				<?if ($page == '/index.php'):?>
 					<div class="slider-main">
-						<div class="slider-main__slider">
-							<div class="bxslider_main">
-								<div class="slider-main__item">
-									<div class="vert-middle">
-										<div class="vert-middle__inner">
-											<div class="slider-main__header">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
-											<div class="slider-main__text">Мир создан для любви и гармонии с собой и окружающим миром. Вы обязательно убедитесь в этом, побывав на этой экскурсии.</div>
-											<a href="" class="btn">Подробнее</a>
+						<div class="bxslider_main">
+							<div class="slider-main__item">
+								<div class="slider-main__slider">
+									<div class="slider-main__body">
+										<div class="vert-middle">
+											<div class="vert-middle__inner">
+												<div class="slider-main__header">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
+												<div class="slider-main__text">Мир создан для любви и гармонии с собой и окружающим миром. Вы обязательно убедитесь в этом, побывав на этой экскурсии.</div>
+												<a href="" class="btn">Подробнее</a>
+											</div>
 										</div>
 									</div>
 								</div>
+								<div class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></div>
+							</div>
 
-								<div class="slider-main__item">
-									<div class="vert-middle">
-										<div class="vert-middle__inner">
-											<div class="slider-main__header">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
-											<div class="slider-main__text">Мир создан для любви и гармонии с собой и окружающим миром. Вы обязательно убедитесь в этом, побывав на этой экскурсии.</div>
-											<a href="" class="btn">Подробнее</a>
+							<div class="slider-main__item">
+								<div class="slider-main__slider">
+									<div class="slider-main__body">
+										<div class="vert-middle">
+											<div class="vert-middle__inner">
+												<div class="slider-main__header">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
+												<div class="slider-main__text">Мир создан для любви и гармонии с собой и окружающим миром. Вы обязательно убедитесь в этом, побывав на этой экскурсии.</div>
+												<a href="" class="btn">Подробнее</a>
+											</div>
 										</div>
 									</div>
 								</div>
+								<div class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></div>
 							</div>
 						</div>
-						<div class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></div>
 					</div>
 				<?endif;?>
+
 				<div class="row">
 					<div class="row__inner">
 						<div class="col-12-3">
