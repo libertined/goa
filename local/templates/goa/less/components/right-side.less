@@ -205,5 +205,31 @@
 	  	& p {
 			margin: 15px 0px;
 	  	}
+
+	  	&__top5 {
+		  	margin-bottom: 15px;
+		}
+
+	  	&__top5-pos {
+			position: static;
+	  	}
+
+	  	&__top5-hover-wrap {
+			background: none;
+			position: static;
+			width: auto;
+			height: auto;
+			text-align: left;
+			display: block;
+		  	margin-bottom: 10px;
+	  	}
+
+	  	&__top5-hover {
+		  	color: @color-grey-dark;
+	  	}
+
+	  	&__top5:hover &__top5-hover {
+		  	color: @color-red;
+	  	}
   	}
 }

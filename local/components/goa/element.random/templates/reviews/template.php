@@ -18,7 +18,7 @@ $frame = $this->createFrame()->begin('');
 			<div class="slider-review__item">
 				<div class="row row--padd30">
 					<div class="row__inner">
-						<div class="col-12-4">
+						<div class="col-12-4 col-adaptive-768">
 							<div class="slider-review__item-info">
 								<div class="slider-review__item-pic">
 									<?if(empty($arItem["PREVIEW_PICTURE"])):?>
@@ -31,7 +31,7 @@ $frame = $this->createFrame()->begin('');
 								<div class="slider-review__item-date"><?=$arItem["DATE_ACTIVE_FROM"]?></div>
 							</div>
 						</div>
-						<div class="col-12-8">
+						<div class="col-12-8 col-adaptive-768">
 							<div class="slider-review__item-text"><?=$arItem["PREVIEW_TEXT"]?></div>
 						</div>
 					</div>
