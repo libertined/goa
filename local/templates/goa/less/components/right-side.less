@@ -158,10 +158,52 @@
 	}
 }
 
+//------------------- < 1440 и > 767 ------------------//
+@media only screen and (min-width: @width-content-middle) and (max-width: (@width-content-max-inner - 1)) {
+  	.right-side {
+		& h2 {
+	  		font-size: 32px;
+	  		line-height: 34px;
+	  		margin-bottom: 15px;
+		}
+
+	  	& h3 {
+			font-size: 22px;
+			line-height: 26px;
+			margin-bottom: 10px;
+	  	}
+
+	  	& p {
+			margin: 15px 0px;
+	  	}
+  	}
+}
+
 //------------------- < 1024 ------------------//
 @media only screen and (max-width: (@width-content-normal - 1)) {
 	.right-side {
-		padding: 0px @padd-mobile;
-		padding-bottom: 50px;
+	  	padding: 0px @padd-mobile;
+	  	padding-bottom: 50px;
 	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.right-side {
+	  	& h2 {
+			font-size: 24px;
+			line-height: 26px;
+			margin-bottom: 10px;
+	  	}
+
+	  	& h3 {
+			font-size: 20px;
+			line-height: 24px;
+			margin-bottom: 10px;
+	 	}
+
+	  	& p {
+			margin: 15px 0px;
+	  	}
+  	}
 }

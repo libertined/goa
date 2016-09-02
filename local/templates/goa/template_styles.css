@@ -523,11 +523,13 @@ a:hover {
   .col-adaptive-768 {
     width: 100%;
   }
+  .top-adaptive-768 {
+    margin-top: 30px;
+  }
+  .marg-b-adaptive-none {
+    margin-bottom: 0px;
+  }
   /*
-	.top-adaptive-768 {
-		margin-top: 20px;
-	}
-	
 	.visible-adaptive-768 {
 		display: none;
 	}  
@@ -927,10 +929,40 @@ a:hover {
   vertical-align: top;
   margin: 0px 10px;
 }
+@media only screen and (min-width: 768px) and (max-width: 1439px) {
+  .right-side h2 {
+    font-size: 32px;
+    line-height: 34px;
+    margin-bottom: 15px;
+  }
+  .right-side h3 {
+    font-size: 22px;
+    line-height: 26px;
+    margin-bottom: 10px;
+  }
+  .right-side p {
+    margin: 15px 0px;
+  }
+}
 @media only screen and (max-width: 1023px) {
   .right-side {
     padding: 0px 4%;
     padding-bottom: 50px;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .right-side h2 {
+    font-size: 24px;
+    line-height: 26px;
+    margin-bottom: 10px;
+  }
+  .right-side h3 {
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 10px;
+  }
+  .right-side p {
+    margin: 15px 0px;
   }
 }
 .slider-review {
@@ -1014,6 +1046,13 @@ a:hover {
 }
 .goa-more:hover .goa-more__text {
   color: #ffcc66;
+}
+@media only screen and (max-width: 767px) {
+  .goa-more__text {
+    font-size: 20px;
+    line-height: 24px;
+    margin-top: 12px;
+  }
 }
 .see {
   background: #ffcc66;

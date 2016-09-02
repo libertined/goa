@@ -96,7 +96,7 @@ false
 );?>
 
 <h2>Больше, чем экскурсии по Гоа</h2>
-<div class="row row--padd30 marg-b-70 marg-t-40">
+<div class="row row--padd30 marg-b-70 marg-t-40 marg-b-adaptive-none">
 	<div class="row__inner col-adaptive-row">
 		<div class="col-12-4 col-adaptive-768">
 			<a href="" class="goa-more">
@@ -126,7 +126,7 @@ false
 			</a>
 		</div>
 
-		<div class="col-12-4 col-adaptive-768">
+		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
 			<a href="" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -156,7 +156,7 @@ false
 			</a>
 		</div>
 
-		<div class="col-12-4 col-adaptive-768">
+		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
 			<a href="" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -186,7 +186,7 @@ false
 
 <div class="row row--padd30 marg-b-70">
 	<div class="row__inner col-adaptive-row">
-		<div class="col-12-4 col-adaptive-768">
+		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
 			<a href="" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -211,7 +211,7 @@ false
 			</a>
 		</div>
 
-		<div class="col-12-4 col-adaptive-768">
+		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
 			<a href="" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -239,7 +239,7 @@ false
 			</a>
 		</div>
 
-		<div class="col-12-4 col-adaptive-768">
+		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
 			<a href="" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
