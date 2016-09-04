@@ -6,17 +6,18 @@
 	}
 	
 	&__logo {
+	  	display: block;
 		width: 153px;
 		height: 72px;
 		float: left;
 		margin: 9px 0px;
 		cursor: pointer;
-		background: url("@{img-path}logo.png") no-repeat 0px 0px;
+		//background: url("@{img-path}logo.png") no-repeat 0px 0px;
+	  	margin-right: 35px;
 	}
 	
 	&__menu {
 		float: left;
-		margin-left: 35px;
 	}
 	
 	&__phone {
@@ -55,4 +56,68 @@
 			margin-right: 0px;
 		}
 	}
+
+  	&__phone-num-adaptive {
+	  	font-size: 15px;
+	  	line-height: 20px;
+	  	color: @text-color-base;
+  	}
+
+  	&__menu-adaptive {
+	  	float: right;
+	  	padding: 35px 0px;
+  	}
+
+  	&__menu-adaptive-btn {
+		width: 23px;
+		height: 20px;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-image: url("@{svg-path}faceless.svg");
+	  	.bg-size(19px);
+	  	cursor: pointer;
+  	}
+}
+
+//------------------- < 1440 и > 767 ------------------//
+@media only screen and (min-width: @width-content-middle) and (max-width: (@width-content-max-inner - 1)) {
+  	.page-header {
+	  	&__inner {
+			text-align: center;
+	  	}
+
+		&__menu {
+		  	float: none;
+		}
+
+	  	&__phone {
+		  	display: inline-block;
+		  	float: none;
+		  	margin-left: 0px;
+		  	padding: 20px 0px;
+	  	}
+
+	  	&__logo {
+		  	margin: 9px auto;
+		  	float: none;
+		}
+  	}
+}
+
+//------------------- < 1024 ------------------//
+@media only screen and (max-width: (@width-content-normal - 1)) {
+	.page-header {
+
+	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.page-header {
+	  	&__phone {
+			float: none;
+			margin-left: 0px;
+			padding: 20px 0px;
+	  	}
+  	}
 }

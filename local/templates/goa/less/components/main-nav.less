@@ -1,5 +1,6 @@
 .main-nav {
 	.clearfix();
+  	padding-top: 35px;
   
 	&__item {
 		display: block;
@@ -10,7 +11,7 @@
 			display: block;
 			text-transform: uppercase;
 			font-size: 14px;
-			line-height: 90px;
+			line-height: 20px;
 			color: @text-color-base;
 		}
 	}
@@ -21,4 +22,22 @@
 			color: @color-green;
 		}
 	}
+}
+
+//------------------- < 1440 и > 767 ------------------//
+@media only screen and (min-width: @width-content-middle) and (max-width: (@width-content-max-inner - 1)) {
+  	.main-nav {
+	  	display: inline-block;
+	  	padding-top: 20px;
+
+	  	&__item {
+			display: inline-block;
+		  	vertical-align: top;
+		  	float: none;
+
+		  	& a {
+			  	line-height: 30px;
+		  	}
+	  	}
+  	}
 }

@@ -3,7 +3,7 @@ html, body {
 	margin: 0;
 	width: 100%;
 	height: 100%;
-	min-width: @width-content-max;
+	//min-width: @width-content-max;
 	position: relative;
 }
 
@@ -233,8 +233,12 @@ a {
 	}
 }
 
-//------------------- < 1440 ------------------//
-@media only screen and (max-width: (@width-content-max-inner - 1)) {
+.visible-adaptive-show-768 {
+  	display: none;
+}
+
+//------------------- < 1500 ------------------//
+@media only screen and (max-width: (@width-content-max - 1)) {
 	.page-content-inner {
 		margin: 0 auto;
 		width: 100%;
@@ -304,6 +308,10 @@ a {
 
   	.visible-adaptive-768 {
 		display: none !important;
+  	}
+
+  	.visible-adaptive-show-768 {
+		display: block !important;
   	}
 
 	/*
