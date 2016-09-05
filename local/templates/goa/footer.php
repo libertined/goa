@@ -5,7 +5,7 @@
         </div>
       </div>
 
-      <div class="instagram">
+      <div class="instagram visible-adaptive-768">
         <div class="page-content-inner page-content-inner--w1300">
           <div class="instagram__header">@tvoygoa</div>
           <div class="instagram__body">

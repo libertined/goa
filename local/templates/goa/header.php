@@ -135,7 +135,7 @@ IncludeTemplateLangFile(__FILE__);
 
 				<div class="row">
 					<div class="row__inner col-adaptive-row">
-						<div class="col-12-3 col-adaptive-1024">
+						<div class="col-12-3 col-adaptive-1024 visible-adaptive-768">
 							<section class="left-side">
 								<? $APPLICATION->IncludeComponent("bitrix:menu", "sub_menu", Array(
 									"ROOT_MENU_TYPE" => "left",	// Тип меню для первого уровня

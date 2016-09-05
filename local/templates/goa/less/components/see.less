@@ -20,5 +20,31 @@
 		font-family: Scada;
 		margin-top: 20px;
 		margin-bottom: 35px;
+	  	display: block;
 	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.see {
+	  	padding-top: 10px;
+	  	padding-bottom: 10px;
+
+	  	&__icon {
+			width: 32px;
+			height: 25px;
+
+			& object {
+		  		width: 32px;
+		  		height: 25px;
+			}
+	  	}
+	  	&__text {
+		  	margin-bottom: 0px;
+		  	margin-top: 2px;
+		  	font-size: 24px;
+		  	line-height: 29px;
+		  	color: @color-red;
+	  	}
+  	}
 }

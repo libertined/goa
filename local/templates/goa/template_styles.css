@@ -1084,6 +1084,10 @@ a:hover {
   }
 }
 @media only screen and (max-width: 767px) {
+  .right-side {
+    padding-top: 20px;
+    padding-bottom: 15px;
+  }
   .right-side h2 {
     font-size: 24px;
     line-height: 26px;
@@ -1242,6 +1246,28 @@ a:hover {
   font-family: Scada;
   margin-top: 20px;
   margin-bottom: 35px;
+  display: block;
+}
+@media only screen and (max-width: 767px) {
+  .see {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .see__icon {
+    width: 32px;
+    height: 25px;
+  }
+  .see__icon object {
+    width: 32px;
+    height: 25px;
+  }
+  .see__text {
+    margin-bottom: 0px;
+    margin-top: 2px;
+    font-size: 24px;
+    line-height: 29px;
+    color: #fd7866;
+  }
 }
 .btn {
   display: inline-block;
