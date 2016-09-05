@@ -20,8 +20,9 @@
 
 	<div class="visible-adaptive-show-768">
 		<div class="page-header__menu-adaptive">
-			<div class="page-header__menu-adaptive-btn"></div>
-			<nav class="main-nav-adaptive" style="display: none;">
+			<div class="page-header__menu-adaptive-btn js-menu-adaptive-btn"></div>
+			<nav class="main-nav-adaptive js-menu-adaptive-list">
+				<a href="" class="main-nav-adaptive__close js-menu-adaptive-close"></a>
 				<ul class="main-nav-adaptive__list">
 					<?
 					foreach($arResult as $arItem):

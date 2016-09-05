@@ -96,6 +96,12 @@ $(document).ready( function() {
 		return false;
 	});
 
+	//Мобильное меню
+	$(document).on("click", ".js-menu-adaptive-btn, .js-menu-adaptive-close", function () {
+		$(".js-menu-adaptive-list").slideToggle("200", function () {});
+		return false;
+	});
+
 	$(".js-interesting-refresh").on('click', function(){
 		$.ajax({
 			type: "POST",
