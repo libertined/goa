@@ -1,7 +1,7 @@
 .page-footer {
 	background: @color-green-light;
 	margin-top: -(@footer-height);
-	height: 400px;
+	//height: @footer-height;
 	
 	&__top {
 		height: 335px;
@@ -104,4 +104,80 @@
 		line-height: 15px;
 		padding: 25px 0px;
 	}
+
+  	&__nav {
+
+	}
+
+  	&__nav-list {
+
+  	}
+
+  	&__nav-item {
+	  	font-size: 15px;
+	  	line-height: 20px;
+
+		& a {
+			display: block;
+		  	color: @color-grey;
+		}
+
+	  	&:hover a {
+		  	color: @text-color-base;
+		}
+  	}
+
+  	&--nav-current a {
+	  	color: @text-color-base;
+	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.page-footer {
+	  	//height: @footer-height-min;
+	  	margin-top: -(@footer-height-min);
+
+	  	&__top {
+			height: auto;
+		  	padding: 12px 0px;
+	  	}
+
+	  	&__copyright {
+			height: auto;
+	  	}
+
+	  	&__copyright-inner {
+			color: #fff;
+		  	font-size: 12px;
+		  	line-height: 20px;
+		  	padding: 5px 0px;
+
+		  	& a {
+			 	color: #fff;
+
+			  	&:hover {
+				  	color: @text-color-base;
+				}
+			}
+	  	}
+
+	  	&__socials {
+		  	width: 55px;
+		  	display: inline-block;
+		 	vertical-align: top;
+	  	}
+
+	  	&__social-item {
+		  	margin-right: 0px;
+		 	margin-bottom: 7px;
+		  	width: 40px;
+		  	height: 40px;
+
+		  	& object {
+				height: 14px;
+				padding: 13px 0px;
+		  	}
+		}
+  	}
 }

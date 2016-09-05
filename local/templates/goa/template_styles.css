@@ -522,6 +522,10 @@ a:hover {
   body {
     min-width: 320px;
   }
+  .content-top-inner {
+    padding-bottom: 254px;
+    /* Задаём нижний отступ, равный высоте футера или больше */
+  }
   .col-adaptive-768 {
     width: 100%;
   }
@@ -670,7 +674,6 @@ a:hover {
 .page-footer {
   background: #caf2c2;
   margin-top: -400px;
-  height: 400px;
 }
 .page-footer__top {
   height: 335px;
@@ -752,6 +755,59 @@ a:hover {
 .page-footer__copyright-inner {
   line-height: 15px;
   padding: 25px 0px;
+}
+.page-footer__nav-item {
+  font-size: 15px;
+  line-height: 20px;
+}
+.page-footer__nav-item a {
+  display: block;
+  color: #757c80;
+}
+.page-footer__nav-item:hover a {
+  color: #333333;
+}
+.page-footer--nav-current a {
+  color: #333333;
+}
+@media only screen and (max-width: 767px) {
+  .page-footer {
+    margin-top: -254px;
+  }
+  .page-footer__top {
+    height: auto;
+    padding: 12px 0px;
+  }
+  .page-footer__copyright {
+    height: auto;
+  }
+  .page-footer__copyright-inner {
+    color: #fff;
+    font-size: 12px;
+    line-height: 20px;
+    padding: 5px 0px;
+  }
+  .page-footer__copyright-inner a {
+    color: #fff;
+  }
+  .page-footer__copyright-inner a:hover {
+    color: #333333;
+  }
+  .page-footer__socials {
+    width: 55px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  .page-footer__social-item {
+    margin-right: 0px;
+    margin-bottom: 7px;
+    width: 40px;
+    height: 40px;
+  }
+  .page-footer__social-item object {
+    height: 14px;
+    padding: 13px 0px;
+  }
 }
 .main-nav {
   padding-top: 35px;
@@ -2218,7 +2274,7 @@ a.breadcrumbs--item-main:hover {
   -moz-box-shadow: 1px 2px 5px 0px #757c80;
   box-shadow: 1px 2px 5px 0px #757c80;
   color: #fff;
-  padding: 4%;
+  padding: 50px 4%;
 }
 .main-nav-adaptive__item a {
   color: #fff;
