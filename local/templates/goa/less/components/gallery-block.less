@@ -25,3 +25,13 @@
 		color: @color-red;
 	}
 }
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.gallery-block {
+	  	&__title {
+		  	height: initial;
+		  	overflow: initial;
+	  	}
+  	}
+}

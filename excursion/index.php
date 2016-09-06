@@ -2,6 +2,79 @@
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Экскурсии");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
 $APPLICATION->SetTitle("Экскурсии");?>
+
+<div class="filter">
+	<div class="filter__categories">
+		<div class="filter__category-item filter--category-active">
+			2 дня (5)
+			<div class="filter__category-close"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+		</div>
+		<div class="filter__category-item">4 дня (8)</div>
+		<div class="filter__category-item">6 дней (3)</div>
+		<div class="filter__category-item">Исторические (7)</div>
+		<div class="filter__category-item">Развлекательные (8)</div>
+		<div class="filter__category-item">Древняя архитектура (5)</div>
+		<div class="filter__category-item">7 дней (3)</div>
+	</div>
+	<div class="filter__clear marg-t-20">
+		<div class="filter__clear-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+		<div class="filter__clear-text">Сбросить все фильтры</div>
+	</div>
+	<div class="filter__result marg-t-40 marg-b-20">Найдено <span>5 экскурсий</span></div>
+</div>
+
+<a href="" class="exs-block marg-b-40">
+	<div class="row row--padd30">
+		<div class="row__inner">
+			<div class="col-12-4 col-adaptive-768">
+				<div class="exs-block__title visible-adaptive-show-768">Колхапур и Махабалешвар</div>
+				<div class="exs-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_6.jpg" alt="" /></div>
+			</div>
+			<div class="col-12-8 col-adaptive-768">
+				<div class="exs-block__title visible-adaptive-768">Колхапур и Махабалешвар</div>
+				<div class="exs-block__text">
+					<p>Мы сделаем для вас это путешествие незабываемым.<br />За два дня вы увидите удивительные памятники, услышите древние легенды, отдохнете в горах, почувствуете себя махараджей.</p>
+					<p>Мы побываем в священном храме Махалакшми (7в), во Дворце махараджей, где и по сей день живет королевская семья, насладимся чистым горным воздухом и спелой клубникой, окунемся в облака на рассвете.</p>
+				</div>
+				<div class="exs-block__categories visible-adaptive-768">
+					<div class="exs-block__categories-item">Развлекательные</div>
+					<div class="exs-block__categories-item">2 дня</div>
+					<div class="exs-block__categories-item">Историческая</div>
+				</div>
+				<div class="visible-adaptive-show-768 pos-right marg-t-20">
+					<div class="exs-block__btn btn btn--red btn--small">Подробно</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</a>
+
+<a href="" class="exs-block">
+	<div class="row row--padd30">
+		<div class="row__inner">
+			<div class="col-12-4 col-adaptive-768">
+				<div class="exs-block__title visible-adaptive-show-768">Колхапур и Махабалешвар</div>
+				<div class="exs-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_6.jpg" alt="" /></div>
+			</div>
+			<div class="col-12-8 col-adaptive-768">
+				<div class="exs-block__title visible-adaptive-768">Колхапур и Махабалешвар</div>
+				<div class="exs-block__text">
+					<p>Мы сделаем для вас это путешествие незабываемым.<br />За два дня вы увидите удивительные памятники, услышите древние легенды, отдохнете в горах, почувствуете себя махараджей.</p>
+					<p>Мы побываем в священном храме Махалакшми (7в), во Дворце махараджей, где и по сей день живет королевская семья, насладимся чистым горным воздухом и спелой клубникой, окунемся в облака на рассвете.</p>
+				</div>
+				<div class="exs-block__categories visible-adaptive-768">
+					<div class="exs-block__categories-item">Развлекательные</div>
+					<div class="exs-block__categories-item">2 дня</div>
+					<div class="exs-block__categories-item">Историческая</div>
+				</div>
+				<div class="visible-adaptive-show-768 pos-right marg-t-20">
+					<div class="exs-block__btn btn btn--red btn--small">Подробно</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</a>
+
 <?if(!isset($_REQUEST["tags"])):?>
 
 	<?$APPLICATION->IncludeComponent(

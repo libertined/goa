@@ -452,7 +452,7 @@ a:hover {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 2000;
+  z-index: 99;
   display: block;
   width: 65px;
   height: 65px;
@@ -1312,6 +1312,16 @@ a:hover {
   border: solid 1px #cdd4db;
   color: #333333;
 }
+.btn--red {
+  background: #fc381d;
+  border: solid 1px #fc381d;
+  color: #fff;
+}
+.btn--red:hover {
+  background: #fc2204;
+  border: solid 1px #fc2204;
+  color: #fff;
+}
 .btn--fill {
   width: 100%;
   padding: 0px;
@@ -1332,6 +1342,13 @@ a:hover {
 .btn--big:hover {
   background: #fc2204;
   border: solid 1px #fc2204;
+}
+.btn--small {
+  line-height: 29px;
+  height: 31px;
+  font-family: OpenSans;
+  font-size: 15px;
+  padding: 0px 30px;
 }
 .main-img {
   background-color: #f2f2f2;
@@ -1442,7 +1459,6 @@ a.breadcrumbs--item-main:hover {
   display: inline-block;
   vertical-align: top;
   width: 100%;
-  max-width: 300px;
 }
 .exs-block:hover .exs-block__title {
   color: #fd7866;
@@ -1463,6 +1479,16 @@ a.breadcrumbs--item-main:hover {
 }
 .exs-block__categories-item:hover {
   border: solid 2px #757c80;
+}
+@media only screen and (max-width: 767px) {
+  .exs-block {
+    padding: 15px;
+  }
+  .exs-block__title {
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 15px;
+  }
 }
 .filter__categories {
   margin: -7px;
@@ -1594,10 +1620,15 @@ a.breadcrumbs--item-main:hover {
   font-size: 24px;
   line-height: 30px;
   margin-top: 20px;
-  white-space: nowrap;
 }
 .services-block:hover .services-block__title {
   color: #fd7866;
+}
+@media only screen and (max-width: 767px) {
+  .services-block__title {
+    font-size: 20px;
+    line-height: 24px;
+  }
 }
 .gallery-block {
   display: block;
@@ -1621,6 +1652,12 @@ a.breadcrumbs--item-main:hover {
 }
 .gallery-block:hover .gallery-block__title {
   color: #fd7866;
+}
+@media only screen and (max-width: 767px) {
+  .gallery-block__title {
+    height: initial;
+    overflow: initial;
+  }
 }
 .gallery-open-block {
   display: block;

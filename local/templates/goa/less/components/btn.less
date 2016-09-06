@@ -43,6 +43,18 @@
 			color: @text-color-base;
 		}
 	}
+
+  	&--red {
+		background: @color-red-dark;
+		border: solid 1px @color-red-dark;
+		color: #fff;
+
+		&:hover {
+		  	background: darken(@color-red-dark, 5%);
+		  	border: solid 1px darken(@color-red-dark, 5%);
+		  	color: #fff;
+		}
+  	}
 	
 	&--fill {
 		width: 100%;
@@ -67,5 +79,13 @@
 			background: darken(@color-red-dark, 5%);
 			border: solid 1px darken(@color-red-dark, 5%);
 		}
+	}
+
+  	&--small {
+	  	line-height: 29px;
+	  	height: 31px;
+	  	font-family: @font-family-regular;
+	  	font-size: 15px;
+	  	padding: 0px 30px;
 	}
 }

@@ -18,6 +18,7 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-1.11.2.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.bxslider.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/scripts.js');
+	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/modal-window.js');
 
 	$APPLICATION->ShowHeadStrings();
 	$APPLICATION->ShowHead();
@@ -77,7 +78,7 @@ IncludeTemplateLangFile(__FILE__);
 
 		<main class="page-content">
 			<? if ($page != '/index.php'):?>
-				<div class="page-content-inner">
+				<div class="page-content-inner visible-adaptive-768">
 					<div class="main-img">
 						<img src="<?$APPLICATION->ShowProperty("PAGE_IMAGE")?>" alt="" class="main-img__img" />
 						<h1 class="main-img__header">

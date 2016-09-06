@@ -25,7 +25,7 @@
 			display: inline-block;
 			vertical-align: top;
 			width: 100%;
-			max-width: 300px;
+			//max-width: 300px;
 		}
 	}
 	
@@ -52,4 +52,17 @@
 			border: solid 2px @color-grey;
 		}
 	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.exs-block {
+	  	padding: 15px;
+
+	  	&__title {
+		  	font-size: 20px;
+		  	line-height: 24px;
+		  	margin-bottom: 15px;
+	  	}
+  	}
 }
