@@ -170,4 +170,56 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
     <a href="" class="btn">Показать еще</a>
 </div>
 
+<div class="modal-window" id="modal-review">
+    <div class="modal-window__body">
+        <div class="form form--grey form--w670 form--center">
+            <div class="form__header">Добавление отзыва</div>
+            <div class="marg-b-15">
+                <div class="form__wrap">
+                    <div class="form__title">Экскурсия</div>
+                    <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
+                </div>
+            </div>
+
+            <div class="marg-b-15">
+                <div class="form__wrap">
+                    <div class="form__title">Представьтесь, пожалуйста</div>
+                    <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
+                </div>
+            </div>
+
+            <div class="marg-b-15">
+                <div class="form__wrap">
+                    <div class="form__title">Профиль Вконтакте или Facebook</div>
+                    <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
+                </div>
+            </div>
+
+            <div class="marg-b-15">
+                <div class="form__wrap">
+                    <div class="form__title">Текст отзыва</div>
+                    <div class="form__field"><textarea class="form__textarea"></textarea></div>
+                </div>
+            </div>
+
+            <div class="marg-b-15">
+                <div class="form__wrap">
+                    <div class="form__title">При желании вы можете прикрепить к отзыву несколько фото</div>
+                    <div class="form__field">
+                        <div class="form__file">
+                            <div class="form__file-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                            <div class="form__file-text">Перетащите фото сюда или нажмите для выбора на компьютере</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form__wrap">
+                <div class="form__title">&nbsp;</div>
+                <div class="form__field pos-right"><button type="submit" name="" class="btn">Отправить</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
