@@ -237,6 +237,10 @@ a {
   	display: none;
 }
 
+.visible-adaptive-show-1024 {
+  	display: none;
+}
+
 //------------------- < 1500 ------------------//
 @media only screen and (max-width: (@width-content-max - 1)) {
 	.page-content-inner {
@@ -270,6 +274,14 @@ a {
 	.col-adaptive-1024 {
 		width: 100%;
 	}
+
+  	.visible-adaptive-1024 {
+		display: none !important;
+  	}
+
+  	.visible-adaptive-show-1024 {
+		display: block !important;
+  	}
   
   /*.top-adaptive {
     margin-top: 20px;

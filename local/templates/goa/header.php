@@ -102,33 +102,35 @@ IncludeTemplateLangFile(__FILE__);
 					<div class="slider-main">
 						<div class="bxslider_main">
 							<div class="slider-main__item">
+								<a href="" class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></a>
 								<div class="slider-main__slider">
 									<div class="slider-main__body">
 										<div class="vert-middle">
 											<div class="vert-middle__inner">
 												<div class="slider-main__header">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
 												<div class="slider-main__text">Мир создан для любви и гармонии с собой и окружающим миром. Вы обязательно убедитесь в этом, побывав на этой экскурсии.</div>
-												<a href="" class="btn">Подробнее</a>
+												<div class="visible-adaptive-1024"><a href="" class="btn">Подробнее</a></div>
+												<div class="visible-adaptive-show-1024"><a href="" class="btn btn--small">Подробнее</a></div>
 											</div>
 										</div>
 									</div>
 								</div>
-								<div class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></div>
 							</div>
 
 							<div class="slider-main__item">
+								<a href="" class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></a>
 								<div class="slider-main__slider">
 									<div class="slider-main__body">
 										<div class="vert-middle">
 											<div class="vert-middle__inner">
 												<div class="slider-main__header">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
 												<div class="slider-main__text">Мир создан для любви и гармонии с собой и окружающим миром. Вы обязательно убедитесь в этом, побывав на этой экскурсии.</div>
-												<a href="" class="btn">Подробнее</a>
+												<div class="visible-adaptive-1024"><a href="" class="btn">Подробнее</a></div>
+												<div class="visible-adaptive-show-1024"><a href="" class="btn btn--small">Подробнее</a></div>
 											</div>
 										</div>
 									</div>
 								</div>
-								<div class="slider-main__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/bg_slider_main.jpg" alt="" /></div>
 							</div>
 						</div>
 					</div>
