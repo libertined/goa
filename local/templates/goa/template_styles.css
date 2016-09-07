@@ -1438,10 +1438,19 @@ a.breadcrumbs--item-main:hover {
   display: inline-block;
   vertical-align: top;
   width: 100%;
-  max-width: 180px;
 }
 .news-block:hover .news-block__title {
   color: #fd7866;
+}
+@media only screen and (max-width: 767px) {
+  .news-block__title {
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 10px;
+  }
+  .news-block__date {
+    margin-bottom: 10px;
+  }
 }
 .exs-block {
   display: block;

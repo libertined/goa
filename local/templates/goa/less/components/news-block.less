@@ -32,11 +32,26 @@
 			display: inline-block;
 			vertical-align: top;
 			width: 100%;
-			max-width: 180px;
+			//max-width: 180px;
 		}
 	}
 	
 	&:hover &__title {
 		color: @color-red;
 	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.news-block {
+	  	&__title {
+		  	font-size: 20px;
+		  	line-height: 24px;
+		  	margin-bottom: 10px;
+	  	}
+
+	  	&__date {
+		  	margin-bottom: 10px;
+	  	}
+  	}
 }

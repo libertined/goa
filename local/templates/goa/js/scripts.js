@@ -96,6 +96,19 @@ $(document).ready( function() {
 		return false;
 	});
 
+	//Переключение вкладок экскурсии
+	$(document).on("click", ".js-extab-btn", function () {
+		var btn = $(this);
+		var data = btn.attr("data-tab");
+
+		$(".js-extab-btn").closest(".tabs__item").removeClass("tabs--item-active");
+		btn.closest(".tabs__item").addClass("tabs--item-active");
+
+		$(".js-extab").css("display","none");
+		$(".js-extab[data-tab="+data+"]").css("display","block");
+		return false;
+	});
+
 	//Мобильное меню
 	$(document).on("click", ".js-menu-adaptive-btn, .js-menu-adaptive-close", function () {
 		$(".js-menu-adaptive-list").slideToggle("200", function () {});
