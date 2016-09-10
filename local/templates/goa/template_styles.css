@@ -1915,6 +1915,7 @@ a.breadcrumbs--item-main:hover {
   line-height: 16px;
   color: #757c80;
   margin-left: 10px;
+  display: block;
 }
 .slider-exs__open:hover .slider-exs__open-text {
   color: #333333;
@@ -2154,6 +2155,9 @@ a.breadcrumbs--item-main:hover {
   background: #333333;
 }
 @media only screen and (max-width: 767px) {
+  .review {
+    padding: 15px;
+  }
   .review--reply {
     margin-left: 15px;
   }

@@ -30,7 +30,7 @@ $APPLICATION->SetTitle("FAQ");?>
 
         <div class="slider-exs__open visible-adaptive-768">
             <div class="slider-exs__open-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-            <div class="slider-exs__open-text">Открыть галерею</div>
+            <a href="" class="slider-exs__open-text">Открыть галерею</a>
         </div>
     </div>
 
@@ -56,7 +56,7 @@ $APPLICATION->SetTitle("FAQ");?>
 
         <div class="slider-exs__open visible-adaptive-768">
             <div class="slider-exs__open-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-            <div class="slider-exs__open-text">Открыть галерею</div>
+            <a href="" class="slider-exs__open-text">Открыть галерею</a>
         </div>
     </div>
 
