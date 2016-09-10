@@ -24,15 +24,15 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
         <div class="filter__clear-text">Сбросить все</div>
     </div>
 
-    <div class="after-parent marg-b-30 marg-t-40">
-        <div class="left">
+    <div class="after-parent marg-b-30 marg-t-40 center-adaptive-768">
+        <div class="right col-adaptive-768"><a href="" class="btn openmodal" data-id="modal-review">Добавить отзыв</a></div>
+        <div class="left col-adaptive-768">
             <div class="vert-middle vert-middle--h-55">
                 <div class="vert-middle__inner">
                     <div class="filter__result">Показано <span>3 отзыва</span></div>
                 </div>
             </div>
         </div>
-        <a href="" class="btn right openmodal" data-id="modal-review">Добавить отзыв</a>
     </div>
 </div>
 

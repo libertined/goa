@@ -510,6 +510,12 @@ a:hover {
   .visible-adaptive-show-1024 {
     display: block !important;
   }
+  .top-adaptive-1024 {
+    margin-top: 30px;
+  }
+  .center-adaptive-1024 {
+    text-align: center;
+  }
   /*.top-adaptive {
     margin-top: 20px;
   }
@@ -540,6 +546,9 @@ a:hover {
   }
   .top-adaptive-768 {
     margin-top: 30px;
+  }
+  .top-adaptive-768-h15 {
+    margin-top: 15px;
   }
   .marg-b-adaptive-none {
     margin-bottom: 0px;
@@ -1357,7 +1366,19 @@ a:hover {
   font-size: 15px;
   padding: 0px 30px;
 }
+@media only screen and (max-width: 1199px) {
+  .btn--big {
+    line-height: 58px;
+    height: 60px;
+    font-size: 24px;
+  }
+}
 @media only screen and (max-width: 767px) {
+  .btn {
+    line-height: 39px;
+    height: 41px;
+    padding: 0px 30px;
+  }
   .btn--big {
     line-height: 58px;
     height: 60px;
@@ -1391,6 +1412,12 @@ a:hover {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
+}
+@media only screen and (max-width: 1023px) {
+  .main-img__header-text {
+    font-size: 34px;
+    line-height: 40px;
+  }
 }
 .breadcrumbs {
   background: #fff;
@@ -1988,6 +2015,9 @@ a.breadcrumbs--item-main:hover {
   background: #dce1e6;
   margin-left: 40px;
 }
+.review__title {
+  margin-bottom: 40px;
+}
 .review__title:before,
 .review__title:after {
   content: " ";
@@ -2002,7 +2032,6 @@ a.breadcrumbs--item-main:hover {
   font-family: OpenSansSemibold;
   font-size: 17px;
   line-height: 22px;
-  margin-bottom: 40px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -2123,6 +2152,31 @@ a.breadcrumbs--item-main:hover {
 }
 .review__exs-link:hover:after {
   background: #333333;
+}
+@media only screen and (max-width: 767px) {
+  .review--reply {
+    margin-left: 15px;
+  }
+  .review__title {
+    margin-bottom: 20px;
+  }
+  .review__name {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .review--reply .review__name {
+    padding-left: 0px;
+  }
+  .review--reply .review__name:after {
+    display: none;
+  }
+  .review__date {
+    width: 100%;
+    text-align: left;
+  }
+  .review__link {
+    font-size: 13px;
+  }
 }
 .form--yellow {
   background: #ffcc66;

@@ -191,15 +191,15 @@ $APPLICATION->SetTitle("FAQ");?>
 </div>
 
 <div class="js-extab" data-tab="extab-reviews" style="display: none;">
-    <div class="after-parent marg-b-30">
-        <div class="left">
+    <div class="after-parent marg-b-30 center-adaptive-768">
+        <div class="right col-adaptive-768"><a href="" class="btn">Добавить отзыв</a></div>
+        <div class="left col-adaptive-768">
             <div class="vert-middle vert-middle--h-55">
                 <div class="vert-middle__inner">
                     <div class="filter__result">Показано <span>3 отзыва</span></div>
                 </div>
             </div>
         </div>
-        <a href="" class="btn right">Добавить отзыв</a>
     </div>
 
     <div class="marg-b-40">
@@ -300,9 +300,9 @@ $APPLICATION->SetTitle("FAQ");?>
         </div>
     </div>
 
-    <div class="after-parent marg-t-50">
+    <div class="after-parent marg-t-50 center-adaptive-768">
         <a href="" class="btn btn--big left">Заказать экскурсию</a>
-        <a href="" class="btn right">Добавить отзыв</a>
+        <div class="right col-adaptive-768 top-adaptive-768-h15"><a href="" class="btn">Добавить отзыв</a></div>
     </div>
 </div>
 

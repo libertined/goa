@@ -9,6 +9,7 @@
 	
 	&__title {
 		.clearfix();
+	  	margin-bottom: 40px;
 	}
 	
 	&__name {
@@ -17,7 +18,6 @@
 		font-family: @font-family-semibold;
 		font-size: 17px;
 		line-height: 22px;
-		margin-bottom: 40px;
 		.box-sizing(border-box);
 	}
 	
@@ -162,4 +162,39 @@
 			}
 		}
 	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.review {
+	  	&--reply {
+			margin-left: 15px;
+	  	}
+
+	  	&__title {
+			margin-bottom: 20px;
+	  	}
+
+		&__name {
+	  		width: 100%;
+		  	margin-bottom: 5px;
+		}
+
+	  	&--reply &__name {
+			padding-left: 0px;
+
+			&:after {
+		  		display: none;
+			}
+	  	}
+
+		&__date {
+	  		width: 100%;
+		  	text-align: left;
+		}
+
+	  	&__link {
+			font-size: 13px;
+	  	}
+  	}
 }
