@@ -309,56 +309,58 @@ $APPLICATION->SetTitle("FAQ");?>
 <div class="js-extab" data-tab="extab-order" style="display: none;">
     <p>Пожалуйста, обращайте внимание на правильность заполнения полей Емейл и Телефон. Если эти данные будут введены неверно, мы не сможем связаться с вами.</p>
 
-    <div class="form form--yellow form--w670">
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Ориентировочная дата*</div>
-            <div class="form__field form--field-date">
-                <input placeholder="" name="" value="20 ноября 2015" type="text" class="form__input" />
-                <div class="form__icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-            </div>
-        </div>
-
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Название отеля</div>
-            <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
-        </div>
-
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Количество людей*</div>
-            <div class="form__field">
-                <div class="form__counter">
-                    <div class="form__counter-btn form--counter-minus"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                    <input placeholder="" name="" value="1" type="text" class="form__input form--input-counter" />
-                    <div class="form__counter-btn form--counter-plus"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+    <form action="" method="post" name="">
+        <div class="form form--yellow form--w670">
+            <div class="form__wrap marg-b-15">
+                <label for="label-date" class="form__title">Ориентировочная дата*</label>
+                <div class="form__field form--field-date">
+                    <input id="label-date" placeholder="" name="" value="20 ноября 2015" type="text" class="form__input" />
+                    <div class="form__icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
                 </div>
             </div>
-        </div>
 
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Имя*</div>
-            <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
-        </div>
+            <div class="form__wrap marg-b-15">
+                <label for="label-hotel" class="form__title">Название отеля</label>
+                <div class="form__field"><input id="label-hotel" placeholder="" name="" value="" type="text" class="form__input" /></div>
+            </div>
 
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Email*</div>
-            <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
-        </div>
+            <div class="form__wrap marg-b-15">
+                <label for="label-counter" class="form__title">Количество людей*</label>
+                <div class="form__field">
+                    <div class="form__counter">
+                        <div class="form__counter-btn form--counter-minus"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                        <input id="label-counter" placeholder="" name="" value="1" type="text" class="form__input form--input-counter" />
+                        <div class="form__counter-btn form--counter-plus"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Телефон*</div>
-            <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
-        </div>
+            <div class="form__wrap marg-b-15">
+                <label for="label-name" class="form__title">Имя*</label>
+                <div class="form__field"><input id="label-name" placeholder="" name="" value="" type="text" class="form__input" /></div>
+            </div>
 
-        <div class="form__wrap marg-b-15">
-            <div class="form__title">Дополнительная информация</div>
-            <div class="form__field"><textarea class="form__textarea"></textarea></div>
-        </div>
+            <div class="form__wrap marg-b-15">
+                <label for="label-email" class="form__title">Email*</label>
+                <div class="form__field"><input id="label-email" placeholder="" name="" value="" type="text" class="form__input" /></div>
+            </div>
 
-        <div class="form__wrap">
-            <div class="form__title">&nbsp;</div>
-            <div class="form__field pos-right"><button type="submit" name="" class="btn">Заказать</button></div>
+            <div class="form__wrap marg-b-15">
+                <label for="label-phone" class="form__title">Телефон*</label>
+                <div class="form__field"><input id="label-phone" placeholder="" name="" value="" type="text" class="form__input" /></div>
+            </div>
+
+            <div class="form__wrap marg-b-15">
+                <label for="label-info" class="form__title">Дополнительная информация</label>
+                <div class="form__field"><textarea id="label-info" class="form__textarea"></textarea></div>
+            </div>
+
+            <div class="form__wrap">
+                <div class="form__title visible-adaptive-768">&nbsp;</div>
+                <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Заказать</button></div>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

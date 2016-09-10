@@ -30,6 +30,7 @@
 	}
 	
 	&__title {
+	  	display: block;
 		float: left;
 		font-size: 15px;
 		line-height: 22px;
@@ -94,6 +95,7 @@
 	
 	&__counter {
 		.clearfix();
+	  	width: 122px;
 	}
 	
 	&__counter-btn {
@@ -149,4 +151,31 @@
 		line-height: 17px;
 		text-align: center;
 	}
+}
+
+//------------------- < 768 ------------------//
+@media only screen and (max-width: (@width-content-middle - 1)) {
+  	.form {
+	  	&__title {
+		  	width: 100%;
+		  	text-align: center;
+		  	float: initial;
+		  	padding-right: 0px;
+	  	}
+
+	  	&__field {
+		  	width: 100%;
+		  	max-width: none;
+		  	margin: 0 auto;
+		  	float: initial;
+		}
+
+	  	&--field-date {
+		  	max-width: 200px;
+	  	}
+
+	  	&__counter {
+		  	margin: 0 auto;
+	  	}
+  	}
 }

@@ -908,7 +908,7 @@ a:hover {
   margin-top: 30px;
   float: right;
 }
-.left-side__body-refresh object {
+.left-side__body-refresh svg {
   width: 16px;
   height: 20px;
 }
@@ -2208,6 +2208,7 @@ a.breadcrumbs--item-main:hover {
   margin: 0 auto;
 }
 .form__title {
+  display: block;
   float: left;
   font-size: 15px;
   line-height: 22px;
@@ -2269,6 +2270,9 @@ a.breadcrumbs--item-main:hover {
   width: 18px;
   height: 20px;
 }
+.form__counter {
+  width: 122px;
+}
 .form__counter:before,
 .form__counter:after {
   content: " ";
@@ -2317,6 +2321,26 @@ a.breadcrumbs--item-main:hover {
   font-size: 14px;
   line-height: 17px;
   text-align: center;
+}
+@media only screen and (max-width: 767px) {
+  .form__title {
+    width: 100%;
+    text-align: center;
+    float: initial;
+    padding-right: 0px;
+  }
+  .form__field {
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+    float: initial;
+  }
+  .form--field-date {
+    max-width: 200px;
+  }
+  .form__counter {
+    margin: 0 auto;
+  }
 }
 .modal-shadow {
   position: fixed;

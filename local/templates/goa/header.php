@@ -14,6 +14,7 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset = \Bitrix\Main\Page\Asset::getInstance();
 
 	$oAsset->addCss(SITE_TEMPLATE_PATH."/css/jquery.bxslider.css");
+	$oAsset->addCss(SITE_TEMPLATE_PATH."/svg/styles.css");
 
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-1.11.2.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.bxslider.min.js');

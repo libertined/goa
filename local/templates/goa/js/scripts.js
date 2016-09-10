@@ -115,7 +115,7 @@ $(document).ready( function() {
 		return false;
 	});
 
-	$(".js-interesting-refresh").on('click', function(){
+	$(document).on("click", ".js-interesting-refresh", function () {
 		$.ajax({
 			type: "POST",
 			url: "/ajax/interesting.php",
