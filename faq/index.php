@@ -5,10 +5,10 @@ $APPLICATION->SetTitle("FAQ");?>
 
 <div class="tabs marg-b-40">
     <ul class="tabs__list">
-        <li class="tabs__item tabs--item-active"><a href="" class="tabs__item-link js-extab-btn" data-tab="extab-description">Описание</a></li>
-        <li class="tabs__item"><a href="" class="tabs__item-link js-extab-btn" data-tab="extab-programm">Программа и стоимость</a></li>
-        <li class="tabs__item"><a href="" class="tabs__item-link js-extab-btn" data-tab="extab-reviews">Отзывы</a></li>
-        <li class="tabs__item"><a href="" class="tabs__item-link js-extab-btn" data-tab="extab-order">Заказ</a></li>
+        <li class="tabs__item tabs--item-active"><a href="" class="tabs__item-link tabs--item-link-description js-extab-btn" data-tab="extab-description"><span>Описание</span></a></li>
+        <li class="tabs__item"><a href="" class="tabs__item-link tabs--item-link-programm js-extab-btn" data-tab="extab-programm"><span>Программа и стоимость</span></a></li>
+        <li class="tabs__item"><a href="" class="tabs__item-link tabs--item-link-reviews js-extab-btn" data-tab="extab-reviews"><span>Отзывы</span></a></li>
+        <li class="tabs__item"><a href="" class="tabs__item-link tabs--item-link-order js-extab-btn" data-tab="extab-order"><span>Заказ</span></a></li>
     </ul>
 </div>
 
@@ -28,7 +28,7 @@ $APPLICATION->SetTitle("FAQ");?>
             </div>
         </div>
 
-        <div class="slider-exs__open">
+        <div class="slider-exs__open visible-adaptive-768">
             <div class="slider-exs__open-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
             <div class="slider-exs__open-text">Открыть галерею</div>
         </div>
@@ -54,18 +54,18 @@ $APPLICATION->SetTitle("FAQ");?>
             </div>
         </div>
 
-        <div class="slider-exs__open">
+        <div class="slider-exs__open visible-adaptive-768">
             <div class="slider-exs__open-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
             <div class="slider-exs__open-text">Открыть галерею</div>
         </div>
     </div>
 
-    <div class="right-side__share">
+    <div class="right-side__share visible-adaptive-768">
         <div class="right-side__share-title">Поделиться:</div>
         <div class="right-side__share-body"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/share.png" /></div>
     </div>
 
-    <a href="" class="btn btn--big marg-t-50">Заказать экскурсию</a>
+    <a href="" class="btn btn--big marg-t-50 marg-t-adaptive-none">Заказать экскурсию</a>
 </div>
 
 <div class="js-extab" data-tab="extab-programm" style="display: none;">
@@ -181,13 +181,13 @@ $APPLICATION->SetTitle("FAQ");?>
 
     <p>Внимание! Теперь вы можете оплатить экскурсии банковскими картами, мы делаем все для вашего удобства.<br />Наличными мы принимаем деньги в любой валюте: доллары, евро, рупии, рубли.</p>
 
-    <div class="right-side__cards">
+    <div class="right-side__cards center-adaptive-768">
         <div class="right-side__card"><img src="<?=SITE_TEMPLATE_PATH?>/img/card-visa.png" /></div>
         <div class="right-side__card"><img src="<?=SITE_TEMPLATE_PATH?>/img/card-mastercard.png" /></div>
         <div class="right-side__card"><img src="<?=SITE_TEMPLATE_PATH?>/img/card-maestro.png" /></div>
     </div>
 
-    <a href="" class="btn btn--big marg-t-50">Заказать экскурсию</a>
+    <a href="" class="btn btn--big marg-t-50 top-adaptive-768">Заказать экскурсию</a>
 </div>
 
 <div class="js-extab" data-tab="extab-reviews" style="display: none;">

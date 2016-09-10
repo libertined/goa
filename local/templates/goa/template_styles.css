@@ -544,26 +544,18 @@ a:hover {
   .marg-b-adaptive-none {
     margin-bottom: 0px;
   }
+  .marg-t-adaptive-none {
+    margin-top: 0px;
+  }
   .visible-adaptive-768 {
     display: none !important;
   }
   .visible-adaptive-show-768 {
     display: block !important;
   }
-  /*
-
-
-  .row {
-    margin: 0px -5px;
-
-    & .col-12-1, & .col-12-2, & .col-12-3, & .col-12-4, & .col-12-5, & .col-12-6, & .col-12-7, & .col-12-8, & .col-12-9, & .col-12-10, & .col-12-11, & .col-12-12 {
-      padding: 0px 5px;
-    }
-
-    & .col-10-1, & .col-10-2, & .col-10-3, & .col-10-4, & .col-10-5, & .col-10-6, & .col-10-7, & .col-10-8, & .col-10-9, & .col-10-10 {
-      padding: 0px 5px;
-    }
-  }*/
+  .center-adaptive-768 {
+    text-align: center;
+  }
 }
 .page-header {
   background: #fff;
@@ -1131,6 +1123,12 @@ a:hover {
   .right-side__top5:hover .right-side__top5-hover {
     color: #fd7866;
   }
+  .right-side ul {
+    padding-left: 15px;
+  }
+  .right-side ol {
+    padding-left: 25px;
+  }
 }
 .slider-review {
   padding: 10px 50px;
@@ -1358,6 +1356,15 @@ a:hover {
   font-family: OpenSans;
   font-size: 15px;
   padding: 0px 30px;
+}
+@media only screen and (max-width: 767px) {
+  .btn--big {
+    line-height: 58px;
+    height: 60px;
+    font-size: 24px;
+    width: 100%;
+    padding: 0px;
+  }
 }
 .main-img {
   background-color: #f2f2f2;
@@ -1804,6 +1811,37 @@ a.breadcrumbs--item-main:hover {
 .tabs--item-active .tabs__item-link:hover {
   background: #fd7866;
 }
+@media only screen and (max-width: 767px) {
+  .tabs__item {
+    width: 25%;
+  }
+  .tabs__item:nth-child(2) {
+    width: 25%;
+  }
+  .tabs__item-link span {
+    display: block;
+    background-position: center;
+    background-repeat: no-repeat;
+    -webkit-background-size: 32px 21px;
+    -moz-background-size: 32px 21px;
+    -o-background-size: 32px 21px;
+    background-size: 32px 21px;
+    cursor: pointer;
+    font-size: 0;
+  }
+  .tabs--item-link-description span {
+    background-image: url("svg/faceless.svg");
+  }
+  .tabs--item-link-programm span {
+    background-image: url("svg/faceless.svg");
+  }
+  .tabs--item-link-reviews span {
+    background-image: url("svg/faceless.svg");
+  }
+  .tabs--item-link-order span {
+    background-image: url("svg/faceless.svg");
+  }
+}
 .slider-exs {
   padding-bottom: 90px;
 }
@@ -1883,6 +1921,16 @@ a.breadcrumbs--item-main:hover {
   width: 80%;
   padding-left: 30px;
 }
+@media only screen and (max-width: 767px) {
+  .program-table__header {
+    font-size: 20px;
+    line-height: 30px;
+    padding: 10px 15px;
+  }
+  .program-table__line {
+    padding: 10px 15px;
+  }
+}
 .price-table__line {
   background: #fff;
   font-size: 15px;
@@ -1925,6 +1973,12 @@ a.breadcrumbs--item-main:hover {
 }
 .price-table--white {
   color: #fff;
+}
+@media only screen and (max-width: 767px) {
+  .price-table--big {
+    font-size: 20px;
+    line-height: 28px;
+  }
 }
 .review {
   background: #fff;
