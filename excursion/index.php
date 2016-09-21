@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Экскурсии");?>
 	<div class="filter__categories">
 		<div class="filter__category-item filter--category-active">
 			2 дня (5)
-			<div class="filter__category-close"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+			<div class="filter__category-close"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/cross-13x13.svg">Your browser does not support SVGs</object></div>
 		</div>
 		<div class="filter__category-item">4 дня (8)</div>
 		<div class="filter__category-item">6 дней (3)</div>
