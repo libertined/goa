@@ -53,9 +53,9 @@
             <div class="col-12-5">
               <div class="page-footer__title">Присоединяйтесь к нам</div>
               <div class="page-footer__socials">
-                <a href="" class="page-footer__social-item page-footer--social-ig"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
-                <a href="" class="page-footer__social-item page-footer--social-fb"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/fb-11x21.svg">Your browser does not support SVGs</object></a>
-                <a href="" class="page-footer__social-item page-footer--social-vk"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/vk-25x14.svg">Your browser does not support SVGs</object></a>
+                <a href="https://www.instagram.com/tvoygoa/" class="page-footer__social-item page-footer--social-ig" target="_blank"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
+                <a href="https://www.facebook.com/tvoygoa" class="page-footer__social-item page-footer--social-fb" target="_blank"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/fb-11x21.svg">Your browser does not support SVGs</object></a>
+                <a href="https://vk.com/tvoygoa" class="page-footer__social-item page-footer--social-vk" target="_blank"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/vk-25x14.svg">Your browser does not support SVGs</object></a>
               </div>
             </div>
 

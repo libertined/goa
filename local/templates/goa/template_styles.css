@@ -741,10 +741,17 @@ a:hover {
 .page-footer__social-item:hover {
   background: #53a642;
 }
+
 .page-footer__social-item object {
   height: 21px;
-  padding: 17px 0px;
+  padding: 17px 0px;	
 }
+
+.page-footer--social-vk object {
+  height: 14px;
+  padding: 20px 0px;
+}
+
 .page-footer__dev-wrap {
   text-align: right;
   padding-top: 207px;
