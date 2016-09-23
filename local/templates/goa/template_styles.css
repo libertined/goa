@@ -752,6 +752,13 @@ a:hover {
   padding: 20px 0px;
 }
 
+.page-footer__social-item .icon {
+  fill: currentColor;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 .page-footer__dev-wrap {
   text-align: right;
   padding-top: 207px;
@@ -825,6 +832,7 @@ a:hover {
     height: 14px;
     padding: 13px 0px;
   }
+
 }
 .main-nav {
   padding-top: 35px;
