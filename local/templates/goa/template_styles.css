@@ -751,12 +751,24 @@ a:hover {
   height: 14px;
   padding: 20px 0px;
 }
-
+/* Добавление для спрайта*/
 .page-footer__social-item .icon {
   fill: currentColor;
-  width: 20px;
-  height: 20px;
+  width: 21px;
+  height: 21px;
   display: block;
+  margin: 0 auto;
+  padding: 17px 0;
+}
+
+.icon .icon-fb {
+  width: 11px;
+}
+
+.icon .icon-vk {
+  height: 15px;
+  width: 25px;
+  padding: 20px 0;
 }
 
 .page-footer__dev-wrap {

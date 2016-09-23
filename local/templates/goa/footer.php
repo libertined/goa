@@ -58,8 +58,16 @@
                         <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#instagram"></use>
                     </svg>
                 </a>
-                <a href="https://www.facebook.com/tvoygoa" class="page-footer__social-item page-footer--social-fb" target="_blank"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/fb-11x21.svg">Your browser does not support SVGs</object></a>
-                <a href="https://vk.com/tvoygoa" class="page-footer__social-item page-footer--social-vk" target="_blank"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/vk-25x14.svg">Your browser does not support SVGs</object></a>
+                <a href="https://www.facebook.com/tvoygoa" class="page-footer__social-item page-footer--social-fb" target="_blank">
+                    <svg class="icon icon-fb">
+                        <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#fb"></use>
+                    </svg>
+                </a>
+                <a href="https://vk.com/tvoygoa" class="page-footer__social-item page-footer--social-vk" target="_blank">
+                    <svg class="icon icon-vk">
+                        <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#vk"></use>
+                    </svg>
+                </a>
               </div>
             </div>
 
