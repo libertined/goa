@@ -168,5 +168,4 @@ $(document).ready( function() {
 		select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");
 		select_wrap.removeClass("pseudo-select--show");
 	});
-
 });
