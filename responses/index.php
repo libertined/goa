@@ -5,6 +5,27 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
 
 <div class="filter">
     <div class="filter__option">
+        <div class="filter__grey">
+            <div class="filter__select-title">Показать отзывы по экскурсии:</div>
+            <div class="filter__select">
+                <!--<div class="pseudo-select">
+                    <div class="pseudo-select__text">Вариант 1</div>
+                    <ul class="pseudo-select__list">
+                        <li class="pseudo-select__option current" data-value="1">Вариант 1</li>
+                        <li class="pseudo-select__option" data-value="2">Вариант 2</li>
+                        <li class="pseudo-select__option" data-value="3">Вариант 3</li>
+                        <li class="pseudo-select__option" data-value="4">Вариант 4</li>
+                    </ul>
+                    <select name="status" class="pseudo-select__real">
+                        <option value="1" selected="selected">Вариант 1</option>
+                        <option value="2">Вариант 2</option>
+                        <option value="3">Вариант 3</option>
+                        <option value="4">Вариант 4</option>
+                    </select>
+                </div>-->
+            </div>
+        </div>
+
         <div class="filter__option-title">Выбрано:</div>
         <div class="filter__option-body">
             <div class="filter__option-item">
@@ -178,7 +199,23 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
                 <div class="marg-b-15">
                     <div class="form__wrap">
                         <label for="label-review-ex" class="form__title">Экскурсия</label>
-                        <div class="form__field"><input id="label-review-ex" placeholder="" name="" value="" type="text" class="form__input" /></div>
+                        <div class="form__field">
+                            <div class="pseudo-select">
+                                <div class="pseudo-select__text">Выберите экскурсию</div>
+                                <ul class="pseudo-select__list">
+                                    <li class="pseudo-select__option current" data-value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                    <li class="pseudo-select__option" data-value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                    <li class="pseudo-select__option" data-value="3">Весь ГОА за 1 день</li>
+                                    <li class="pseudo-select__option" data-value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                </ul>
+                                <select name="" class="pseudo-select__real" id="label-review-ex">
+                                    <option value="1" selected="selected">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                                    <option value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                                    <option value="3">Весь ГОА за 1 день</option>
+                                    <option value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -124,4 +124,48 @@ $(document).ready( function() {
 			}
 		});
 	});
+
+
+	//ПСЕВДО-СЕЛЕКТ
+	//Клик вне селекта
+	if ($(".pseudo-select").length) {
+		$(document).click(function (e) {
+			if ($(e.target).closest(".pseudo-select").length) {
+				return;
+			}
+			else {
+				$(".pseudo-select__list").removeAttr("style");
+				$(".pseudo-select").removeClass("pseudo-select--show");
+			}
+			e.stopPropagation();
+		});
+	}
+
+	//Раскрытие списка
+	$(document).on("click", ".pseudo-select__text", function () {
+		$(this).closest(".pseudo-select").find(".pseudo-select__list").slideToggle(0, function () {
+			if ($(this).closest(".pseudo-select").hasClass("pseudo-select--show")) {
+				$(this).closest(".pseudo-select").removeClass("pseudo-select--show");
+			}
+			else {
+				$(this).closest(".pseudo-select").addClass("pseudo-select--show");
+			}
+		});
+	});
+
+	//Клик по элементу списка
+	$(document).on("click", ".pseudo-select__option", function () {
+		var select_wrap = $(this).closest(".pseudo-select");
+		var select_text = $(this).text();
+		var data_value = $(this).attr("data-value");
+
+		select_wrap.find(".pseudo-select__option").removeClass("current");
+		$(this).addClass("current");
+		select_wrap.find(".pseudo-select__text").text(select_text);
+		select_wrap.find(".pseudo-select__list").removeAttr("style");
+
+		select_wrap.find('.pseudo-select__real option').removeAttr("selected");
+		select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");
+		select_wrap.removeClass("pseudo-select--show");
+	});
 });

@@ -1,0 +1,72 @@
+.pseudo-select {
+    position: relative;
+  
+    &__text {
+        line-height: 40px;
+        height: 40px;
+        padding-left: 20px;
+        padding-right: 40px;
+        .box-sizing(border-box);
+        cursor: pointer;
+        overflow: hidden;
+        border: none;
+        white-space: nowrap;
+        background: #fff;
+        color: @color-grey;
+        position: relative;
+    
+        &:after {
+            content:"";
+            display: block;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background: #fff url("@{svg-path}faceless.svg") no-repeat left center;
+            .bg-size(9px);
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    &--show &__text {
+        .box-shadow(0 3px 7px 0 @color-grey);
+    }
+  
+    ul&__list {
+        width: 100%;
+        position: absolute;
+        top: 40px;
+        left: 0px;
+        background: #fff;
+        max-height: 212px;
+        overflow: auto;
+        .box-sizing(border-box);
+        cursor: pointer;
+        z-index: 1;
+        display: none;
+        margin: 0px;
+        padding: 0px;
+        .box-shadow(0 3px 7px 0 @color-grey);
+    }
+  
+    ul li&__option {
+        padding: 15px 20px;
+        cursor: pointer;
+        line-height: 20px;
+        font-size: 15px;
+        margin: 0px;
+        border-bottom: solid 1px #fff;
+
+        &:after {
+            display: none;
+        }
+    
+        &.current, &:hover {
+            background: @bg-base;
+        }
+    }
+  
+    &__real {
+        display: none;
+    }
+}
