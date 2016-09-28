@@ -41,7 +41,7 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
     </div>
 
     <div class="filter__clear marg-t-20">
-        <div class="filter__clear-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+        <div class="filter__clear-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/reset-18x18.svg">Your browser does not support SVGs</object></div>
         <div class="filter__clear-text">Сбросить все</div>
     </div>
 

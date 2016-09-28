@@ -464,7 +464,7 @@ a:hover {
   background-color: #fff;
   background-position: center;
   background-repeat: no-repeat;
-  background-image: url("svg/faceless.svg");
+  background-image: url("svg/sprite.svg#arrow-up-view");
   -webkit-background-size: 16px;
   -moz-background-size: 16px;
   -o-background-size: 16px;
@@ -738,15 +738,27 @@ a:hover {
   background: #91d982;
   float: left;
   margin-right: 15px;
-  text-align: center;
 }
 .page-footer__social-item:hover {
   background: #53a642;
 }
-.page-footer__social-item object {
+
+/* Добавление для спрайта*/
+.icon {
+  fill: currentColor;
+  width: 21px;
   height: 21px;
-  padding: 17px 0px;
+  display: block;
+  margin: 0 auto;
+  padding: 17px 0;
 }
+
+.icon-vk {
+  height: 15px;
+  width: 25px;
+  padding: 20px 0;
+}
+
 .page-footer__dev-wrap {
   text-align: right;
   padding-top: 207px;
@@ -820,6 +832,7 @@ a:hover {
     height: 14px;
     padding: 13px 0px;
   }
+
 }
 .main-nav {
   padding-top: 35px;
