@@ -742,23 +742,6 @@ a:hover {
 .page-footer__social-item:hover {
   background: #53a642;
 }
-
-/* Добавление для спрайта*/
-.icon {
-  fill: currentColor;
-  width: 21px;
-  height: 21px;
-  display: block;
-  margin: 0 auto;
-  padding: 17px 0;
-}
-
-.icon-vk {
-  height: 15px;
-  width: 25px;
-  padding: 20px 0;
-}
-
 .page-footer__dev-wrap {
   text-align: right;
   padding-top: 207px;
@@ -793,6 +776,19 @@ a:hover {
 }
 .page-footer--nav-current a {
   color: #333333;
+}
+.icon {
+  fill: currentColor;
+  width: 21px;
+  height: 21px;
+  display: block;
+  margin: 0 auto;
+  padding: 17px 0;
+}
+.icon-vk {
+  height: 15px;
+  width: 25px;
+  padding: 20px 0;
 }
 @media only screen and (max-width: 767px) {
   .page-footer {
@@ -832,7 +828,6 @@ a:hover {
     height: 14px;
     padding: 13px 0px;
   }
-
 }
 .main-nav {
   padding-top: 35px;
@@ -1652,6 +1647,7 @@ a.breadcrumbs--item-main:hover {
   display: inline-block;
   vertical-align: top;
   margin-right: 30px;
+  cursor: pointer;
 }
 .filter__option-name {
   padding-right: 20px;
@@ -1659,16 +1655,20 @@ a.breadcrumbs--item-main:hover {
   font-size: 15px;
   line-height: 22px;
 }
+.filter__option-item:hover .filter__option-name {
+  color: #fd7866;
+}
 .filter__option-close {
   position: absolute;
   top: 0px;
   right: 0px;
   width: 11px;
   height: 22px;
-}
-.filter__option-close object {
-  width: 11px;
-  height: 11px;
+  background: url("svg/faceless.svg") no-repeat center;
+  -webkit-background-size: 11px;
+  -moz-background-size: 11px;
+  -o-background-size: 11px;
+  background-size: 11px;
 }
 .filter__grey {
   background: #dce1e6;
@@ -1680,6 +1680,12 @@ a.breadcrumbs--item-main:hover {
   margin-right: 25px;
   font-size: 17px;
   line-height: 40px;
+}
+.filter__select {
+  width: 100%;
+  max-width: 400px;
+  display: inline-block;
+  vertical-align: top;
 }
 .services-block {
   display: block;
@@ -2635,25 +2641,27 @@ a.breadcrumbs--item-main:hover {
   -moz-box-shadow: 0 3px 7px 0 #757c80;
   box-shadow: 0 3px 7px 0 #757c80;
 }
-ul.pseudo-select__list {
+.pseudo-select__wrap {
   width: 100%;
+  height: 212px;
+  overflow: auto;
   position: absolute;
+  z-index: 1;
   top: 40px;
   left: 0px;
-  background: #fff;
-  max-height: 212px;
-  overflow: auto;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  cursor: pointer;
-  z-index: 1;
   display: none;
-  margin: 0px;
-  padding: 0px;
+  cursor: pointer;
   -webkit-box-shadow: 0 3px 7px 0 #757c80;
   -moz-box-shadow: 0 3px 7px 0 #757c80;
   box-shadow: 0 3px 7px 0 #757c80;
+  background: #fff;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+ul.pseudo-select__list {
+  margin: 0px;
+  padding: 0px;
 }
 ul li.pseudo-select__option {
   padding: 15px 20px;

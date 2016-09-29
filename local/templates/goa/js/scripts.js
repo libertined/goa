@@ -134,7 +134,7 @@ $(document).ready( function() {
 				return;
 			}
 			else {
-				$(".pseudo-select__list").removeAttr("style");
+				$(".pseudo-select__wrap").removeAttr("style");
 				$(".pseudo-select").removeClass("pseudo-select--show");
 			}
 			e.stopPropagation();
@@ -143,12 +143,16 @@ $(document).ready( function() {
 
 	//Раскрытие списка
 	$(document).on("click", ".pseudo-select__text", function () {
-		$(this).closest(".pseudo-select").find(".pseudo-select__list").slideToggle(0, function () {
+		$(this).closest(".pseudo-select").find(".pseudo-select__wrap").slideToggle(0, function () {
 			if ($(this).closest(".pseudo-select").hasClass("pseudo-select--show")) {
 				$(this).closest(".pseudo-select").removeClass("pseudo-select--show");
 			}
 			else {
 				$(this).closest(".pseudo-select").addClass("pseudo-select--show");
+				$('.scroll-pane').jScrollPane({
+					//showArrows: true
+					//wheelSpeed: 10
+				});
 			}
 		});
 	});
@@ -162,7 +166,7 @@ $(document).ready( function() {
 		select_wrap.find(".pseudo-select__option").removeClass("current");
 		$(this).addClass("current");
 		select_wrap.find(".pseudo-select__text").text(select_text);
-		select_wrap.find(".pseudo-select__list").removeAttr("style");
+		select_wrap.find(".pseudo-select__wrap").removeAttr("style");
 
 		select_wrap.find('.pseudo-select__real option').removeAttr("selected");
 		select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");

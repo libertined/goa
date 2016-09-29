@@ -5,24 +5,28 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
 
 <div class="filter">
     <div class="filter__option">
-        <div class="filter__grey">
+        <div class="filter__grey marg-b-20">
             <div class="filter__select-title">Показать отзывы по экскурсии:</div>
             <div class="filter__select">
-                <!--<div class="pseudo-select">
-                    <div class="pseudo-select__text">Вариант 1</div>
-                    <ul class="pseudo-select__list">
-                        <li class="pseudo-select__option current" data-value="1">Вариант 1</li>
-                        <li class="pseudo-select__option" data-value="2">Вариант 2</li>
-                        <li class="pseudo-select__option" data-value="3">Вариант 3</li>
-                        <li class="pseudo-select__option" data-value="4">Вариант 4</li>
-                    </ul>
-                    <select name="status" class="pseudo-select__real">
-                        <option value="1" selected="selected">Вариант 1</option>
-                        <option value="2">Вариант 2</option>
-                        <option value="3">Вариант 3</option>
-                        <option value="4">Вариант 4</option>
+                <div class="pseudo-select">
+                    <div class="pseudo-select__text">Все экскурсии</div>
+                    <div class="pseudo-select__wrap scroll-pane">
+                        <ul class="pseudo-select__list">
+                            <li class="pseudo-select__option current" data-value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                            <li class="pseudo-select__option" data-value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                            <li class="pseudo-select__option" data-value="3">Весь ГОА за 1 день</li>
+                            <li class="pseudo-select__option" data-value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                            <li class="pseudo-select__option" data-value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                        </ul>
+                    </div>
+                    <select name="" class="pseudo-select__real" id="label-review-ex">
+                        <option value="1" selected="selected">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                        <option value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                        <option value="3">Весь ГОА за 1 день</option>
+                        <option value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                        <option value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
                     </select>
-                </div>-->
+                </div>
             </div>
         </div>
 
@@ -30,12 +34,12 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
         <div class="filter__option-body">
             <div class="filter__option-item">
                 <div class="filter__option-name">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
-                <div class="filter__option-close"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                <div class="filter__option-close"></div>
             </div>
 
             <div class="filter__option-item">
                 <div class="filter__option-name">Весь ГОА за один день</div>
-                <div class="filter__option-close"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                <div class="filter__option-close"></div>
             </div>
         </div>
     </div>
@@ -202,17 +206,21 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
                         <div class="form__field">
                             <div class="pseudo-select">
                                 <div class="pseudo-select__text">Выберите экскурсию</div>
-                                <ul class="pseudo-select__list">
-                                    <li class="pseudo-select__option current" data-value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                                    <li class="pseudo-select__option" data-value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                                    <li class="pseudo-select__option" data-value="3">Весь ГОА за 1 день</li>
-                                    <li class="pseudo-select__option" data-value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                                </ul>
+                                <div class="pseudo-select__wrap scroll-pane">
+                                    <ul class="pseudo-select__list">
+                                        <li class="pseudo-select__option current" data-value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                        <li class="pseudo-select__option" data-value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                        <li class="pseudo-select__option" data-value="3">Весь ГОА за 1 день</li>
+                                        <li class="pseudo-select__option" data-value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                        <li class="pseudo-select__option" data-value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                    </ul>
+                                </div>
                                 <select name="" class="pseudo-select__real" id="label-review-ex">
                                     <option value="1" selected="selected">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
                                     <option value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
                                     <option value="3">Весь ГОА за 1 день</option>
                                     <option value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                                    <option value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
                                 </select>
                             </div>
                         </div>

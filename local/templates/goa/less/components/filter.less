@@ -109,6 +109,7 @@
 		display: inline-block;
 		vertical-align: top;
 		margin-right: 30px;
+	  	cursor: pointer;
 	}
 	
 	&__option-name {
@@ -117,6 +118,10 @@
 		font-size: 15px;
 		line-height: 22px;
 	}
+
+  	&__option-item:hover &__option-name {
+	  	color: @color-red;
+  	}
 	
 	&__option-close {
 		position: absolute;
@@ -124,11 +129,8 @@
 		right: 0px;
 		width: 11px;
 		height: 22px;
-		
-		& object {
-			width: 11px;
-			height: 11px;
-		}
+	  	background: url("@{svg-path}faceless.svg") no-repeat center;
+	  	.bg-size(11px);
 	}
 
   	&__grey {
@@ -142,5 +144,12 @@
 	  	margin-right: 25px;
 	  	font-size: 17px;
 	  	line-height: 40px;
+	}
+
+  	&__select {
+	  	width: 100%;
+	  	max-width: 400px;
+	  	display: inline-block;
+	  	vertical-align: top;
 	}
 }
