@@ -1,4 +1,7 @@
 $(document).ready( function() {
+	if($(".request-phone").length)
+		$(".request-phone").mask("+7 (999) 999-99-99");
+
 	//Кнопка прокрутки наверх
 	$(function() {
 		var e = $(".js-scrollTop");
@@ -50,7 +53,7 @@ $(document).ready( function() {
 	}
 
 	if($('.bxslider_exs_1').length>0) {
-		$('.bxslider_exs_1').bxSlider({
+		var bxslider_exs_1 = $('.bxslider_exs_1').bxSlider({
 			mode: 'horizontal',
 			minSlides: 1,
 			maxSlides: 1,
@@ -67,7 +70,7 @@ $(document).ready( function() {
 	}
 
 	if($('.bxslider_exs_2').length>0) {
-		$('.bxslider_exs_2').bxSlider({
+		var bxslider_exs_2 = $('.bxslider_exs_2').bxSlider({
 			mode: 'horizontal',
 			minSlides: 1,
 			maxSlides: 1,
@@ -100,12 +103,22 @@ $(document).ready( function() {
 	$(document).on("click", ".js-extab-btn", function () {
 		var btn = $(this);
 		var data = btn.attr("data-tab");
+		var url = btn.attr("href");
 
 		$(".js-extab-btn").closest(".tabs__item").removeClass("tabs--item-active");
 		btn.closest(".tabs__item").addClass("tabs--item-active");
 
 		$(".js-extab").css("display","none");
 		$(".js-extab[data-tab="+data+"]").css("display","block");
+
+		if(bxslider_exs_1)
+			bxslider_exs_1.reloadSlider();
+
+		if(bxslider_exs_2)
+			bxslider_exs_2.reloadSlider();
+
+		location.hash(url);
+
 		return false;
 	});
 
@@ -182,6 +195,26 @@ $(document).ready( function() {
 			select_wrap.find('.pseudo-select__real option').removeAttr("selected");
 			select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");
 			select_wrap.removeClass("pseudo-select--show");
+		}
+	});
+
+	//Плюс-минус
+	$(document).on("click", ".form__counter-btn", function () {
+		var btn = $(this);
+		var wrap = btn.closest(".form__counter");
+		var input = wrap.find(".form--input-counter");
+		var value = input.val()*1;
+
+		if(btn.hasClass("form--counter-plus")) {
+			var value_new = value+1;
+			input.val(value_new);
+		}
+
+		if(btn.hasClass("form--counter-minus")) {
+			var value_new = value-1;
+			if(value_new < 1)
+				value_new = 1;
+			input.val(value_new);
 		}
 	});
 });

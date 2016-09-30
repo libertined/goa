@@ -20,6 +20,7 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-1.11.2.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-ui.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.bxslider.min.js');
+	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.maskedinput.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.mousewheel.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.jscrollpane.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/scripts.js');

@@ -2324,16 +2324,25 @@ a.breadcrumbs--item-main:hover {
   float: left;
   width: 40px;
   height: 40px;
-  background: #fff;
   padding: 12px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   cursor: pointer;
 }
-.form__counter-btn object {
-  width: 16px;
-  height: 16px;
+.form--counter-minus {
+  background: #ffffff url("svg/faceless.svg") no-repeat center;
+  -webkit-background-size: 16px;
+  -moz-background-size: 16px;
+  -o-background-size: 16px;
+  background-size: 16px;
+}
+.form--counter-plus {
+  background: #ffffff url("svg/faceless.svg") no-repeat center;
+  -webkit-background-size: 16px;
+  -moz-background-size: 16px;
+  -o-background-size: 16px;
+  background-size: 16px;
 }
 .form--input-counter {
   float: left;

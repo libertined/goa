@@ -5,10 +5,10 @@ $APPLICATION->SetTitle("FAQ");?>
 
 <div class="tabs marg-b-40">
     <ul class="tabs__list">
-        <li class="tabs__item tabs--item-active"><a href="" class="tabs__item-link tabs--item-link-description js-extab-btn" data-tab="extab-description"><span>Описание</span></a></li>
-        <li class="tabs__item"><a href="" class="tabs__item-link tabs--item-link-programm js-extab-btn" data-tab="extab-programm"><span>Программа и стоимость</span></a></li>
-        <li class="tabs__item"><a href="" class="tabs__item-link tabs--item-link-reviews js-extab-btn" data-tab="extab-reviews"><span>Отзывы</span></a></li>
-        <li class="tabs__item"><a href="" class="tabs__item-link tabs--item-link-order js-extab-btn" data-tab="extab-order"><span>Заказ</span></a></li>
+        <li class="tabs__item tabs--item-active"><a href="#1" class="tabs__item-link tabs--item-link-description js-extab-btn" data-tab="extab-description"><span>Описание</span></a></li>
+        <li class="tabs__item"><a href="#2" class="tabs__item-link tabs--item-link-programm js-extab-btn" data-tab="extab-programm"><span>Программа и стоимость</span></a></li>
+        <li class="tabs__item"><a href="#3" class="tabs__item-link tabs--item-link-reviews js-extab-btn" data-tab="extab-reviews"><span>Отзывы</span></a></li>
+        <li class="tabs__item"><a href="#4" class="tabs__item-link tabs--item-link-order js-extab-btn" data-tab="extab-order"><span>Заказ</span></a></li>
     </ul>
 </div>
 
@@ -328,9 +328,9 @@ $APPLICATION->SetTitle("FAQ");?>
                 <label for="label-counter" class="form__title">Количество людей*</label>
                 <div class="form__field">
                     <div class="form__counter">
-                        <div class="form__counter-btn form--counter-minus"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                        <input id="label-counter" placeholder="" name="" value="1" type="text" class="form__input form--input-counter" />
-                        <div class="form__counter-btn form--counter-plus"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                        <div class="form__counter-btn form--counter-minus"></div>
+                        <input id="label-counter" placeholder="" name="" value="1" type="text" class="form__input form--input-counter" readonly />
+                        <div class="form__counter-btn form--counter-plus"></div>
                     </div>
                 </div>
             </div>
@@ -342,12 +342,12 @@ $APPLICATION->SetTitle("FAQ");?>
 
             <div class="form__wrap marg-b-15">
                 <label for="label-email" class="form__title">Email*</label>
-                <div class="form__field"><input id="label-email" placeholder="" name="" value="" type="text" class="form__input" /></div>
+                <div class="form__field"><input id="label-email" placeholder="" name="" value="" type="email" class="form__input" /></div>
             </div>
 
             <div class="form__wrap marg-b-15">
                 <label for="label-phone" class="form__title">Телефон*</label>
-                <div class="form__field"><input id="label-phone" placeholder="" name="" value="" type="text" class="form__input" /></div>
+                <div class="form__field"><input id="label-phone" placeholder="" name="" value="" type="tel" class="form__input request-phone" /></div>
             </div>
 
             <div class="form__wrap marg-b-15">
