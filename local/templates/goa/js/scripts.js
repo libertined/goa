@@ -159,17 +159,29 @@ $(document).ready( function() {
 
 	//Клик по элементу списка
 	$(document).on("click", ".pseudo-select__option", function () {
-		var select_wrap = $(this).closest(".pseudo-select");
-		var select_text = $(this).text();
-		var data_value = $(this).attr("data-value");
+		var el = $(this);
+		var select_wrap = el.closest(".pseudo-select");
+		var select_text = el.text();
+		var data_value = el.attr("data-value");
 
-		select_wrap.find(".pseudo-select__option").removeClass("current");
-		$(this).addClass("current");
-		select_wrap.find(".pseudo-select__text").text(select_text);
-		select_wrap.find(".pseudo-select__wrap").removeAttr("style");
+		//Если мультиплай
+		if(select_wrap.hasClass("pseudo-select--multiple")) {
+			if(el.hasClass("current")) {
+				el.removeClass("current");
+				select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').removeAttr("selected");
+			} else {
+				el.addClass("current");
+				select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");
+			}
+		} else {
+			select_wrap.find(".pseudo-select__option").removeClass("current");
+			el.addClass("current");
+			select_wrap.find(".pseudo-select__text").text(select_text);
+			select_wrap.find(".pseudo-select__wrap").removeAttr("style");
 
-		select_wrap.find('.pseudo-select__real option').removeAttr("selected");
-		select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");
-		select_wrap.removeClass("pseudo-select--show");
+			select_wrap.find('.pseudo-select__real option').removeAttr("selected");
+			select_wrap.find('.pseudo-select__real option[value="'+data_value+'"]').attr("selected","selected");
+			select_wrap.removeClass("pseudo-select--show");
+		}
 	});
 });

@@ -2682,3 +2682,23 @@ ul li.pseudo-select__option:hover {
 .pseudo-select__real {
   display: none;
 }
+.pseudo-select--multiple ul li.pseudo-select__option {
+  padding-left: 55px;
+  background: url("svg/faceless.svg") no-repeat 20px center;
+  -webkit-background-size: 20px;
+  -moz-background-size: 20px;
+  -o-background-size: 20px;
+  background-size: 20px;
+}
+.pseudo-select--multiple ul li.pseudo-select__option.current {
+  padding-left: 55px;
+  background: url("svg/faceless.svg") no-repeat 20px center;
+  background-color: #f2f2f2;
+  -webkit-background-size: 20px;
+  -moz-background-size: 20px;
+  -o-background-size: 20px;
+  background-size: 20px;
+}
+.pseudo-select--multiple ul li.pseudo-select__option:hover {
+  background-color: #f2f2f2;
+}

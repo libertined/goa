@@ -73,4 +73,21 @@
     &__real {
         display: none;
     }
+
+    &--multiple ul li&__option {
+        padding-left: 55px;
+        background: url("@{svg-path}faceless.svg") no-repeat 20px center;
+        .bg-size(20px);
+
+        &.current {
+            padding-left: 55px;
+            background: url("@{svg-path}faceless.svg") no-repeat 20px center;
+            background-color: @bg-base;
+            .bg-size(20px);
+        }
+
+        &:hover {
+            background-color: @bg-base;
+        }
+    }
 }
