@@ -217,6 +217,28 @@ $(document).ready( function() {
 			input.val(value_new);
 		}
 	});
+
+	//Псеудочекбокс
+	$(document).on("click", ".form--title-viber", function () {
+		var el = $(this);
+		var check="n";
+
+		if(el.find(".form__viber-real").prop("checked"))
+			var check="y";
+
+		if(check=="n") {
+			el.addClass("check");
+			el.find(".form__viber-real").prop("checked","true");
+
+			el.closest(".form__wrap").find(".form__input").attr("disabled","disabled");
+		}
+		if(check=="y") {
+			el.removeClass("check");
+			el.find(".form__viber-real").prop("checked","");
+
+			el.closest(".form__wrap").find(".form__input").removeAttr("disabled");
+		}
+	});
 });
 
 //Календари

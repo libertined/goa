@@ -350,6 +350,14 @@ $APPLICATION->SetTitle("FAQ");?>
                 <div class="form__field"><input id="label-phone" placeholder="" name="" value="" type="tel" class="form__input request-phone" /></div>
             </div>
 
+            <div class="form__wrap marg-b-15 center-adaptive-768">
+                <div class="form__title form--title-viber">
+                    Viber, WhatsApp совпадает с телефоном
+                    <input name="close" value="yes" type="checkbox" class="form__viber-real" />
+                </div>
+                <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
+            </div>
+
             <div class="form__wrap marg-b-15">
                 <label for="label-info" class="form__title">Дополнительная информация</label>
                 <div class="form__field"><textarea id="label-info" class="form__textarea"></textarea></div>

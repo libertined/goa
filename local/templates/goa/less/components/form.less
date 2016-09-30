@@ -33,11 +33,39 @@
 	  	display: block;
 		float: left;
 		font-size: 15px;
-		line-height: 22px;
-		padding: 9px 0px;
+		line-height: 20px;
+		padding: 10px 0px;
 		width: 40%;
 		padding-right: 30px;
 		.box-sizing(border-box);
+	}
+
+  	&--title-viber {
+	  	padding: 0px 30px;
+	  	position: relative;
+	  	cursor: pointer;
+
+	  	&:after {
+		  	content: "";
+		  	position: absolute;
+		  	top: 10px;
+		  	left: 0px;
+		  	width: 20px;
+		  	height: 20px;
+		  	background: url("@{svg-path}faceless.svg") no-repeat 0px 0px;
+		  	.bg-size(20px);
+		}
+
+	  	&.check {
+			&:after {
+				background: url("@{svg-path}expand.svg") no-repeat 0px 0px;
+				.bg-size(20px);
+			}
+		}
+	}
+
+  	&__viber-real {
+	  	display: none;
 	}
 	
 	&__field {
@@ -63,6 +91,11 @@
 		font-family: @font-family-regular;
 		.box-sizing(border-box);
 		color: @color-grey;
+
+	  	&[disabled="disabled"] {
+			background: @bg-base;
+			color: @color-grey-light;
+		}
 	}
 	
 	.form__textarea {
@@ -158,6 +191,12 @@
 		  	float: initial;
 		  	padding-right: 0px;
 	  	}
+
+		&--title-viber {
+			padding: 10px 30px;
+		  	display: inline-block;
+		  	width: initial;
+		}
 
 	  	&__field {
 		  	width: 100%;
