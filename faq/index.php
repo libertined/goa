@@ -314,8 +314,8 @@ $APPLICATION->SetTitle("FAQ");?>
             <div class="form__wrap marg-b-15">
                 <label for="label-date" class="form__title">Ориентировочная дата*</label>
                 <div class="form__field form--field-date">
-                    <input id="label-date" placeholder="" name="" value="20 ноября 2015" type="text" class="form__input" />
-                    <div class="form__icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
+                    <input id="label-date" placeholder="" name="" value="20 ноября 2015" type="text" class="form__input js-datepicker-after" />
+                    <div class="form__icon form--icon-date"></div>
                 </div>
             </div>
 

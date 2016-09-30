@@ -1,0 +1,92 @@
+#ui-datepicker-div {
+    background: #fff;
+    padding: 10px;
+    .box-shadow(0 3px 7px 0 @color-grey);
+    z-index: 99 !important;
+  
+    & a {
+        text-decoration: none;
+        display: block;
+    }
+
+    & th {
+        color: @text-color-base;
+        font: normal 14px/20px @font-family-semibold;
+    }
+
+    & .ui-datepicker-header {
+        position: relative;
+        text-align: center;
+        padding-bottom: 10px;
+    }
+
+    & .ui-datepicker-prev,
+    & .ui-datepicker-next {
+        position: absolute;
+        top: 0px;
+        cursor: pointer;
+        font: normal 14px/20px @font-family-base;
+
+        &:hover {
+            color: @color-red;
+        }
+    }
+
+    & .ui-datepicker-prev {
+        left: 0px;
+    }
+
+    & .ui-datepicker-next {
+        right: 0px;
+    }
+
+    & .ui-datepicker-title {
+        display: inline-block;
+        color: @text-color-base;
+        font: normal 16px/20px @font-family-semibold;
+    }
+
+    & .ui-datepicker-calendar td {
+        text-align: center;
+        padding: 5px;
+        border: 1px solid @color-red;
+        vertical-align: top;
+        .box-sizing(border-box);
+        line-height: 25px;
+        font-size: 12px;
+        width: 35px;
+
+        &:hover {
+            background: @color-grey-light;
+        }
+
+        &.ui-datepicker-current-day {
+            background: @color-yellow;
+
+            &:hover {
+                background: @color-yellow;
+            }
+        }
+
+        &.ui-datepicker-today {
+            background: @color-red;
+
+            & a {
+                color: #fff;
+            }
+
+            &:hover {
+                background: @color-red-dark;
+            }
+        }
+
+        &.ui-state-disabled {
+            background: @bg-base;
+            border: 1px solid @color-grey-light;
+
+            & span {
+                color: @color-grey;
+            }
+        }
+    }
+}
