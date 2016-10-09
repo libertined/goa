@@ -71,9 +71,20 @@
 	
 	&__clear-text {
 		float: left;
-		margin-left: 10px;
+		padding-left: 28px; 
 		font-size: 14px;
 		line-height: 18px;
+		position: relative;
+		
+		&::before {
+			content: "";
+			display: block;
+			background-image: url(/local/templates/goa/svg/reset-18x18.svg);
+			width: 18px;
+			height: 18px;
+			left: 0;
+			position: absolute;
+		}
 	}
 	
 	&__result {
