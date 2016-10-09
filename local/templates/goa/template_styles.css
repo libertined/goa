@@ -1665,22 +1665,24 @@ a.breadcrumbs--item-main:hover {
   color: #757c80;
   font-size: 15px;
   line-height: 22px;
+  position: relative;
+}
+.filter__option-name::after {
+	content: "";
+	position: absolute;
+	right: 0px;
+	width: 13px;
+	height: 22px;
+	background: url("svg/cross-12x12-grey.svg") no-repeat center;
+	-webkit-background-size: 13px;
+	-moz-background-size: 13px;
+	-o-background-size: 13px;
+	background-size: 13px;
 }
 .filter__option-item:hover .filter__option-name {
   color: #fd7866;
 }
-.filter__option-close {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 11px;
-  height: 22px;
-  background: url("svg/faceless.svg") no-repeat center;
-  -webkit-background-size: 11px;
-  -moz-background-size: 11px;
-  -o-background-size: 11px;
-  background-size: 11px;
-}
+
 .filter__grey {
   background: #dce1e6;
   padding: 8px 28px;

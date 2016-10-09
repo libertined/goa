@@ -128,21 +128,23 @@
 		color: @color-grey;
 		font-size: 15px;
 		line-height: 22px;
+		position: relative;
+
+		&::after {
+			content: "";
+			position: absolute;
+			right: 0px;
+			width: 13px;
+			height: 22px;
+		  	background: url("@{svg-path}cross-12x12-grey.svg") no-repeat center;
+		  	.bg-size(13px);
+		}
 	}
 
   	&__option-item:hover &__option-name {
 	  	color: @color-red;
   	}
 	
-	&__option-close {
-		position: absolute;
-		top: 0px;
-		right: 0px;
-		width: 11px;
-		height: 22px;
-	  	background: url("@{svg-path}faceless.svg") no-repeat center;
-	  	.bg-size(11px);
-	}
 
   	&__grey {
 		background: @color-grey-light;

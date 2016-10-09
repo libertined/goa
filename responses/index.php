@@ -34,12 +34,10 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
         <div class="filter__option-body">
             <div class="filter__option-item">
                 <div class="filter__option-name">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
-                <div class="filter__option-close"></div>
             </div>
 
             <div class="filter__option-item">
                 <div class="filter__option-name">Весь ГОА за один день</div>
-                <div class="filter__option-close"></div>
             </div>
         </div>
     </div>
