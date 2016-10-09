@@ -113,55 +113,35 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
                 <div class="col-12-3">
                     <div class="review__gallery-img marg-b-30">
                         <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_8.jpg" alt="">
-                        <div class="review__gallery-open">
-                            <div class="vert-middle"><div class="vert-middle__inner">
-                                    <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                            </div>
-                        </div>
+                        <div class="review__gallery-open"></div>
                     </div>
                 </div>
 
                 <div class="col-12-3">
                     <div class="review__gallery-img marg-b-30">
                         <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_8.jpg" alt="">
-                        <div class="review__gallery-open">
-                            <div class="vert-middle"><div class="vert-middle__inner">
-                                    <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                            </div>
-                        </div>
+                        <div class="review__gallery-open"></div>
                     </div>
                 </div>
 
                 <div class="col-12-3">
                     <div class="review__gallery-img marg-b-30">
                         <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_8.jpg" alt="">
-                        <div class="review__gallery-open">
-                            <div class="vert-middle"><div class="vert-middle__inner">
-                                    <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                            </div>
-                        </div>
+                        <div class="review__gallery-open"></div>
                     </div>
                 </div>
 
                 <div class="col-12-3">
                     <div class="review__gallery-img marg-b-30">
                         <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_8.jpg" alt="">
-                        <div class="review__gallery-open">
-                            <div class="vert-middle"><div class="vert-middle__inner">
-                                    <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                            </div>
-                        </div>
+                        <div class="review__gallery-open"></div>
                     </div>
                 </div>
 
                 <div class="col-12-3">
                     <div class="review__gallery-img marg-b-30">
                         <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_8.jpg" alt="">
-                        <div class="review__gallery-open">
-                            <div class="vert-middle"><div class="vert-middle__inner">
-                                    <object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                            </div>
-                        </div>
+                        <div class="review__gallery-open"></div>
                     </div>
                 </div>
             </div>
