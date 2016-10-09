@@ -17,7 +17,6 @@ $APPLICATION->SetTitle("Экскурсии");?>
 		<div class="filter__category-item">7 дней (3)</div>
 	</div>
 	<div class="filter__clear marg-t-20">
-		<div class="filter__clear-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
 		<div class="filter__clear-text">Сбросить все фильтры</div>
 	</div>
 	<div class="filter__result marg-t-40 marg-b-20">Найдено <span>5 экскурсий</span></div>
