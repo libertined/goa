@@ -112,10 +112,26 @@
             </div>
             <div class="col-12-3 pos-right">
               <div class="page-footer__socials">
-                <a href="" class="page-footer__social-item page-footer--social-ig"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
-                <a href="" class="page-footer__social-item page-footer--social-fb"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
-                <a href="" class="page-footer__social-item page-footer--social-vk"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
-                <a href="" class="page-footer__social-item page-footer--social-mail"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/instagram.svg">Your browser does not support SVGs</object></a>
+                <a href="https://www.instagram.com/tvoygoa/" class="page-footer__social-item page-footer--social-ig" target="_blank">
+                  <svg class="icon icon-ig">
+                    <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#instagram"></use>
+                  </svg>
+                </a>
+                <a href="https://www.facebook.com/tvoygoa" class="page-footer__social-item page-footer--social-fb" target="_blank">
+                  <svg class="icon icon-fb">
+                    <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#fb"></use>
+                  </svg>
+                </a>
+                <a href="https://vk.com/tvoygoa" class="page-footer__social-item page-footer--social-vk" target="_blank">
+                  <svg class="icon icon-vk">
+                    <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#vk"></use>
+                  </svg>
+                </a>
+                <a href="mailto:info@tvoygoa.ru" class="page-footer__social-item page-footer--social-mail" target="_blank">
+                  <svg class="icon icon-vk">
+                    <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#vk"></use>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
