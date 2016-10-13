@@ -95,13 +95,18 @@
 		left: 0px;
 		width: 100%;
 		height: 100%;
-		background: url("@{img-path}00000060.png") repeat 0px 0px;
-		text-align: center;
+		background: rgba(41, 38, 51, 0.6);
 		display: none;
-		
-		& object {
+
+		&::before {
+			content: "";
 			width: 24px;
 			height: 24px;
+			display: block;
+			background: url("@{svg-path}expand.svg") no-repeat center / 24px;
+			position: absolute;
+			top: calc(50% - 12px);
+			left: calc(50% - 12px);
 		}
 	}
 	

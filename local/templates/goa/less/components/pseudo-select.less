@@ -76,12 +76,22 @@
 
     &--multiple ul li&__option {
         padding-left: 55px;
-        background: url("@{svg-path}faceless.svg") no-repeat 20px center;
-        .bg-size(20px);
+        position: relative;
+
+        &::before {
+            content: "";
+            display: block;
+            width: 20px;
+            height: 20px;
+            background-color: #dce1e6;
+            position: absolute;
+            top: calc(50% - 10px);
+            left: 15px;
+        }
 
         &.current {
             padding-left: 55px;
-            background: url("@{svg-path}faceless.svg") no-repeat 20px center;
+            background: url("@{svg-path}checked.svg") no-repeat 15px center;
             background-color: @bg-base;
             .bg-size(20px);
         }
@@ -90,4 +100,7 @@
             background-color: @bg-base;
         }
     }
+}
+.pseudo-select--multiple ul li.current.pseudo-select__option::before {
+    display: none;
 }
