@@ -73,8 +73,8 @@
 
             <div class="col-12-3">
               <div class="page-footer__dev-wrap">
-                <div class="page-footer__dev"><span>Разработка -</span> <a href="">AE! studio</a></div>
-                <div class="page-footer__dev"><span>Дизайн от</span> <a href="">Pixeljam</a></div>
+                <div class="page-footer__dev"><span>Разработка -</span> <a href="http://www.ae-studio.ru">AE! studio</a></div>
+                <div class="page-footer__dev"><span>Дизайн от</span> <a href="http://pixeljam.ru/">Pixeljam</a></div>
               </div>
             </div>
           </div>
@@ -145,7 +145,7 @@
           <div class="row">
             <div class="row__inner">
               <div class="col-12-6">© 2016 Твой Гоа</div>
-              <div class="col-12-6 pos-right">Разработка <a href="">AE! studio</a></div>
+              <div class="col-12-6 pos-right">Разработка <a href="http://www.ae-studio.ru">AE! studio</a></div>
             </div>
           </div>
         </div>
