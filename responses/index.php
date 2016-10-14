@@ -4,12 +4,17 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_reviews.jpg");
 $APPLICATION->SetTitle("Отзывы туристов");?>
 
 <?$APPLICATION->IncludeComponent(
-	"goa:reviews",
-	"all_with_filter",
+	"goa:reviews", 
+	"all_with_filter", 
 	array(
-        "CACHE_TYPE" => "A",
-        "CACHE_TIME" => 3600,
-	)
+		"CACHE_TYPE" => "A",
+		"CACHE_TIME" => "3600",
+		"COMPONENT_TEMPLATE" => "all_with_filter",
+		"TOUR_ID" => "",
+		"PER_PAGE" => "5",
+		"PAGE_NUM" => ""
+	),
+	false
 );
 ?>
 

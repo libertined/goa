@@ -13,6 +13,8 @@
 /** @var CBitrixComponent $component */
 
 //$this->setFrameMode( true );
+
+echo '<pre><=== \$arResult ===></pre><pre>' . print_r($arResult, 1) . '</pre><pre><\=== \$arResult ===></pre>';
 ?>
 
 <div class="filter">

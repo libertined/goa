@@ -16,7 +16,29 @@ class Reviews extends CProjectBlockComponent
 {
     
     public function onPrepareComponentParams( $arParams ){
-        
+        $arParams["PER_PAGE"] = intval($arParams["PER_PAGE"]);
+
+        if (!$arParams["PER_PAGE"]) {
+            $arParams["PER_PAGE"] = 5;
+        }
+
+        // try to get manual handled page
+        $arParams["PAGE_NUM"] = intval($arParams["PAGE_NUM"]);
+
+        // try to get auto handled page
+        if (!$arParams["PAGE_NUM"]) {
+            $pageNum = $_REQUEST["PAGE_NUM"];
+
+            $arParams["PAGE_NUM"] = $pageNum ? $pageNum : 1;
+        }
+
+        $TOUR_ID = trim($arParams["TOUR_ID"]);
+
+        if ($TOUR_ID) {
+            $arParams["TOUR_ID"]  = explode(",", $TOUR_ID);
+        }
+
+
         return parent::onPrepareComponentParams($arParams);
     }
     
@@ -35,9 +57,7 @@ class Reviews extends CProjectBlockComponent
         require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLEntityModel.php";
         require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLReviewModel.php";
 
-        $arResult["ITEMS"] = HLReviewModel::getByTourId(array(), 1, 1);
-
-        echo '<pre><=== \$arResult ===></pre><pre>' . print_r($arResult, 1) . '</pre><pre><\=== \$arResult ===></pre>';
+        $arResult["ITEMS"] = HLReviewModel::getByTourId($arParams["TOUR_ID"], $arParams["PER_PAGE"], $arParams["PAGE_NUM"]);
     }
     
     /**

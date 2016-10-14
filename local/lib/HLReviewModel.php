@@ -24,6 +24,14 @@ class HLReviewModel extends HLEntityModel
      * */
     public static function getByTourId( $tourId = array(), $perPage = 10, $pageNum = 1 )
     {
+        if (!intval($perPage)) {
+            throw new Exception ( "\$perPage must be an integer" );
+        }
+
+        if (!intval($pageNum)) {
+            throw new Exception ( "\$pageNum must be an integer" );
+        }
+
         $params = array(
             "filter" => array(),
             "limit"  => $perPage,
