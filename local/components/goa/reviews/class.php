@@ -29,11 +29,15 @@ class Reviews extends CProjectBlockComponent
         $arResult = &$this->arResult;
         $arParams = &$this->arParams;
 
-        //$arResult += BrandElement::get(array(
-        //    "sort" => array("SORT" => "ASC", "NAME" => "ASC"),
-        //    "pagenav" => array("iNumPage" => 1, "nPageSize" => 18)
-        //));
-        
+
+        \Bitrix\Main\Loader::includeModule("highloadblock") or die( 'Module highloadblock not found' );
+
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLEntityModel.php";
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLReviewModel.php";
+
+        $arResult["ITEMS"] = HLReviewModel::getByTourId(array(), 1, 1);
+
+        echo '<pre><=== \$arResult ===></pre><pre>' . print_r($arResult, 1) . '</pre><pre><\=== \$arResult ===></pre>';
     }
     
     /**
