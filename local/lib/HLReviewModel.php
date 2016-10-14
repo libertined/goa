@@ -33,7 +33,9 @@ class HLReviewModel extends HLEntityModel
         }
 
         $params = array(
-            "filter" => array(),
+            "filter" => array(
+                "UF_ACTIVE" => 1
+            ),
             "limit"  => $perPage,
             "offset" => $perPage * ($pageNum - 1),
             "order"  => array("UF_DATE" => "DESC"),
