@@ -45,7 +45,106 @@ class HLReviewModel extends HLEntityModel
             $params["filter"]["UF_TOUR_ID"] = $tourId;
         }
 
-        return static::get( $params );
+        $result = static::get( $params );
+
+        return $result;
+    }
+
+    /**
+     * Returns info about tour
+     * - NAME
+     * - DETAIL_PAGE_URL
+     *
+     *
+     * TODO get info from tours own model-class
+     * */
+    public static function getTourInfoById( $tourId)
+    {
+        if ( !intval($tourId) ) {
+            return array();
+        }
+
+        $toursInfo = static::getAllToursInfo();
+
+        if (! $toursInfo[ $tourId ] ) {
+            // try to update cache with tours info
+            $toursInfo = static::getAllToursInfo(true);
+
+            if (! $toursInfo[ $tourId ] ) {
+                AddMessage2Log( "cant find info about tour [$tourId]", "HLReviewModel" );
+            }
+        }
+
+        return $toursInfo[ $tourId ];
+    }
+
+    /**
+     * Returns info about all tours
+     * - NAME
+     * - DETAIL_PAGE_URL
+     *
+     * @param $updateCache bool daf
+     *
+     *
+     * @TODO get info from tours own model-class
+     * */
+    private static function getAllToursInfo( $updateCache = false )
+    {
+
+        static $result;
+
+        // if info already loaded
+        if ($result && !$updateCache) {
+            return $result;
+        }
+
+        // Создаем объект для работы с кешем (способ кеширования задается в .settings.php)
+        $obCache = Bitrix\Main\Data\Cache::createInstance();
+
+        // Время жизни кеша, в секундах - 10 days
+        $timeout = 864000;
+
+        // Уникальный ключ для кешированных данных
+        // на основании входных данных
+        $cacheKey = "HLReviewModel::getAllToursInfo";
+
+        // Если кэш валиден
+        if( !$updateCache && $obCache->InitCache($timeout, $cacheKey, "HLReviewModel" ) )
+        {
+            // Извлекаем данные из кэша
+            $result = $obCache->GetVars();
+        }
+        // Если кэш невалиден
+        elseif( $obCache->StartDataCache()  )
+        {
+
+            \Bitrix\Main\Loader::includeModule("iblock") or die( 'Module iblock not found' );
+
+            $arFilter = array(
+                "IBLOCK_ID"     => TOUR_IBOCK_ID,
+                "ACTIVE"        => "Y",
+            );
+            $arSelect = array(
+                "ID", "NAME",
+                "DETAIL_PAGE_URL",
+                //"PROPERTY_",
+            );
+            $res = CIBlockElement::GetList(false, $arFilter, false, false, $arSelect);
+
+            $result = array();
+
+            while ($tmp = $res->GetNext(false, false)) {
+                $result[ $tmp["ID"] ] = array(
+                    "NAME" => $tmp["NAME"],
+                    "URL"  => $tmp["DETAIL_PAGE_URL"],
+                );
+            }
+
+            // Сохраняем данные в кэш
+            $obCache->EndDataCache( $result );
+        }
+
+        return $result;
     }
 
 }

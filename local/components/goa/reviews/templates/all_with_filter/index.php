@@ -33,17 +33,12 @@
                 <div class="review__exs-title">Экскурсии:</div>
                 <div class="review__exs-body">
 
-                    <?foreach ( $item["UF_TOUR_ID"] as $tour ){?>
+                    <?foreach ( $item["UF_TOUR_ID"] as $tour ){
+                        $tourInfo = HLReviewModel::getTourInfoById($tour);
+                    ?>
                         <div class="review__exs-item">
-                            <div class="review__exs-name"><?=$tour?></div>
-
-                            <?
-                            /*
-                             * TODO all reviews about tour
-                             * */
-
-                            // <a href="" class="review__exs-link">Все отзывы об этой экскурсии</a>
-                            ?>
+                            <div class="review__exs-name"><?=$tourInfo["NAME"]?></div>
+                             <a href="<?=$tourInfo["URL"]?>" class="review__exs-link">Все отзывы об этой экскурсии</a>
                         </div>
                     <?}?>
 
