@@ -23,11 +23,11 @@ class Reviews extends CProjectBlockComponent
         }
 
         // try to get manual handled page
-        $arParams["PAGE_NUM"] = intval($arParams["PAGE_NUM"]);
+        $arParams["PAGE_NUM"] = intval($arParams["REVIEWS_PAGE_NUM"]);
 
         // try to get auto handled page
         if (!$arParams["PAGE_NUM"]) {
-            $pageNum = $_REQUEST["PAGE_NUM"];
+            $pageNum = $_REQUEST["REVIEWS_PAGE_NUM"];
 
             $arParams["PAGE_NUM"] = $pageNum ? $pageNum : 1;
         }
@@ -57,7 +57,7 @@ class Reviews extends CProjectBlockComponent
         require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLEntityModel.php";
         require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLReviewModel.php";
 
-        $arResult["ITEMS"] = HLReviewModel::getByTourId($arParams["TOUR_ID"], $arParams["PER_PAGE"], $arParams["PAGE_NUM"]);
+        $arResult += HLReviewModel::getByTourId($arParams["TOUR_ID"], $arParams["PER_PAGE"], $arParams["PAGE_NUM"]);
     }
     
     /**

@@ -32,10 +32,13 @@ class HLEntityModel
 
         $dbRes = $entity::getList( $params );
 
-        $result = array();
+        $result = array(
+            "ITEMS"     => array(),
+            "DB_RESULT" => $dbRes,
+        );
 
         while ( $tmp = $dbRes->fetch() ) {
-            $result[ $tmp["ID"] ] = $tmp;
+            $result["ITEMS"][ $tmp["ID"] ] = $tmp;
         }
 
         return $result;

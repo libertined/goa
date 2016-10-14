@@ -17,7 +17,7 @@ $arComponentParameters = array(
 			 "DEFAULT" => "5",
 			 "REFRESH" => "N",
 		 ),
-		 "PAGE_NUM" => array(
+		 "REVIEWS_PAGE_NUM" => array(
 			 "PARENT" => "BASE",
 			 "NAME" => "Номер страницы (оставить пустым для авто режима) ",
 			 "TYPE" => "SRTING",

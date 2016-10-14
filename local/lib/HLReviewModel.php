@@ -39,6 +39,10 @@ class HLReviewModel extends HLEntityModel
             "limit"  => $perPage,
             "offset" => $perPage * ($pageNum - 1),
             "order"  => array("UF_DATE" => "DESC"),
+            'count_total' => true,
+            "select" => array(
+                "*",
+            ),
         );
 
         if ($tourId) {
@@ -46,6 +50,13 @@ class HLReviewModel extends HLEntityModel
         }
 
         $result = static::get( $params );
+
+        /*
+         * calculate page count with current perPage value
+         * for simple use in template
+         * */
+        $count = $result["DB_RESULT"]->getCount();
+        $result["PAGE_COUNT"] = ceil($count / $perPage);
 
         return $result;
     }
@@ -66,6 +77,7 @@ class HLReviewModel extends HLEntityModel
 
         $toursInfo = static::getAllToursInfo();
 
+        // if not fount stored info about tour
         if (! $toursInfo[ $tourId ] ) {
             // try to update cache with tours info
             $toursInfo = static::getAllToursInfo(true);
