@@ -83,10 +83,8 @@ require_once __DIR__ . "/inc_filter.php";
                                             <div class="gallery__slide-img">
                                                 <img src="<?=getResizedImgOrPlaceholder($img, 1024, 1024, true)?>" alt="<?=$item["NAME"]?>" />
                                             </div>
-                                            <?
-                                            // описание фото не было указано в задаче.
-                                            // <div class="gallery__slide-text">Вид на долину в Махабалешваре</div>
-                                            ?>
+
+                                             <div class="gallery__slide-text"><?=$item["UF_IMG_DESC"][ $index ] ? $item["UF_IMG_DESC"][ $index ] : "Описание отсутствует"?></div>
                                         </div>
                                     <?}?>
                                 </div>
@@ -102,19 +100,17 @@ require_once __DIR__ . "/inc_filter.php";
                 </div>
             </div>
 
-            <?
-            /*
-             * TODO reviews replies
-             * */
-
-            //<div class="review review--reply marg-t-20">
-            //    <div class="review__title">
-            //        <div class="review__name">Твой Гоа</div>
-            //        <div class="review__date">22 ноября 2015</div>
-            //    </div>
-            //    <div class="review__text">Спасибо за такой обширный отзыв. Но вы могли бы поинтересоваться у тех 2-х. Они были заранее предупреждены о невозможности поехать в Тибет, о том, что экскурсия возможна только в Хампи и озеро, на что согласились. Наверное, они тоже были вредными, и решили , а пусть все поедут в Тибет..И вы забыли уточнить, что вы ехали в 5-ом, а не в 6-м и цена при этом не поменялась. Ну и самое главное, про Хампи можно написать не одну книгу, а у вас.</div>
-            //</div>
-            ?>
+            <?if($item["UF_ADMIN_REPLY"]):?>
+                <div class="review review--reply marg-t-20">
+                    <div class="review__title">
+                        <div class="review__name">Твой Гоа</div>
+                        <div class="review__date"><?=formatDateCustom( $item["UF_ADMIN_REPLY_DATE"]->format("d.m.Y") )?></div>
+                    </div>
+                    <div class="review__text">
+                        <?=nl2br($item["UF_ADMIN_REPLY"])?>
+                    </div>
+                </div>
+            <?endif?>
         </div>
 
     <?}?>
