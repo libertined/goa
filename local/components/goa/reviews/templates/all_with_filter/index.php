@@ -40,7 +40,6 @@ require_once __DIR__ . "/inc_filter.php";
                             </div>
                         <?}?>
 
-
                     </div>
                 </div>
                 <div class="review__text">
@@ -59,11 +58,11 @@ require_once __DIR__ . "/inc_filter.php";
                     <div class="row row--padd30 marg-t-50">
                         <div class="row__inner">
 
-                            <?foreach ( $item["UF_IMG"] as $img ){?>
+                            <?foreach ( $item["UF_IMG"] as $index => $img ){?>
                                 <div class="col-12-3">
-                                    <div class="review__gallery-img marg-b-30">
+                                    <div class="review__gallery-img marg-b-30 gallery-open-block" >
                                         <img src="<?=getResizedImgOrPlaceholder($img, 250, 250)?>" alt="">
-                                        <div class="review__gallery-open"></div>
+                                        <div class="review__gallery-open openmodal" data-id="modal-gallery-<?=$item["ID"]?>" data-slide="<?=$index?>"></div>
                                     </div>
                                 </div>
                             <?}?>
@@ -71,6 +70,36 @@ require_once __DIR__ . "/inc_filter.php";
                         </div>
                     </div>
                  <?}?>
+
+
+                <div class="modal-window" id="modal-gallery-<?=$item["ID"]?>">
+                    <div class="modal-window__body">
+                        <div class="gallery">
+
+                            <div class="gallery__wrap">
+                                <div class="bxslider_gallery">
+                                    <?foreach ( $item["UF_IMG"] as $index => $img ){?>
+                                        <div class="gallery__slide">
+                                            <div class="gallery__slide-img">
+                                                <img src="<?=getResizedImgOrPlaceholder($img, 1024, 1024, true)?>" alt="<?=$item["NAME"]?>" />
+                                            </div>
+                                            <?
+                                            // описание фото не было указано в задаче.
+                                            // <div class="gallery__slide-text">Вид на долину в Махабалешваре</div>
+                                            ?>
+                                        </div>
+                                    <?}?>
+                                </div>
+                            </div>
+
+                            <div class="gallery__pager" id="js-gallery-pager">
+                                <?foreach ( $item["UF_IMG"] as $index => $img ){?>
+                                   <a data-slide-index="<?=$index?>" href="" class="gallery__pager-item"><img src=<?=getResizedImgOrPlaceholder($img, 70, 70)?> /></a>
+                                <?}?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <?

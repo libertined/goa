@@ -91,7 +91,9 @@ class Reviews extends CProjectBlockComponent
         
         $arResult = &$this->arResult;
         $arParams = &$this->arParams;
-        
+
+        // FIX of "ReferenceError: BX is not defined" js error
+        CJSCore::Init(array("fx"));
     }
     
 }

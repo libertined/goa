@@ -58,6 +58,9 @@ $(function(){
             //console.log("AJAX => ", answer)
 
             $("#review_container").replaceWith( $(answer).find("#review_container") )
+            $("#reviews_by_filter_count").replaceWith( $(answer).find("#reviews_by_filter_count") )
+
+            // TODO re init photo gallery of items
 
             BX.closeWait()
         });
@@ -97,6 +100,9 @@ $(function(){
             sender.remove()
 
             $("#review_container").append( $(answer).find("#review_container").html() )
+            $("#reviews_by_filter_count").replaceWith( $(answer).find("#reviews_by_filter_count") )
+
+            // TODO re init photo gallery of items
 
             BX.closeWait()
         });
