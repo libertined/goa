@@ -129,6 +129,5 @@ require_once __DIR__ . "/inc_filter.php";
 </div>
 
 <?
-// TODO
-//require_once __DIR__ . "/inc_add_reviews_form.php";
+require_once __DIR__ . "/inc_add_reviews_form.php";
 ?>
