@@ -27,21 +27,7 @@ require_once __DIR__ . "/inc_filter.php";
                     <div class="review__name"><?=$item["UF_USER_NAME"]?></div>
                     <div class="review__date"><?=formatDateCustom( $item["UF_DATE"]->format("d.m.Y") )?></div>
                 </div>
-                <div class="review__exs">
-                    <div class="review__exs-title">Экскурсии:</div>
-                    <div class="review__exs-body">
 
-                        <?foreach ( $item["UF_TOUR_ID"] as $tourId ){
-                            $tourInfo = HLReviewModel::getTourInfoById($tourId);
-                        ?>
-                            <div class="review__exs-item">
-                                <div class="review__exs-name"><?=$tourInfo["NAME"]?></div>
-                                 <a href="#" class="review__exs-link js_filter_reviews_by_tour" data-tour_id="<?=$tourId?>">Все отзывы об этой экскурсии</a>
-                            </div>
-                        <?}?>
-
-                    </div>
-                </div>
                 <div class="review__text">
                     <?=nl2br($item["UF_TEXT"])?>
                 </div>
@@ -104,7 +90,10 @@ require_once __DIR__ . "/inc_filter.php";
                 <div class="review review--reply marg-t-20">
                     <div class="review__title">
                         <div class="review__name">Твой Гоа</div>
-                        <div class="review__date"><?=formatDateCustom( $item["UF_ADMIN_REPLY_DATE"]->format("d.m.Y") )?></div>
+
+                        <?if($item["UF_ADMIN_REPLY_DATE"]):?>
+                            <div class="review__date"><?=formatDateCustom( $item["UF_ADMIN_REPLY_DATE"]->format("d.m.Y") )?></div>
+                        <?endif?>
                     </div>
                     <div class="review__text">
                         <?=nl2br($item["UF_ADMIN_REPLY"])?>
@@ -126,6 +115,12 @@ require_once __DIR__ . "/inc_filter.php";
     <?if(!$arResult["ITEMS"]):?>
         <h3 style=" text-align: center; ">- нет данных -</h2>
     <?endif?>
+
+</div>
+
+<div class="after-parent marg-t-50 center-adaptive-768">
+    <a href="" class="btn btn--big left">Заказать экскурсию</a>
+    <div class="right col-adaptive-768 top-adaptive-768-h15"><a href="" class="btn">Добавить отзыв</a></div>
 </div>
 
 <?
