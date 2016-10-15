@@ -11,7 +11,7 @@ $APPLICATION->SetTitle("Отзывы туристов");?>
 		"CACHE_TIME" => "3600",
 		"COMPONENT_TEMPLATE" => "all_with_filter",
 		"TOUR_ID" => "",
-		"PER_PAGE" => "1",
+		"PER_PAGE" => "2",
 		"REVIEWS_PAGE_NUM" => ""
 	),
 	false

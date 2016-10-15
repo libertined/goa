@@ -100,7 +100,7 @@ class HLReviewModel extends HLEntityModel
      *
      * @TODO get info from tours own model-class
      * */
-    private static function getAllToursInfo( $updateCache = false )
+    public static function getAllToursInfo( $updateCache = false )
     {
 
         static $result;
@@ -132,16 +132,22 @@ class HLReviewModel extends HLEntityModel
 
             \Bitrix\Main\Loader::includeModule("iblock") or die( 'Module iblock not found' );
 
+            $sort = array(
+                "SORT" => "ASC",
+                "NAME" => "ASC",
+            );
+
             $arFilter = array(
                 "IBLOCK_ID"     => TOUR_IBOCK_ID,
                 "ACTIVE"        => "Y",
             );
+
             $arSelect = array(
                 "ID", "NAME",
                 "DETAIL_PAGE_URL",
                 //"PROPERTY_",
             );
-            $res = CIBlockElement::GetList(false, $arFilter, false, false, $arSelect);
+            $res = CIBlockElement::GetList($sort, $arFilter, false, false, $arSelect);
 
             $result = array();
 

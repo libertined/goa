@@ -3,28 +3,28 @@
     <div class="modal-window__body">
         <form action="" method="post" name="">
             <div class="form form--grey form--w670 form--center">
-                <div class="form__header">Добавление отзыва</div>
+                <div class="form__header">Р”РѕР±Р°РІР»РµРЅРёРµ РѕС‚Р·С‹РІР°</div>
                 <div class="marg-b-15">
                     <div class="form__wrap">
-                        <label for="label-review-ex" class="form__title">Экскурсия</label>
+                        <label for="label-review-ex" class="form__title">Р­РєСЃРєСѓСЂСЃРёСЏ</label>
                         <div class="form__field">
                             <div class="pseudo-select">
-                                <div class="pseudo-select__text">Выберите экскурсию</div>
+                                <div class="pseudo-select__text">Р’С‹Р±РµСЂРёС‚Рµ СЌРєСЃРєСѓСЂСЃРёСЋ</div>
                                 <div class="pseudo-select__wrap scroll-pane">
                                     <ul class="pseudo-select__list">
-                                        <li class="pseudo-select__option" data-value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                                        <li class="pseudo-select__option" data-value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                                        <li class="pseudo-select__option" data-value="3">Весь ГОА за 1 день</li>
-                                        <li class="pseudo-select__option" data-value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                                        <li class="pseudo-select__option" data-value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                                        <li class="pseudo-select__option" data-value="1">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</li>
+                                        <li class="pseudo-select__option" data-value="2">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</li>
+                                        <li class="pseudo-select__option" data-value="3">Р’РµСЃСЊ Р“РћРђ Р·Р° 1 РґРµРЅСЊ</li>
+                                        <li class="pseudo-select__option" data-value="4">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</li>
+                                        <li class="pseudo-select__option" data-value="5">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</li>
                                     </ul>
                                 </div>
                                 <select name="" class="pseudo-select__real" id="label-review-ex">
-                                    <option value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
-                                    <option value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
-                                    <option value="3">Весь ГОА за 1 день</option>
-                                    <option value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
-                                    <option value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+                                    <option value="1">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</option>
+                                    <option value="2">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</option>
+                                    <option value="3">Р’РµСЃСЊ Р“РћРђ Р·Р° 1 РґРµРЅСЊ</option>
+                                    <option value="4">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</option>
+                                    <option value="5">РћС‚РґС‹С… РЅР° РїР»СЏР¶Р°С… РџР°Р»РѕР»РµРј, РљРѕР»Р° Рё СЃС‚Р°СЂРёРЅРЅС‹Р№ С„РѕСЂС‚ РљР°Р±Рѕ РґРµ Р Р°РјР°</option>
                                 </select>
                             </div>
                         </div>
@@ -33,32 +33,32 @@
 
                 <div class="marg-b-15">
                     <div class="form__wrap">
-                        <label for="label-review-name" class="form__title">Представьтесь, пожалуйста</label>
+                        <label for="label-review-name" class="form__title">РџСЂРµРґСЃС‚Р°РІСЊС‚РµСЃСЊ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°</label>
                         <div class="form__field"><input id="label-review-name" placeholder="" name="" value="" type="text" class="form__input" /></div>
                     </div>
                 </div>
 
                 <div class="marg-b-15">
                     <div class="form__wrap">
-                        <label for="label-review-soc" class="form__title">Профиль Вконтакте или Facebook</label>
+                        <label for="label-review-soc" class="form__title">РџСЂРѕС„РёР»СЊ Р’РєРѕРЅС‚Р°РєС‚Рµ РёР»Рё Facebook</label>
                         <div class="form__field"><input id="label-review-soc" placeholder="" name="" value="" type="text" class="form__input" /></div>
                     </div>
                 </div>
 
                 <div class="marg-b-15">
                     <div class="form__wrap">
-                        <label for="label-review-text" class="form__title">Текст отзыва</label>
+                        <label for="label-review-text" class="form__title">РўРµРєСЃС‚ РѕС‚Р·С‹РІР°</label>
                         <div class="form__field"><textarea id="label-review-text" class="form__textarea"></textarea></div>
                     </div>
                 </div>
 
                 <div class="marg-b-15">
                     <div class="form__wrap">
-                        <div class="form__title">При желании вы можете прикрепить к отзыву несколько фото</div>
+                        <div class="form__title">РџСЂРё Р¶РµР»Р°РЅРёРё РІС‹ РјРѕР¶РµС‚Рµ РїСЂРёРєСЂРµРїРёС‚СЊ Рє РѕС‚Р·С‹РІСѓ РЅРµСЃРєРѕР»СЊРєРѕ С„РѕС‚Рѕ</div>
                         <div class="form__field">
                             <div class="form__file">
                                 <div class="form__file-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-                                <div class="form__file-text">Перетащите фото сюда или нажмите для выбора на компьютере</div>
+                                <div class="form__file-text">РџРµСЂРµС‚Р°С‰РёС‚Рµ С„РѕС‚Рѕ СЃСЋРґР° РёР»Рё РЅР°Р¶РјРёС‚Рµ РґР»СЏ РІС‹Р±РѕСЂР° РЅР° РєРѕРјРїСЊСЋС‚РµСЂРµ</div>
                             </div>
                         </div>
                     </div>
@@ -66,7 +66,7 @@
 
                 <div class="form__wrap">
                     <div class="form__title visible-adaptive-768">&nbsp;</div>
-                    <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Отправить</button></div>
+                    <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">РћС‚РїСЂР°РІРёС‚СЊ</button></div>
                 </div>
             </div>
         </form>

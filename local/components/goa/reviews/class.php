@@ -32,10 +32,22 @@ class Reviews extends CProjectBlockComponent
             $arParams["PAGE_NUM"] = $pageNum ? $pageNum : 1;
         }
 
+        // try to get manual handled tours
         $TOUR_ID = trim($arParams["TOUR_ID"]);
 
         if ($TOUR_ID) {
             $arParams["TOUR_ID"]  = explode(",", $TOUR_ID);
+        }
+        // try to get from request
+        else if ($_REQUEST["REVIEWS_TOUR_ID"]) {
+            $arParams["TOUR_ID"]  = explode(",", $_REQUEST["REVIEWS_TOUR_ID"]);
+
+            /*
+             * if "all" item selected - clear filter by tour IDs
+             * */
+            if (in_array("all", $arParams["TOUR_ID"])) {
+                $arParams["TOUR_ID"] = false;
+            }
         }
 
 

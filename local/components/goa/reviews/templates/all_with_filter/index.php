@@ -13,13 +13,10 @@
 /** @var CBitrixComponent $component */
 
 //$this->setFrameMode( true );
-
-//echo '<pre><=== \$arResult ===></pre><pre>' . print_r($arResult, 1) . '</pre><pre><\=== \$arResult ===></pre>';
 ?>
 
 <?
-// TODO
-//require_once __DIR__ . "/inc_filter.php";
+require_once __DIR__ . "/inc_filter.php";
 ?>
 
 <div id="review_container">
@@ -28,18 +25,18 @@
             <div class="review">
                 <div class="review__title">
                     <div class="review__name"><?=$item["UF_USER_NAME"]?></div>
-                    <div class="review__date"><?=$item["UF_DATE"]->format("d.m.Y")?></div>
+                    <div class="review__date"><?=formatDateCustom( $item["UF_DATE"]->format("d.m.Y") )?></div>
                 </div>
                 <div class="review__exs">
                     <div class="review__exs-title">Экскурсии:</div>
                     <div class="review__exs-body">
 
-                        <?foreach ( $item["UF_TOUR_ID"] as $tour ){
-                            $tourInfo = HLReviewModel::getTourInfoById($tour);
+                        <?foreach ( $item["UF_TOUR_ID"] as $tourId ){
+                            $tourInfo = HLReviewModel::getTourInfoById($tourId);
                         ?>
                             <div class="review__exs-item">
                                 <div class="review__exs-name"><?=$tourInfo["NAME"]?></div>
-                                 <a href="<?=$tourInfo["URL"]?>" class="review__exs-link">Все отзывы об этой экскурсии</a>
+                                 <a href="#" class="review__exs-link js_filter_reviews_by_tour" data-tour_id="<?=$tourId?>">Все отзывы об этой экскурсии</a>
                             </div>
                         <?}?>
 
@@ -93,14 +90,19 @@
 
     <?}?>
 
-    <?
-    if ($arResult["PAGE_COUNT"] > $arParams["PAGE_NUM"]){
-    ?>
+
+    <?if ($arResult["PAGE_COUNT"] > $arParams["PAGE_NUM"]){?>
         <div class="pos-center">
             <a href="" class="btn " id="show_more_reviews" data-next_page_num="<?=$arParams["PAGE_NUM"] + 1?>">Показать еще</a>
         </div>
     <?}?>
+
+
+    <?if(!$arResult["ITEMS"]):?>
+        <h3 style=" text-align: center; ">- нет данных -</h2>
+    <?endif?>
 </div>
+
 <?
 // TODO
 //require_once __DIR__ . "/inc_add_reviews_form.php";

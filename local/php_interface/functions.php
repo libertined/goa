@@ -55,3 +55,19 @@ function getResizedImgOrPlaceholder( $imgId, $width, $height = 0, $proportional 
 
     return $resizedImg['src'];
 }
+
+/**
+ * Форматирует дату
+ *
+ * @param $date string Дата (наример, начало активности элемента)
+ *
+ * @param $format string Формат даты (в рамках Bitrix API)
+ *
+ * @return string Пример 05.11.2015 15:37:00 => 5 Ноября 2015
+ *
+ *
+ * @author dev@dermanov.ru
+ */
+function formatDateCustom ($date, $format = "j F Y") {
+    return strtolower( CIBlockFormatProperties::DateFormat($format, strtotime($date)) );
+}
