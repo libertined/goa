@@ -104,7 +104,10 @@ require_once __DIR__ . "/inc_filter.php";
                 <div class="review review--reply marg-t-20">
                     <div class="review__title">
                         <div class="review__name">Твой Гоа</div>
-                        <div class="review__date"><?=formatDateCustom( $item["UF_ADMIN_REPLY_DATE"]->format("d.m.Y") )?></div>
+
+                        <?if($item["UF_ADMIN_REPLY_DATE"]):?>
+                            <div class="review__date"><?=formatDateCustom( $item["UF_ADMIN_REPLY_DATE"]->format("d.m.Y") )?></div>
+                        <?endif?>
                     </div>
                     <div class="review__text">
                         <?=nl2br($item["UF_ADMIN_REPLY"])?>

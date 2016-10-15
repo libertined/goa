@@ -50,7 +50,7 @@ $(function(){
         $.get(location.href, params, function(answer, textStatus, xhr) {
             // check the answer status is ok
             if (xhr.readyState != 4 || xhr.status != 200) {
-                alert("Во время запроса произошла ошибка. Попробуйте повторить запрос позже.");
+                alert("Р’Рѕ РІСЂРµРјСЏ Р·Р°РїСЂРѕСЃР° РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°. РџРѕРїСЂРѕР±СѓР№С‚Рµ РїРѕРІС‚РѕСЂРёС‚СЊ Р·Р°РїСЂРѕСЃ РїРѕР·Р¶Рµ.");
 
                 return;
             }
@@ -89,7 +89,7 @@ $(function(){
         $.get(location.href, params, function(answer, textStatus, xhr) {
             // check the answer status is ok
             if (xhr.readyState != 4 || xhr.status != 200) {
-                alert("Во время запроса произошла ошибка. Попробуйте повторить запрос позже.");
+                alert("Р’Рѕ РІСЂРµРјСЏ Р·Р°РїСЂРѕСЃР° РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°. РџРѕРїСЂРѕР±СѓР№С‚Рµ РїРѕРІС‚РѕСЂРёС‚СЊ Р·Р°РїСЂРѕСЃ РїРѕР·Р¶Рµ.");
 
                 return;
             }
@@ -100,7 +100,6 @@ $(function(){
             sender.remove()
 
             $("#review_container").append( $(answer).find("#review_container").html() )
-            $("#reviews_by_filter_count").replaceWith( $(answer).find("#reviews_by_filter_count") )
 
             // TODO re init photo gallery of items
 
