@@ -1,15 +1,4 @@
-<select name="" id="reviews_filter_by_tour_select" multiple style="
-    width: 150px;
-    height: 200px;
-    margin: 20px auto;
-    display: block;
-">
-    <option value="all" selected>Все экскурсии</option>
 
-    <?foreach ( HLReviewModel::getAllToursInfo() as $id => $tour ){?>
-        <option value="<?=$id?>"><?=$tour["NAME"]?></option>
-    <?}?>
-</select>
 
 
 <div class="filter">
@@ -18,23 +7,23 @@
             <div class="filter__select-title">Показать отзывы по экскурсии:</div>
             <div class="filter__select">
                 <div class="pseudo-select pseudo-select--multiple">
+
                     <div class="pseudo-select__text">Все экскурсии</div>
+
                     <div class="pseudo-select__wrap scroll-pane">
                         <ul class="pseudo-select__list">
-                            <li class="pseudo-select__option" data-value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                            <li class="pseudo-select__option" data-value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                            <li class="pseudo-select__option" data-value="3">Весь ГОА за 1 день</li>
-                            <li class="pseudo-select__option" data-value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
-                            <li class="pseudo-select__option" data-value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</li>
+                            <?foreach ( HLReviewModel::getAllToursInfo() as $id => $tour ){?>
+                                <li class="pseudo-select__option js_reviews_filter_by_tour_pseudo_select_option" data-value="<?=$id?>"><?=$tour["NAME"]?></li>
+                            <?}?>
                         </ul>
                     </div>
-                    <select name="" class="pseudo-select__real" id="label-review-ex" multiple="multiple">
-                        <option value="1">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
-                        <option value="2">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
-                        <option value="3">Весь ГОА за 1 день</option>
-                        <option value="4">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
-                        <option value="5">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</option>
+
+                    <select name="" class="pseudo-select__real js_reviews_filter_by_tour_select" id="label-review-ex" multiple="multiple">
+                        <?foreach ( HLReviewModel::getAllToursInfo() as $id => $tour ){?>
+                            <option value="<?=$id?>"><?=$tour["NAME"]?></option>
+                        <?}?>
                     </select>
+
                 </div>
             </div>
         </div>
@@ -52,7 +41,7 @@
     </div>
 
     <div class="filter__clear marg-t-20">
-        <div class="filter__clear-text">Сбросить все</div>
+        <div class="filter__clear-text" id="reviews_filter_reset">Сбросить все</div>
     </div>
 
 

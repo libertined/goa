@@ -69,10 +69,8 @@ require_once __DIR__ . "/inc_filter.php";
 
                         </div>
                     </div>
-                 <?}?>
 
-
-                <div class="modal-window" id="modal-gallery-<?=$item["ID"]?>">
+                   <div class="modal-window" id="modal-gallery-<?=$item["ID"]?>">
                     <div class="modal-window__body">
                         <div class="gallery">
 
@@ -98,6 +96,7 @@ require_once __DIR__ . "/inc_filter.php";
                         </div>
                     </div>
                 </div>
+              <?}?>
             </div>
 
             <?if($item["UF_ADMIN_REPLY"]):?>
