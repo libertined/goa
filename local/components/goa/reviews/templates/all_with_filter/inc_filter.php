@@ -8,7 +8,7 @@
             <div class="filter__select">
                 <div class="pseudo-select pseudo-select--multiple">
 
-                    <div class="pseudo-select__text">Все экскурсии</div>
+                    <div class="pseudo-select__text js_selected_tour_in_one_line">Все экскурсии</div>
 
                     <div class="pseudo-select__wrap scroll-pane">
                         <ul class="pseudo-select__list">
@@ -28,20 +28,22 @@
             </div>
         </div>
 
-        <div class="filter__option-title">Выбрано:</div>
-        <div class="filter__option-body">
-            <div class="filter__option-item">
-                <div class="filter__option-name">Отдых на пляжах Палолем, Кола и старинный форт Кабо де Рама</div>
-            </div>
+        <div class="js_review_filter_items_block hidden">
+            <div class="filter__option-title">Выбрано:</div>
+            <div class="filter__option-body js_selected_review_items_wrap">
 
-            <div class="filter__option-item">
-                <div class="filter__option-name">Весь ГОА за один день</div>
+                <div class="filter__option-item js_selected_tour_example hidden" data-tour_id="">
+                    <div class="filter__option-name">NAME</div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div class="filter__clear marg-t-20">
-        <div class="filter__clear-text" id="reviews_filter_reset">Сбросить все</div>
+    <div class="js_review_filter_items_block hidden">
+        <div class="filter__clear marg-t-20">
+            <div class="filter__clear-text" id="reviews_filter_reset">Сбросить все</div>
+        </div>
     </div>
 
 

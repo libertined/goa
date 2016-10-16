@@ -11,8 +11,38 @@
 * Redraw selected items under select
 * */
 function redrawReviewsFilterSelectedValue(){
-    // TODO
+    var filter_selected_items_blocks = $(".js_review_filter_items_block")
+    var items   = $(".js_reviews_filter_by_tour_pseudo_select_option.current")
+    var example = $(".js_selected_tour_example")
+    var selected_review_items_wrap   = $(".js_selected_review_items_wrap")
+    var selected_tour_in_one_line = $(".js_selected_tour_in_one_line")
+    var selected_tour_in_one_line_val = []
+    var item_clone
 
+    filter_selected_items_blocks.find( ".js_selected_review" ).remove()
+
+    if (items.size()) {
+        filter_selected_items_blocks.show()
+
+        items.each(function(i, o){
+            o = $(o)
+            item_clone = example.clone()
+
+            item_clone.removeClass("hidden js_selected_tour_example").addClass("js_selected_review")
+            item_clone.find( ".filter__option-name" ).text( o.text() )
+            item_clone.data( "tour_id", o.data("value") )
+
+            selected_review_items_wrap.append( item_clone )
+
+            selected_tour_in_one_line_val.push( o.text() )
+        })
+
+        selected_tour_in_one_line.text( selected_tour_in_one_line_val.join(", ") )
+
+    } else {
+        filter_selected_items_blocks.hide()
+        selected_tour_in_one_line.text("Все экскурсии")
+    }
 }
 
 /**
@@ -33,6 +63,19 @@ function getReviewsFilterValue(){
 }
 
 $(function(){
+
+    /**
+     *  Remove tour from filter
+     * */
+    $(document).on("click", ".js_selected_review", function() {
+        var tour_id = $(this).data("tour_id")
+
+        $(".js_reviews_filter_by_tour_pseudo_select_option[data-value=" + tour_id + "]").removeClass("current")
+
+        redrawReviewsFilterSelectedValue()
+
+        $(".js_reviews_filter_by_tour_select").change()
+    })
 
     /**
      * Reset filter selected values
