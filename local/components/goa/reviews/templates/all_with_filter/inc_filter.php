@@ -1,7 +1,7 @@
 
 
 
-<div class="filter">
+<div class="filter js_reviews_filter">
     <div class="filter__option">
         <div class="filter__grey marg-b-20">
             <div class="filter__select-title">Показать отзывы по экскурсии:</div>

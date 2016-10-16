@@ -103,7 +103,13 @@ $(function(){
     * */
     $(document).on("click", ".js_filter_reviews_by_tour", function() {
         var tour_id    = $(this).data("tour_id")
-        var scrollUpto = $(".js_reviews_filter_by_tour_select").offset().top - 40
+        var scrollUpto = $(".js_reviews_filter").offset().top - 40
+
+        $(".js_reviews_filter_by_tour_pseudo_select_option.current").removeClass("current")
+        $(".js_reviews_filter_by_tour_pseudo_select_option[data-value=" + tour_id + "]").addClass("current")
+
+        redrawReviewsFilterSelectedValue()
+
 
         // scroll page to begin of items list
         $("html, body").animate({
