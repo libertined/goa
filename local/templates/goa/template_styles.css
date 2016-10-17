@@ -623,6 +623,7 @@ a:hover {
   font-size: 14px;
   line-height: 20px;
   margin-right: 20px;
+  display: block;
 }
 .page-header__phone-num span {
   color: #333333;
@@ -719,6 +720,9 @@ a:hover {
 .page-footer__contact-text {
   float: left;
   line-height: 22px;
+}
+.page-footer__contact-text a {
+  display: block;
 }
 .page-footer--contact-link {
   border-bottom: solid 1px #53a642;
@@ -2163,10 +2167,10 @@ a.breadcrumbs--item-main:hover {
   width: 24px;
   height: 24px;
   display: block;
-  background: url("/local/templates/goa/svg/expand.svg") no-repeat center / 24px;
+  background: url("svg/expand.svg") no-repeat center / 24px;
   position: absolute;
-  top: calc(50% - 12px);
-  left: calc(50% - 12px);
+  top: calc(38%);
+  left: calc(38%);
 }
 .review__gallery-img:hover .review__gallery-open {
   display: block;
@@ -2321,13 +2325,12 @@ a.breadcrumbs--item-main:hover {
 }
 .form__input {
   font-size: 15px;
-  line-height: 15px;
+  line-height: 20px;
   width: 100%;
   border: none;
   background: #fff;
   display: block;
-  height: 40px;
-  padding: 0 20px;
+  padding: 10px 20px;
   font-family: OpenSans;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -2354,19 +2357,33 @@ a.breadcrumbs--item-main:hover {
   resize: none;
   color: #757c80;
 }
-.form__icon {
+.form--icon {
+  background: #fff;
+}
+.form--icon:after {
+  content: "";
+  display: block;
   position: absolute;
+  z-index: 1;
   top: 10px;
   right: 12px;
   width: 18px;
   height: 20px;
 }
-.form--icon-date {
+.form--icon .form__input {
+  position: relative;
+  z-index: 2;
+  background: none;
+}
+.form--icon-date:after {
   background: url("svg/faceless.svg") no-repeat 0px 0px;
   -webkit-background-size: 18px 20px;
   -moz-background-size: 18px 20px;
   -o-background-size: 18px 20px;
   background-size: 18px 20px;
+}
+.form--icon-date .form__input {
+  cursor: pointer;
 }
 .form__counter {
   width: 122px;
@@ -2406,7 +2423,7 @@ a.breadcrumbs--item-main:hover {
 .form--input-counter {
   float: left;
   width: 40px;
-  padding: 0px;
+  padding: 10px 0px;
   text-align: center;
   margin: 0px 1px;
 }
@@ -2717,6 +2734,9 @@ a.breadcrumbs--item-main:hover {
   -moz-box-shadow: 0 3px 7px 0 #757c80;
   box-shadow: 0 3px 7px 0 #757c80;
 }
+.pseudo-select--show .pseudo-select__text:after {
+  background: #ffffff url("svg/reset-18x18.svg") no-repeat left center;
+}
 .pseudo-select__wrap {
   width: 100%;
   height: 212px;
@@ -2762,7 +2782,6 @@ ul li.pseudo-select__option:hover {
   padding-left: 55px;
   position: relative;
 }
-
 .pseudo-select--multiple ul li.pseudo-select__option::before {
   content: "";
   display: block;
@@ -2770,11 +2789,8 @@ ul li.pseudo-select__option:hover {
   height: 20px;
   background-color: #dce1e6;
   position: absolute;
-  top: calc(50% - 10px);
+  top: calc(40%);
   left: 15px;
-}
-.pseudo-select--multiple ul li.current.pseudo-select__option::before {
-  display: none;
 }
 .pseudo-select--multiple ul li.pseudo-select__option.current {
   padding-left: 55px;
@@ -2787,6 +2803,9 @@ ul li.pseudo-select__option:hover {
 }
 .pseudo-select--multiple ul li.pseudo-select__option:hover {
   background-color: #f2f2f2;
+}
+.pseudo-select--multiple ul li.current.pseudo-select__option::before {
+  display: none;
 }
 #ui-datepicker-div {
   background: #fff;

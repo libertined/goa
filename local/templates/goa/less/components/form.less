@@ -81,13 +81,13 @@
 	
 	&__input {
 		font-size: 15px;
-		line-height: 15px;
+		line-height: 20px;
 		width: 100%;
 		border: none;
 		background: #fff;
 		display: block;
-		height: 40px;
-		padding: 0 20px;
+		//height: 40px;
+		padding: 10px 20px;
 		font-family: @font-family-regular;
 		.box-sizing(border-box);
 		color: @color-grey;
@@ -113,17 +113,36 @@
 		color: @color-grey;
 	}
 	
-	&__icon {
-		position: absolute;
-		top: 10px;
-		right: 12px;
-		width: 18px;
-		height: 20px;
+	&--icon {
+	  	background: #fff;
+
+	  	&:after {
+		  	content: "";
+		  	display: block;
+			position: absolute;
+		  	z-index: 1;
+			top: 10px;
+			right: 12px;
+			width: 18px;
+			height: 20px;
+		}
 	}
 
+  	&--icon &__input {
+		position: relative;
+		z-index: 2;
+		background: none;
+  	}
+
   	&--icon-date {
-	  	background: url("@{svg-path}faceless.svg") no-repeat 0px 0px;
-	  	.bg-size(18px 20px);
+	  	&:after {
+			background: url("@{svg-path}faceless.svg") no-repeat 0px 0px;
+			.bg-size(18px 20px);
+	  	}
+	}
+
+	&--icon-date &__input {
+	  	cursor: pointer;
 	}
 	
 	&__counter {
@@ -153,7 +172,7 @@
 	&--input-counter {
 		float: left;
 		width: 40px;
-		padding: 0px;
+		padding: 10px 0px;
 		text-align: center;
 		margin: 0px 1px;
 	}

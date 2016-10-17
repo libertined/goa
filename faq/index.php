@@ -293,9 +293,8 @@ $APPLICATION->SetTitle("FAQ");?>
         <div class="form form--yellow form--w670">
             <div class="form__wrap marg-b-15">
                 <label for="label-date" class="form__title">Ориентировочная дата*</label>
-                <div class="form__field form--field-date">
-                    <input id="label-date" placeholder="" name="" value="20 ноября 2015" type="text" class="form__input js-datepicker-after" />
-                    <div class="form__icon form--icon-date"></div>
+                <div class="form__field form--field-date form--icon form--icon-date">
+                    <input id="label-date" placeholder="" name="" value="20 ноября 2015" type="date" class="form__input js-datepicker-after" />
                 </div>
             </div>
 

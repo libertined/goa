@@ -29,16 +29,16 @@
               <div class="page-footer__contact">
                 <div class="page-footer__contact-title">Индия</div>
                 <div class="page-footer__contact-text">
-                  <p onclick="location.href='tel:+918888717922'">+91 8888 71 79 22</p>
-                  <p onclick="location.href='tel:+918888704005'">+91 8888 70 40 05</p>
-                  <p onclick="location.href='tel:+917875009944'">+91 7875 00 99 44</p>
+                  <a href="tel:+918888717922">+91 8888 71 79 22</a>
+                  <a href="tel:+918888704005">+91 8888 70 40 05</a>
+                  <a href="tel:+917875009944">+91 7875 00 99 44</a>
                 </div>
               </div>
 
               <div class="page-footer__contact">
                 <div class="page-footer__contact-title">Россия</div>
                 <div class="page-footer__contact-text">
-                  <p onclick="location.href='tel:+79817717922'">+7 981 771 79 22</p>
+                  <a href="tel:+79817717922">+7 981 771 79 22</a>
                 </div>
               </div>
 

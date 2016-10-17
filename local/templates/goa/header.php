@@ -62,8 +62,8 @@ IncludeTemplateLangFile(__FILE__);
 						<div class="page-header__phone-icon">
 							<object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/phone.svg">Your browser does not  support  SVGs</object>
 						</div>
-						<div class="page-header__phone-num" onclick="location.href='tel:+918888717922'"><span>IN. </span>+91 8888 71 79 22</div>
-						<div class="page-header__phone-num" onclick="location.href='tel:+79817717922'"><span>RU. </span>+7 981 771 79 22</div>
+						<a href="tel:+918888717922" class="page-header__phone-num"><span>IN. </span>+91 8888 71 79 22</a>
+						<a href="tel:+79817717922" class="page-header__phone-num"><span>RU. </span>+7 981 771 79 22</a>
 					</div>
 				</div>
 
@@ -71,10 +71,10 @@ IncludeTemplateLangFile(__FILE__);
 					<div class="page-header__phone">
 						<div class="row">
 							<div class="row__inner">
-								<div class="col-12-6"><div class="page-header__phone-num-adaptive" onclick="location.href='tel:+918888704005'">+91 8888 70 40 05</div></div>
-								<div class="col-12-6 pos-right"><div class="page-header__phone-num-adaptive" onclick="location.href='tel:+918888717922'">+91 8888 71 79 22</div></div>
-								<div class="col-12-6"><div class="page-header__phone-num-adaptive" onclick="location.href='tel:+917875009944'">+91 7875 00 99 44</div></div>
-								<div class="col-12-6 pos-right"><div class="page-header__phone-num-adaptive" onclick="location.href='tel:+79817717922'">+7 981 771 79 22</div></div>
+								<div class="col-12-6"><a href="tel:+918888704005" class="page-header__phone-num-adaptive" onclick="location.href=''">+91 8888 70 40 05</a></div>
+								<div class="col-12-6 pos-right"><a href="tel:+918888717922" class="page-header__phone-num-adaptive">+91 8888 71 79 22</a></div>
+								<div class="col-12-6"><a href="tel:+917875009944" class="page-header__phone-num-adaptive">+91 7875 00 99 44</a></div>
+								<div class="col-12-6 pos-right"><a href="tel:+79817717922" class="page-header__phone-num-adaptive">+7 981 771 79 22</a></div>
 							</div>
 						</div>
 					</div>
