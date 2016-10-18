@@ -70,7 +70,9 @@ require_once __DIR__ . "/inc_filter.php";
                         </div>
                     </div>
 
-                   <div class="modal-window" id="modal-gallery-<?=$item["ID"]?>">
+                   <div class="modal-window js-window" id="modal-gallery-<?=$item["ID"]?>">
+                       <a class="closemodal" href=""></a>
+
                     <div class="modal-window__body">
                         <div class="gallery">
 
@@ -126,7 +128,7 @@ require_once __DIR__ . "/inc_filter.php";
 
 
     <?if(!$arResult["ITEMS"]):?>
-        <h3 style=" text-align: center; ">- нет данных -</h2>
+        <h3 style=" text-align: center; ">- нет данных -</h3>
     <?endif?>
 </div>
 
