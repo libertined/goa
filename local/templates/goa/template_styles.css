@@ -2887,3 +2887,8 @@ ul li.pseudo-select__option:hover {
 #ui-datepicker-div .ui-datepicker-calendar td.ui-state-disabled span {
   color: #757c80;
 }
+
+
+.hidden {
+    display: none;
+}
