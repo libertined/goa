@@ -66,10 +66,15 @@ class Reviews extends CProjectBlockComponent
 
         \Bitrix\Main\Loader::includeModule("highloadblock") or die( 'Module highloadblock not found' );
 
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLEntityModel.php";
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/local/lib/HLReviewModel.php";
-
         $arResult += HLReviewModel::getByTourId($arParams["TOUR_ID"], $arParams["PER_PAGE"], $arParams["PAGE_NUM"]);
+
+
+        global $CACHE_MANAGER;
+
+        $CACHE_MANAGER->StartTagCache($this->getCachePath());
+            $CACHE_MANAGER->RegisterTag("reviews_component");
+        $CACHE_MANAGER->EndTagCache();
+
     }
     
     /**
