@@ -110,23 +110,23 @@ class HLReviewModel extends HLEntityModel
             return $result;
         }
 
-        // Ñîçäàåì îáúåêò äëÿ ðàáîòû ñ êåøåì (ñïîñîá êåøèðîâàíèÿ çàäàåòñÿ â .settings.php)
+        // Ð¡Ð¾Ð·Ð´Ð°ÐµÐ¼ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ ÐºÐµÑˆÐµÐ¼ (ÑÐ¿Ð¾ÑÐ¾Ð± ÐºÐµÑˆÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ð·Ð°Ð´Ð°ÐµÑ‚ÑÑ Ð² .settings.php)
         $obCache = Bitrix\Main\Data\Cache::createInstance();
 
-        // Âðåìÿ æèçíè êåøà, â ñåêóíäàõ - 10 days
+        // Ð’Ñ€ÐµÐ¼Ñ Ð¶Ð¸Ð·Ð½Ð¸ ÐºÐµÑˆÐ°, Ð² ÑÐµÐºÑƒÐ½Ð´Ð°Ñ… - 10 days
         $timeout = 864000;
 
-        // Óíèêàëüíûé êëþ÷ äëÿ êåøèðîâàííûõ äàííûõ
-        // íà îñíîâàíèè âõîäíûõ äàííûõ
+        // Ð£Ð½Ð¸ÐºÐ°Ð»ÑŒÐ½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡ Ð´Ð»Ñ ÐºÐµÑˆÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…
+        // Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ð°Ð½Ð¸Ð¸ Ð²Ñ…Ð¾Ð´Ð½Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…
         $cacheKey = "HLReviewModel::getAllToursInfo";
 
-        // Åñëè êýø âàëèäåí
+        // Ð•ÑÐ»Ð¸ ÐºÑÑˆ Ð²Ð°Ð»Ð¸Ð´ÐµÐ½
         if( !$updateCache && $obCache->InitCache($timeout, $cacheKey, "HLReviewModel" ) )
         {
-            // Èçâëåêàåì äàííûå èç êýøà
+            // Ð˜Ð·Ð²Ð»ÐµÐºÐ°ÐµÐ¼ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¸Ð· ÐºÑÑˆÐ°
             $result = $obCache->GetVars();
         }
-        // Åñëè êýø íåâàëèäåí
+        // Ð•ÑÐ»Ð¸ ÐºÑÑˆ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´ÐµÐ½
         elseif( $obCache->StartDataCache()  )
         {
 
@@ -154,11 +154,11 @@ class HLReviewModel extends HLEntityModel
             while ($tmp = $res->GetNext(false, false)) {
                 $result[ $tmp["ID"] ] = array(
                     "NAME" => $tmp["NAME"],
-                    "URL"  => $tmp["DETAIL_PAGE_URL"],
+                    //"URL"  => $tmp["DETAIL_PAGE_URL"],
                 );
             }
 
-            // Ñîõðàíÿåì äàííûå â êýø
+            // Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð² ÐºÑÑˆ
             $obCache->EndDataCache( $result );
         }
 
