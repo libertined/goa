@@ -17,6 +17,7 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset->addCss(SITE_TEMPLATE_PATH."/css/jquery.jscrollpane.css");
 	$oAsset->addCss(SITE_TEMPLATE_PATH."/svg/styles.css");
 
+	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/modernizr-2.6.2.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-1.11.2.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery-ui.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.bxslider.min.js');
