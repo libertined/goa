@@ -6,7 +6,6 @@ foreach($arResult["ITEMS"] as &$item){
 		$item["TAGS"] = [];
 		foreach($tagsList as $tag) {
 			$tag = trim($tag);
-			$tag = str_replace(' ', '+', $tag);
 			$item["TAGS"][] = [
 				"NAME" => $tag,
 				"URL" => $APPLICATION->GetCurPageParam("tags=".str_replace(' ', '+', $tag), array("tags"))

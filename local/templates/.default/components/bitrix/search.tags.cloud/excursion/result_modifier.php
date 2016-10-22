@@ -19,6 +19,22 @@ if (is_array($arResult["SEARCH"]))
 				$cnt += ($arResult["CNT_MAX"] - $cnt)*($period - ($time - $res["TIME"]))/$period;
 			}
 		}
+		$activeTagNumber = activeNumber($arResult["TAGS_CHAIN"], $res["NAME"]);
+		if($activeTagNumber < 0) {
+			$arResult["SEARCH"][$key]["ACTIVE"] = false;
+		} else {
+			$arResult["SEARCH"][$key]["ACTIVE"] = true;
+			$arResult["SEARCH"][$key]["URL_WITHOUT"] = $arResult["TAGS_CHAIN"][$activeTagNumber]["TAG_WITHOUT"];
+		}
 	}
 }
-?>
+
+function activeNumber($activeTags, $tagName)
+{
+	foreach($activeTags as $key => $activeTag) {
+		if($activeTag["TAG_NAME"] == $tagName) {
+			return $key;
+		}
+	}
+	return -1;
+}

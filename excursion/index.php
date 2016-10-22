@@ -60,7 +60,7 @@ $APPLICATION->SetTitle("Экскурсии");?>
 		"HIDE_LINK_WHEN_NO_DETAIL" => "N",
 		"IBLOCK_ID" => "5",
 		"IBLOCK_TYPE" => "info",
-		"INCLUDE_IBLOCK_INTO_CHAIN" => "Y",
+		"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
 		"INCLUDE_SUBSECTIONS" => "Y",
 		"MESSAGE_404" => "",
 		"NEWS_COUNT" => "20",
@@ -78,12 +78,12 @@ $APPLICATION->SetTitle("Экскурсии");?>
 			0 => "",
 			1 => "",
 		),
-		"SET_BROWSER_TITLE" => "Y",
+		"SET_BROWSER_TITLE" => "N",
 		"SET_LAST_MODIFIED" => "N",
 		"SET_META_DESCRIPTION" => "Y",
 		"SET_META_KEYWORDS" => "Y",
 		"SET_STATUS_404" => "N",
-		"SET_TITLE" => "Y",
+		"SET_TITLE" => "N",
 		"SHOW_404" => "N",
 		"SORT_BY1" => "ACTIVE_FROM",
 		"SORT_BY2" => "SORT",
@@ -95,53 +95,55 @@ $APPLICATION->SetTitle("Экскурсии");?>
 	false
 );?>
 <?else:?>
-	<?$APPLICATION->IncludeComponent(
-		"bitrix:search.page",
-		"tags",
-		Array(
-			"AJAX_MODE" => "N",
-			"AJAX_OPTION_ADDITIONAL" => "",
-			"AJAX_OPTION_HISTORY" => "N",
-			"AJAX_OPTION_JUMP" => "N",
-			"AJAX_OPTION_STYLE" => "Y",
-			"CACHE_TIME" => "3600",
-			"CACHE_TYPE" => "A",
-			"CHECK_DATES" => "N",
-			"COLOR_NEW" => "0",
-			"COLOR_OLD" => "C8C8C8",
-			"COLOR_TYPE" => "Y",
-			"DEFAULT_SORT" => "rank",
-			"DISPLAY_BOTTOM_PAGER" => "Y",
-			"DISPLAY_TOP_PAGER" => "Y",
-			"FILTER_NAME" => "",
-			"FONT_MAX" => "50",
-			"FONT_MIN" => "10",
-			"NO_WORD_LOGIC" => "N",
-			"PAGER_SHOW_ALWAYS" => "Y",
-			"PAGER_TEMPLATE" => "",
-			"PAGER_TITLE" => "Результаты поиска",
-			"PAGE_RESULT_COUNT" => "50",
-			"PATH_TO_USER_PROFILE" => "",
-			"PERIOD_NEW_TAGS" => "",
-			"RATING_TYPE" => "",
-			"RESTART" => "N",
-			"SHOW_CHAIN" => "Y",
-			"SHOW_RATING" => "",
-			"SHOW_WHEN" => "N",
-			"SHOW_WHERE" => "N",
-			"TAGS_INHERIT" => "Y",
-			"TAGS_PAGE_ELEMENTS" => "150",
-			"TAGS_PERIOD" => "",
-			"TAGS_SORT" => "NAME",
-			"TAGS_URL_SEARCH" => "",
-			"USE_LANGUAGE_GUESS" => "Y",
-			"USE_SUGGEST" => "N",
-			"USE_TITLE_RANK" => "N",
-			"WIDTH" => "100%",
-			"arrFILTER" => array("iblock_info"),
-			"arrFILTER_iblock_info" => array("5"),
-			"arrWHERE" => array()
-		)
-	);?>
+	<?$APPLICATION->IncludeComponent("bitrix:search.page", "excursion", Array(
+	"AJAX_MODE" => "N",	// Включить режим AJAX
+		"AJAX_OPTION_ADDITIONAL" => "",	// Дополнительный идентификатор
+		"AJAX_OPTION_HISTORY" => "N",	// Включить эмуляцию навигации браузера
+		"AJAX_OPTION_JUMP" => "N",	// Включить прокрутку к началу компонента
+		"AJAX_OPTION_STYLE" => "Y",	// Включить подгрузку стилей
+		"CACHE_TIME" => "3600",	// Время кеширования (сек.)
+		"CACHE_TYPE" => "A",	// Тип кеширования
+		"CHECK_DATES" => "N",	// Искать только в активных по дате документах
+		"COLOR_NEW" => "0",	// Цвет позднего тега (пример: "C0C0C0")
+		"COLOR_OLD" => "C8C8C8",	// Цвет раннего тега (пример: "FEFEFE")
+		"COLOR_TYPE" => "Y",	// Плавное изменение цвета
+		"DEFAULT_SORT" => "rank",	// Сортировка по умолчанию
+		"DISPLAY_BOTTOM_PAGER" => "Y",	// Выводить под результатами
+		"DISPLAY_TOP_PAGER" => "Y",	// Выводить над результатами
+		"FILTER_NAME" => "",	// Дополнительный фильтр
+		"FONT_MAX" => "50",	// Максимальный размер шрифта (px)
+		"FONT_MIN" => "10",	// Минимальный размер шрифта (px)
+		"NO_WORD_LOGIC" => "N",	// Отключить обработку слов как логических операторов
+		"PAGER_SHOW_ALWAYS" => "Y",	// Выводить всегда
+		"PAGER_TEMPLATE" => "",	// Название шаблона
+		"PAGER_TITLE" => "Результаты поиска",	// Название результатов поиска
+		"PAGE_RESULT_COUNT" => "50",	// Количество результатов на странице
+		"PATH_TO_USER_PROFILE" => "",	// Шаблон пути к профилю пользователя
+		"PERIOD_NEW_TAGS" => "",	// Период, в течение которого считать тег новым (дней)
+		"RATING_TYPE" => "",	// Вид кнопок рейтинга
+		"RESTART" => "N",	// Искать без учета морфологии (при отсутствии результата поиска)
+		"SHOW_CHAIN" => "Y",	// Показывать цепочку навигации
+		"SHOW_RATING" => "",	// Включить рейтинг
+		"SHOW_WHEN" => "N",	// Показывать фильтр по датам
+		"SHOW_WHERE" => "N",	// Показывать выпадающий список "Где искать"
+		"TAGS_INHERIT" => "Y",	// Сужать область поиска
+		"TAGS_PAGE_ELEMENTS" => "150",	// Количество тегов
+		"TAGS_PERIOD" => "",	// Период выборки тегов (дней)
+		"TAGS_SORT" => "NAME",	// Сортировка тегов
+		"TAGS_URL_SEARCH" => "",	// Путь к странице поиска (от корня сайта)
+		"USE_LANGUAGE_GUESS" => "Y",	// Включить автоопределение раскладки клавиатуры
+		"USE_SUGGEST" => "N",	// Показывать подсказку с поисковыми фразами
+		"USE_TITLE_RANK" => "N",	// При ранжировании результата учитывать заголовки
+		"WIDTH" => "100%",	// Ширина облака тегов (пример: "100%" или "100px", "100pt", "100in")
+		"arrFILTER" => array(	// Ограничение области поиска
+			0 => "iblock_info",
+		),
+		"arrFILTER_iblock_info" => array(	// Искать в информационных блоках типа "iblock_info"
+			0 => "5",
+		),
+		"arrWHERE" => ""
+	),
+	false
+);?>
 <?endif;?>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
