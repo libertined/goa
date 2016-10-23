@@ -30,7 +30,7 @@ $APPLICATION->IncludeComponent(
 			0 => "NAME",
 			1 => "TAGS",
 			2 => "DETAIL_TEXT",
-			3 => "",
+			3 => "PREVIEW_PICTURE",
 		),
 		"IBLOCK_ID" => "5",
 		"IBLOCK_TYPE" => "info",

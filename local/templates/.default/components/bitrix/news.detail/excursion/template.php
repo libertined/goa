@@ -42,7 +42,10 @@ $this->setFrameMode(true);
 
   <div class="right-side__share visible-adaptive-768">
     <div class="right-side__share-title">Поделиться:</div>
-    <div class="right-side__share-body"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/share.png" /></div>
+    <div class="right-side__share-body">
+      <script src="//yastatic.net/share2/share.js"></script>
+      <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,gplus,twitter" data-counter=""></div>
+    </div>
   </div>
 
   <div class="btn btn--big marg-t-50 marg-t-adaptive-none js-excursion-order">Заказать экскурсию</div>
