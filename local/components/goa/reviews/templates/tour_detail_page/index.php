@@ -113,13 +113,13 @@ require_once __DIR__ . "/inc_filter.php";
 
 
     <?if(!$arResult["ITEMS"]):?>
-        <h3 style=" text-align: center; ">- нет данных -</h2>
+        <h3 style=" text-align: center; ">- нет данных -</h3>
     <?endif?>
 
 </div>
 
 <div class="after-parent marg-t-50 center-adaptive-768">
-    <a href="" class="btn btn--big left">Заказать экскурсию</a>
+    <div class="btn btn--big left js-excursion-order">Заказать экскурсию</div>
     <div class="right col-adaptive-768 top-adaptive-768-h15"><a href="" class="btn">Добавить отзыв</a></div>
 </div>
 

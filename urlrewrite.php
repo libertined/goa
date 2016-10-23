@@ -7,7 +7,7 @@ $arUrlRewrite = array(
 		"PATH" => "/news/index.php",
 	),
 	array(
-		"CONDITION" => "#^/excursion/(.+)/(.*)#",
+		"CONDITION" => "#^/excursion/(.+)#",
 		"RULE" => "CODE=$1",
 		"ID" => "bitrix:news",
 		"PATH" => "/excursion/detail.php",

@@ -117,10 +117,24 @@ $(document).ready( function() {
 		if(bxslider_exs_2)
 			bxslider_exs_2.reloadSlider();
 
-		location.hash(url);
+		location.hash = url;
 
 		return false;
 	});
+
+	//Нажатие заказать экскурсию
+	$(document).on("click", ".js-excursion-order", function () {
+		$(".js-extab-order").trigger('click');
+		$("html:not(:animated),body:not(:animated)").animate({scrollTop: 350},500);
+		return false;
+	});
+
+	//Если выбран какой-то хэш
+	var curTab = location.hash;
+	if(curTab && $(".js-extab-btn").length > 0) {
+		$curTabBlock = $(".js-extab-btn[href="+curTab+"]");
+		$curTabBlock.trigger('click');
+	}
 
 	//Мобильное меню
 	$(document).on("click", ".js-menu-adaptive-btn, .js-menu-adaptive-close", function () {
