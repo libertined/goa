@@ -21,14 +21,14 @@ $this->setFrameMode(true);
 		<div class="row row--padd30">
 			<div class="row__inner">
 				<div class="col-12-4 col-adaptive-768">
-					<a href="<?=$arItem["DETAIL_PAGE_URL"]?>" class="exs-block__title visible-adaptive-show-768"><?=$arItem["NAME"]?></a>
-					<a href="<?=$arItem["DETAIL_PAGE_URL"]?>" class="exs-block__img">
+					<a href="<?=$arItem["CODE"]?>" class="exs-block__title visible-adaptive-show-768"><?=$arItem["NAME"]?></a>
+					<a href="<?=$arItem["CODE"]?>" class="exs-block__img">
 						<img src="<?=$arItem["PREVIEW_PICTURE"]["SRC"]?>" alt="<?=$arItem["PREVIEW_PICTURE"]["ALT"]?>"
 							title="<?=$arItem["PREVIEW_PICTURE"]["TITLE"]?>" />
 					</a>
 				</div>
 				<div class="col-12-8 col-adaptive-768">
-					<a href="<?=$arItem["DETAIL_PAGE_URL"]?>" class="exs-block__title visible-adaptive-768"><?=$arItem["NAME"]?></a>
+					<a href="<?=$arItem["CODE"]?>" class="exs-block__title visible-adaptive-768"><?=$arItem["NAME"]?></a>
 					<div class="exs-block__text">
 						<?=$arItem["PREVIEW_TEXT"];?>
 					</div>
@@ -38,7 +38,7 @@ $this->setFrameMode(true);
 						<?endforeach;?>
 					</div>
 					<div class="visible-adaptive-show-768 pos-right marg-t-20">
-						<a href="<?=$arItem["DETAIL_PAGE_URL"]?>" class="exs-block__btn btn btn--red btn--small">Подробно</a>
+						<a href="<?=$arItem["CODE"]?>" class="exs-block__btn btn btn--red btn--small">Подробно</a>
 					</div>
 				</div>
 			</div>
