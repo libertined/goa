@@ -1,6 +1,4 @@
 $(document).ready( function() {
-	if($(".request-phone").length)
-		$(".request-phone").mask("+7 (999) 999-99-99");
 
 	//Кнопка прокрутки наверх
 	$(function() {
