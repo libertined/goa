@@ -2303,7 +2303,7 @@ a.breadcrumbs--item-main:hover {
   width: 18px;
   height: 18px;
   /*background: url("svg/faceless.svg") no-repeat 0px 0px;*/
-  border: 2px solid black;
+  border: 2px solid #333;
   -webkit-background-size: 20px;
   -moz-background-size: 20px;
   -o-background-size: 20px;
