@@ -2348,8 +2348,9 @@ a.breadcrumbs--item-main:hover {
 }
 
 .form__input:invalid {
-	border: 2px solid lightred;
+	border: 2px solid red;
 }
+
 .form .form__textarea {
   font-size: 15px;
   line-height: 22px;
