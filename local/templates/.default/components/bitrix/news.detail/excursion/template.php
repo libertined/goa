@@ -148,7 +148,7 @@ $this->setFrameMode(true);
       </div>
 
       <div class="form__wrap">
-       
+        <div class="form__title visible-adaptive-768">&nbsp;</div>  
         <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Заказать</button></div>
       </div>
     </div>
