@@ -7,7 +7,7 @@ IncludeTemplateLangFile(__FILE__);
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Surya Travels | <?php $APPLICATION->ShowTitle()?></title>
+	<title>Surya Travels Tvoy Goa | <?php $APPLICATION->ShowTitle()?></title>
 	<meta name="format-detection" content="telephone=no" />
 	<link href="/favicon.ico" rel="shortcut icon">
 	<?
@@ -26,6 +26,7 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.jscrollpane.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/scripts.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/modal-window.js');
+	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/form.js');
 
 	$APPLICATION->ShowHeadStrings();
 	$APPLICATION->ShowHead();

@@ -1,12 +1,13 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Заказ услуг");?>
+
    <form action="" method="post" name="">
         <div class="form form--yellow form--w670">
- 
+		  
         <div class="form__wrap marg-b-15">
             <label for="service-list" class="form__title">Что заказываем</label>
-            <div class="form__field">
-              <select name="" id="service-list">
+            <label class="form__field select">
+              <select name="" id="service-list" class="form__input">
                   <option value="excursion">Экскурсии</option>
                   <option value="taxi">Такси</option>
                   <option value="rent">Аренда жилья</option>
@@ -14,13 +15,13 @@ $APPLICATION->SetTitle("Заказ услуг");?>
                   <option value="tickets">Авиабилеты по Индии</option>
                   <option value="ayurveda">Аюрведа и лечение</option>
               </select>
-            </div>
+            </label>
         </div>        
         
-        <div class="form__wrap marg-b-15">
+        <div class="form__wrap marg-b-15 form__exhib-select">
             <label for="excursions-list" class="form__title">Выберите экскурсию</label>
-            <div class="form__field">
-              <select name="" id="excursions-list">
+            <label class="form__field select">
+              <select name="" id="excursions-list" class="form__input">
                   <option value="1">Экскурсия 1</option>
                   <option value="2">Экскурсия 2</option>
                   <option value="3">Экскурсия 3</option>
@@ -28,7 +29,7 @@ $APPLICATION->SetTitle("Заказ услуг");?>
                   <option value="5">Экскурсия 5</option>
                   <option value="6">Экскурсия 6</option>
               </select>
-            </div>
+            </label>
         </div>
         
           <div class="form__wrap marg-b-15">
@@ -94,3 +95,4 @@ $APPLICATION->SetTitle("Заказ услуг");?>
   </form>
 
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+<script src="/order/form.js"></script>
