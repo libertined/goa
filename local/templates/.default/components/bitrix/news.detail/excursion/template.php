@@ -100,7 +100,7 @@ $this->setFrameMode(true);
       </div>
 
       <div class="form__wrap marg-b-15">
-        <label for="label-hotel" class="form__title">Название отеля</label>
+        <label for="label-hotel" class="form__title">Название отеля, № комнаты</label>
         <div class="form__field"><input id="label-hotel" placeholder="" name="" value="" type="text" class="form__input" /></div>
       </div>
 
