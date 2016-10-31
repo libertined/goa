@@ -2341,6 +2341,7 @@ a.breadcrumbs--item-main:hover {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   color: #757c80;
+  -webkit-appearance: none;
   -ms-appearance: none;
   -moz-appearance: none;
   appearance: none;
