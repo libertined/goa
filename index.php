@@ -28,7 +28,7 @@ $APPLICATION->IncludeComponent(
 		"CACHE_TIME" => "36000000",
 		"CACHE_TYPE" => "A",
 		"CHECK_DATES" => "Y",
-		"DETAIL_URL" => "/excursion/#CODE#/",
+		"DETAIL_URL" => "#CODE#",
 		"DISPLAY_BOTTOM_PAGER" => "N",
 		"DISPLAY_DATE" => "N",
 		"DISPLAY_NAME" => "N",

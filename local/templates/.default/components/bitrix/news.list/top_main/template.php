@@ -12,7 +12,6 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 ?>
-
 <div class="right-side__top5-wrap">
   <div class="row row--padd30">
     <div class="row__inner">
@@ -37,7 +36,12 @@ $this->setFrameMode(true);
               </div>
             </div>
           </div>
-          <img src="<?=$arResult["ITEMS"][1]["PREVIEW_PICTURE"]["SRC"]?>" alt="" />
+          <?if(!empty($arResult["ITEMS"][1]["DETAIL_PICTURE"]["SRC"])) {
+            $pictUrl = $arResult["ITEMS"][1]["DETAIL_PICTURE"]["SRC"];
+          } else {
+            $pictUrl = $arResult["ITEMS"][1]["PREVIEW_PICTURE"]["SRC"];
+          }?>
+          <img src="<?=$pictUrl?>" alt="" />
         </a>
         <div class="right-side__top5-pos">
           <div class="row row--padd30">
