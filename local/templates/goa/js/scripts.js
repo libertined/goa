@@ -1,6 +1,4 @@
 $(document).ready( function() {
-	if($(".request-phone").length)
-		$(".request-phone").mask("+7 (999) 999-99-99");
 
 	//Кнопка прокрутки наверх
 	$(function() {
@@ -236,6 +234,7 @@ $(document).ready( function() {
 	$(document).on("click", ".form--title-viber", function () {
 		var el = $(this);
 		var check="n";
+		var phoneNumber = document.getElementById("label-phone").value;
 
 		if(el.find(".form__viber-real").prop("checked"))
 			var check="y";
@@ -243,13 +242,13 @@ $(document).ready( function() {
 		if(check=="n") {
 			el.addClass("check");
 			el.find(".form__viber-real").prop("checked","true");
-
+			el.closest(".form__wrap").find(".form__input").attr("value", phoneNumber);
 			el.closest(".form__wrap").find(".form__input").attr("disabled","disabled");
 		}
 		if(check=="y") {
 			el.removeClass("check");
 			el.find(".form__viber-real").prop("checked","");
-
+			el.closest(".form__wrap").find(".form__input").attr("value", "");
 			el.closest(".form__wrap").find(".form__input").removeAttr("disabled");
 		}
 	});

@@ -95,12 +95,12 @@ $this->setFrameMode(true);
       <div class="form__wrap marg-b-15">
         <label for="label-date" class="form__title">Ориентировочная дата*</label>
         <div class="form__field form--field-date form--icon form--icon-date">
-          <input id="label-date" placeholder="" name="" value="20 ноября 2015" type="date" class="form__input js-datepicker-after" />
+          <input id="label-date" placeholder="" name="" value="" type="date" class="form__input js-datepicker-after" required />
         </div>
       </div>
 
       <div class="form__wrap marg-b-15">
-        <label for="label-hotel" class="form__title">Название отеля</label>
+        <label for="label-hotel" class="form__title">Название отеля, № комнаты</label>
         <div class="form__field"><input id="label-hotel" placeholder="" name="" value="" type="text" class="form__input" /></div>
       </div>
 
@@ -117,26 +117,30 @@ $this->setFrameMode(true);
 
       <div class="form__wrap marg-b-15">
         <label for="label-name" class="form__title">Имя*</label>
-        <div class="form__field"><input id="label-name" placeholder="" name="" value="" type="text" class="form__input" /></div>
+        <div class="form__field"><input id="label-name" placeholder="" name="" value="" type="text" class="form__input" required /></div>
       </div>
 
       <div class="form__wrap marg-b-15">
         <label for="label-email" class="form__title">Email*</label>
-        <div class="form__field"><input id="label-email" placeholder="" name="" value="" type="email" class="form__input" /></div>
+        <div class="form__field"><input id="label-email" placeholder="" name="" value="" type="email" class="form__input" required /></div>
       </div>
 
       <div class="form__wrap marg-b-15">
         <label for="label-phone" class="form__title">Телефон*</label>
-        <div class="form__field"><input id="label-phone" placeholder="" name="" value="" type="tel" class="form__input request-phone" /></div>
+        <div class="form__field"><input id="label-phone" placeholder="+7(999)999-99-99" name="" value="" type="tel" class="form__input" pattern="(\+?\d[- . \( \)]*){7,15}" required /></div>
       </div>
 
-      <div class="form__wrap marg-b-15 center-adaptive-768">
-        <div class="form__title form--title-viber">
-          Viber, WhatsApp совпадает с телефоном
-          <input name="close" value="yes" type="checkbox" class="form__viber-real" />
-        </div>
-        <div class="form__field"><input placeholder="" name="" value="" type="text" class="form__input" /></div>
-      </div>
+      <div class="form__wrap marg-b-15">
+		<label for="viber-phone" class="form__title">Viber, WhatsApp</label>
+        <div class="form__field">
+			<input id="viber-phone" placeholder="+7(999)999-99-99" name="" value="" type="tel" class="form__input" pattern="(\+?\d[- . \( \)]*){7,15}" />
+			<div class="form--title-viber">
+			совпадает с основным телефоном <input id="viber-phone" name="close" value="yes" type="checkbox" class="form__viber-real" />
+			</div>
+			
+		</div>  
+          
+	  </div>
 
       <div class="form__wrap marg-b-15">
         <label for="label-info" class="form__title">Дополнительная информация</label>
@@ -144,7 +148,7 @@ $this->setFrameMode(true);
       </div>
 
       <div class="form__wrap">
-        <div class="form__title visible-adaptive-768">&nbsp;</div>
+        <div class="form__title visible-adaptive-768">&nbsp;</div>  
         <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Заказать</button></div>
       </div>
     </div>
