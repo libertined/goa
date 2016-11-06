@@ -1,6 +1,6 @@
 //document.addEventListener("DOMContentLoaded", formInitialization);
 var servicesSelect = document.getElementById("service-list");
-servicesSelect.addEventListener("change", toggleInputsVisibility);
+servicesSelect.addEventListener("change", formHandler);
 
 //для тестов, показываем все скрытые блоки
 var hiddenBlocks = document.querySelectorAll(".hide");
@@ -14,7 +14,7 @@ Array.prototype.forEach.call(hiddenBlocks, function(item) {
  
 /* тест заканчивается здесь, удалить этот блок потом*/
 
-function toggleInputsVisibility() {
+function formHandler() {
 	var excursionsSelectBlock = document.querySelector(".form__exhib-select"),
 		excursionsSelect = document.getElementById("excursions-list"),
 		directionBlock = document.getElementById("label-direction").closest("div.form__wrap"),
@@ -79,4 +79,12 @@ function toggleInputsVisibility() {
 };
 
 
-
+function toggleInputVisibility(){
+	//first argument is boolean (show or hide), second one - object
+	for (var i = 0; i < arguments.length; i+=2) {
+	    if (arguments[i])
+	        arguments[i+1].classList.remove("hide");
+	    else
+	        arguments[i+1].classList.add("hide");
+	}
+}
