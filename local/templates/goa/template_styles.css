@@ -2905,3 +2905,13 @@ ul li.pseudo-select__option:hover {
 .hidden {
     display: none;
 }
+.right-side .ya-share2 ul{
+  padding: 0;
+  margin: 0;
+}
+.right-side .ya-share2 ul li::after{
+  display: none;
+}
+.right-side .ya-share2 ul li{
+  padding: 0;
+}
