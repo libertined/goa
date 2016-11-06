@@ -78,13 +78,13 @@ $this->setFrameMode(true);
       "CACHE_TYPE" => "A",
       "CACHE_TIME" => "3600",
       "COMPONENT_TEMPLATE" => "tour_detail_page",
-      "TOUR_ID" => "15",
+      "TOUR_ID" => $arResult["ID"],
       "PER_PAGE" => "1",
       "REVIEWS_PAGE_NUM" => ""
     ),
     false
   );
-  ?>
+?>
 </div>
 
 <div class="js-extab" data-tab="extab-order" style="display: none;">
