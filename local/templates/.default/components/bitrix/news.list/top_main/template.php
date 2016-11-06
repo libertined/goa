@@ -16,7 +16,7 @@ $this->setFrameMode(true);
   <div class="row row--padd30">
     <div class="row__inner">
       <div class="col-12-5 col-adaptive-768">
-        <a href="<?=$arResult["ITEMS"][0]["DETAIL_PAGE_URL"]?>" class="right-side__top5">
+        <a href="<?=$arResult["ITEMS"][0]["CODE"]?>" class="right-side__top5">
           <div class="right-side__top5-hover-wrap">
             <div class="vert-middle">
               <div class="vert-middle__inner">
@@ -28,7 +28,7 @@ $this->setFrameMode(true);
         </a>
       </div>
       <div class="col-12-7 col-adaptive-768">
-        <a href="<?=$arResult["ITEMS"][1]["DETAIL_PAGE_URL"]?>" class="right-side__top5">
+        <a href="<?=$arResult["ITEMS"][1]["CODE"]?>" class="right-side__top5">
           <div class="right-side__top5-hover-wrap">
             <div class="vert-middle">
               <div class="vert-middle__inner">
@@ -51,7 +51,7 @@ $this->setFrameMode(true);
                 <div class="row row--padd10">
                   <div class="row__inner">
                     <div class="col-12-4 col-adaptive-768">
-                      <a href="<?=$arResult["ITEMS"][2]["DETAIL_PAGE_URL"]?>" class="right-side__top5">
+                      <a href="<?=$arResult["ITEMS"][2]["CODE"]?>" class="right-side__top5">
                         <div class="right-side__top5-hover-wrap">
                           <div class="vert-middle">
                             <div class="vert-middle__inner">
@@ -63,7 +63,7 @@ $this->setFrameMode(true);
                       </a>
                     </div>
                     <div class="col-12-4 col-adaptive-768">
-                      <a href="<?=$arResult["ITEMS"][3]["DETAIL_PAGE_URL"]?>" class="right-side__top5">
+                      <a href="<?=$arResult["ITEMS"][3]["CODE"]?>" class="right-side__top5">
                         <div class="right-side__top5-hover-wrap">
                           <div class="vert-middle">
                             <div class="vert-middle__inner">
@@ -75,7 +75,7 @@ $this->setFrameMode(true);
                       </a>
                     </div>
                     <div class="col-12-4 col-adaptive-768">
-                      <a href="<?=$arResult["ITEMS"][4]["DETAIL_PAGE_URL"]?>" class="right-side__top5">
+                      <a href="<?=$arResult["ITEMS"][4]["CODE"]?>" class="right-side__top5">
                         <div class="right-side__top5-hover-wrap">
                           <div class="vert-middle">
                             <div class="vert-middle__inner">
