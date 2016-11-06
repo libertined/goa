@@ -11,7 +11,7 @@ if (is_array($arResult["SEARCH"]))
 		$excursionLink[$res["ITEM_ID"]] = $key;
 	}
 	$itemsData = Iblock\ElementTable::getList([
-			'select' => ['PREVIEW_TEXT', 'NAME', 'PICT', 'ID'],
+			'select' => ['PREVIEW_TEXT', 'NAME', 'PICT', 'ID', 'CODE'],
 			'filter' => [
 				'@ID' => array_keys($excursionLink)
 			],
@@ -25,5 +25,6 @@ if (is_array($arResult["SEARCH"]))
 		$curElement =& $arResult["SEARCH"][ $excursionLink[$row["ID"]] ];
 		$curElement["DESCRIPTION"] = $row["PREVIEW_TEXT"];
 		$curElement["PICT"] = $row["PICT"];
+		$curElement["URL"] = $row["CODE"];
 	}
 }

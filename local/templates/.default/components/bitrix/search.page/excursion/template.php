@@ -73,14 +73,14 @@ $APPLICATION->IncludeComponent("bitrix:search.tags.cloud", "excursion", $arCloud
 		<div class="row row--padd30">
 			<div class="row__inner">
 				<div class="col-12-4 col-adaptive-768">
-					<a class="exs-block__title visible-adaptive-show-768" href="<?=$arItem["URL_WO_PARAMS"]?>"><?=$arItem["TITLE"]?></a>
-					<a href="<?=$arItem["URL_WO_PARAMS"]?>" class="exs-block__img">
+					<a class="exs-block__title visible-adaptive-show-768" href="<?=$arItem["URL"]?>"><?=$arItem["TITLE"]?></a>
+					<a href="<?=$arItem["URL"]?>" class="exs-block__img">
 						<img src="<?=$arItem["PICT"]?>" alt="<?=$arItem["TITLE"]?>"
 								 title="<?=$arItem["TITLE"]?>" />
 					</a>
 				</div>
 				<div class="col-12-8 col-adaptive-768">
-					<a class="exs-block__title visible-adaptive-768" href="<?=$arItem["URL_WO_PARAMS"]?>"><?=$arItem["TITLE"]?></a>
+					<a class="exs-block__title visible-adaptive-768" href="<?=$arItem["URL"]?>"><?=$arItem["TITLE"]?></a>
 					<div class="exs-block__text">
 						<?=$arItem["DESCRIPTION"];?>
 					</div>
@@ -90,7 +90,7 @@ $APPLICATION->IncludeComponent("bitrix:search.tags.cloud", "excursion", $arCloud
 						<?endforeach;?>
 					</div>
 					<div class="visible-adaptive-show-768 pos-right marg-t-20">
-						<a  href="<?=$arItem["URL_WO_PARAMS"]?>" class="exs-block__btn btn btn--red btn--small">Подробно</a>
+						<a  href="<?=$arItem["URL"]?>" class="exs-block__btn btn btn--red btn--small">Подробно</a>
 					</div>
 				</div>
 			</div>
