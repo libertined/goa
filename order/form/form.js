@@ -3,15 +3,11 @@ var servicesSelect = document.getElementById("service-list");
 servicesSelect.addEventListener("change", formHandler);
 
 //для тестов, показываем все скрытые блоки
-var hiddenBlocks = document.querySelectorAll(".hide");
+/*var hiddenBlocks = document.querySelectorAll(".hidden");
 Array.prototype.forEach.call(hiddenBlocks, function(item) {
-    item.classList.remove("hide");
-    if ( item.querySelector("select")) {
-    	item.querySelector("select").removeAttribute("disabled");
-    	}	
-
+    item.classList.remove("hidden");
 }); 
- 
+*/
 /* тест заканчивается здесь, удалить этот блок потом*/
 
 function formHandler() {
@@ -25,55 +21,35 @@ function formHandler() {
 		placeRentBlock = placeRent.closest("div.form__wrap"),
 		hotelBlock = document.getElementById("label-hotel").closest("div.form__wrap");
 
-/* Написать 2 функции, показ / скрытие блока 
-и установка / снятие атрибута disabled.
-В качестве параметров - список переменных (блоков) - для отображения / скрытия,
-добавления / удаления атрибута, и последний - true/false (установка/снятие)
-*/
-
 	switch(servicesSelect.value) {
 		case "excursion":
-			excursionsSelectBlock.classList.remove("hide");
-			excursionsSelect.removeAttribute("disabled");
-			celebrationType.setAttribute("disabled", "disabled");
-			placeRent.setAttribute("disabled", "disabled");
-			//celebrationTypeBlock.classList.add("hide");		
-			//beachBlock.classList.add("hide");
-			//directionBlock.classList.add("hide");
+			toggleInputVisibility(true, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+			toggleInputAvailability(true, excursionsSelect, false, celebrationType, false, placeRent);
 			break;
 
 		case "taxi":
-			//excursionsSelectBlock.classList.add("hide");
-			excursionsSelect.setAttribute("disabled", "disabled");
-			celebrationType.setAttribute("disabled", "disabled");
-			placeRent.setAttribute("disabled", "disabled");
-			directionBlock.classList.remove("hide");
+			toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, true, directionBlock, true, hotelBlock);
+			toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
 			break;
 
 		case "rent":
-			//excursionsSelectBlock.classList.add("hide");
-			excursionsSelect.setAttribute("disabled", "disabled");
-			celebrationType.setAttribute("disabled", "disabled");
-			placeRent.removeAttribute("disabled");
-			//direction.classList.add("hide");
+			toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, true, beachBlock, true, placeRentBlock, false, directionBlock, false, hotelBlock);
+			toggleInputAvailability(false, excursionsSelect, false, celebrationType, true, placeRent);
 			break;
 		
 		case "celebration":
-			excursionsSelect.setAttribute("disabled", "disabled");
-			celebrationType.removeAttribute("disabled");
-			placeRent.setAttribute("disabled", "disabled");
+			toggleInputVisibility(false, excursionsSelectBlock, true, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+			toggleInputAvailability(false, excursionsSelect, true, celebrationType, false, placeRent);
 			break;
 
 		case "tickets":
-			excursionsSelect.setAttribute("disabled", "disabled");
-			celebrationType.setAttribute("disabled", "disabled");
-			placeRent.setAttribute("disabled", "disabled");
+			toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, true, directionBlock, true, hotelBlock);
+			toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
 			break;
 
 		case "ayurveda":
-			excursionsSelect.setAttribute("disabled", "disabled");
-			celebrationType.setAttribute("disabled", "disabled");
-			placeRent.setAttribute("disabled", "disabled");
+			toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+			toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
 			break;
 	}
 };
@@ -83,8 +59,19 @@ function toggleInputVisibility(){
 	//first argument is boolean (show or hide), second one - object
 	for (var i = 0; i < arguments.length; i+=2) {
 	    if (arguments[i])
-	        arguments[i+1].classList.remove("hide");
+	        arguments[i+1].classList.remove("hidden");
 	    else
-	        arguments[i+1].classList.add("hide");
+	        arguments[i+1].classList.add("hidden");
+	}
+}
+
+function toggleInputAvailability(){
+	// first argument is boolean (show or hide), second one - object
+	// true - make item available, false - make is disabled
+	for (var i = 0; i < arguments.length; i+=2) {
+	    if (arguments[i])
+	        arguments[i+1].removeAttribute("disabled")
+	    else
+	        arguments[i+1].setAttribute("disabled", "disabled");
 	}
 }
