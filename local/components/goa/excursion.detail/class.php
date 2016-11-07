@@ -34,7 +34,7 @@ class ExcursionDetail extends CBitrixComponent
     public function executeComponent()
     {
         global $APPLICATION;
-        /*if($this->startResultCache()) {*/
+        if($this->startResultCache()) {
             $propEnt = Util\BitrixOrmHelper::getIBlockPropertiesEntity(
               $this->arParams["IBLOCK_ID"]);
 
@@ -59,7 +59,6 @@ class ExcursionDetail extends CBitrixComponent
               ));
             if(!empty($arSelect["PROP_IMAGES"])) {
               $arSelect[] = "PHOTOS";
-              $arSelect["REF_GALLERY"] = "PROP.GALLERY_VALUE";
               $queryEl->registerRuntimeField('', new Entity\ExpressionField(
                 'PHOTOS',
                 'GROUP_CONCAT(%s SEPARATOR \'##\')',
@@ -71,7 +70,6 @@ class ExcursionDetail extends CBitrixComponent
                   }];
                 }]
               ));
-              unset($arSelect["PROP_GALLERY"]);
               unset($arSelect["PROP_IMAGES"]);
             }
             $resultData = $queryEl
@@ -79,19 +77,13 @@ class ExcursionDetail extends CBitrixComponent
               ->exec();
 
             while($arInfo = $resultData->Fetch()) {
-              var_dump($arInfo);
               $arInfo["URL"] = $arInfo["CODE"];
               $arInfo["TITLE"] = $arInfo["NAME"];
               $arInfo["GALLERY"] = $this->getGalleryInfo($arInfo["PROP_GALLERY"], $arInfo["PHOTOS"]);
               $this->arResult["ITEM"] = $arInfo;
             }
-        /*}
+        }
         $this->endResultCache();
-
-*/
-
-        //var_dump($this->arResult);
-        die();
 
         if(empty($this->arResult["ITEM"])){
             Iblock\Component\Tools::process404('', true, true, true);
@@ -109,26 +101,35 @@ class ExcursionDetail extends CBitrixComponent
   protected function getGalleryInfo($gallery, $photos)
   {
     $result = [];
-    if(!empty($gallery)) {
-      $result["URL"] = reset($arResult["DISPLAY_PROPERTIES"]["GALLERY"]["LINK_SECTION_VALUE"])["SECTION_PAGE_URL"];
+    if(!empty($photos)) {
       $itemsData = Iblock\ElementTable::getList([
         'select' => ['NAME', 'PICT', 'ID'],
         'filter' => [
-          '@ID' => $arResult["DISPLAY_PROPERTIES"]["IMAGES"]["VALUE"]
+          '@ID' => $photos
         ],
         'runtime' => [
           Util\BitrixOrmHelper::getFileReferenceField('FILE', 'DETAIL_PICTURE'),
           Util\BitrixOrmHelper::getFilePathExpressionField('PICT', 'FILE')
         ]
-
       ]);
       while ($row = $itemsData->fetch()) {
-        $arResult["GALLERY"]["ITEMS"][] = [
+        $result["ITEMS"][] = [
           "ID" => $row["ID"],
           "NAME" => $row["NAME"],
           "URL" => $row["PICT"],
         ];
       }
+
+      $itemsData = Iblock\SectionTable::getList([
+        'select' => ['NAME', 'CODE', 'ID'],
+        'filter' => [
+          '=ID' => $gallery
+        ],
+      ]);
+      while ($row = $itemsData->fetch()) {
+        $result["URL"] = "/photos/".$row["CODE"]."/";
+      }
     }
+    return $result;
   }
 }

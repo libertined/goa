@@ -75,7 +75,8 @@ $this->setFrameMode(true);
     "goa:reviews",
     "tour_detail_page",
     array(
-      "CACHE_TYPE" => "N",
+      "CACHE_TYPE" => "A",
+      "CACHE_TIME" => "3600",
       "COMPONENT_TEMPLATE" => "tour_detail_page",
       "TOUR_ID" => $arResult["ID"],
       "PER_PAGE" => "1",
