@@ -57,31 +57,21 @@ class ExcursionDetail extends CBitrixComponent
                 array('=this.ID' => 'ref.IBLOCK_ELEMENT_ID'),
                 array('join_type' => 'LEFT')
               ));
-            if(!empty($arSelect["PROP_IMAGES"])) {
-              $arSelect[] = "PHOTOS";
-              $queryEl->registerRuntimeField('', new Entity\ExpressionField(
-                'PHOTOS',
-                'GROUP_CONCAT(%s SEPARATOR \'##\')',
-                ['PROP.IMAGES'],
-                [ 'fetch_data_modification' => function () {
-                  return [function ($value) {
-                    $elements = explode("##", $value);
-                    return $elements;
-                  }];
-                }]
-              ));
-              unset($arSelect["PROP_IMAGES"]);
-            }
             $resultData = $queryEl
               ->setSelect($arSelect)
               ->exec();
-
+            $images = [];
             while($arInfo = $resultData->Fetch()) {
               $arInfo["URL"] = $arInfo["CODE"];
               $arInfo["TITLE"] = $arInfo["NAME"];
-              $arInfo["GALLERY"] = $this->getGalleryInfo($arInfo["PROP_GALLERY"], $arInfo["PHOTOS"]);
+              $images[] = $arInfo["PROP_IMAGES"];
               $this->arResult["ITEM"] = $arInfo;
             }
+          $this->arResult["ITEM"]["PROP_IMAGES"] = $images;
+          $this->arResult["ITEM"]["GALLERY"] = $this->getGalleryInfo(
+            $this->arResult["ITEM"]["PROP_GALLERY"],
+            $this->arResult["ITEM"]["PROP_IMAGES"]
+          );
         }
         $this->endResultCache();
 
