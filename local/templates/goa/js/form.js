@@ -1,4 +1,6 @@
-//document.addEventListener("DOMContentLoaded", formInitialization);
+document.addEventListener("DOMContentLoaded", formInitialization);
+
+function formInitialization() {
 var servicesSelect = document.getElementById("service-list");
 servicesSelect.addEventListener("change", formHandler);
 
@@ -74,4 +76,5 @@ function toggleInputAvailability(){
 	    else
 	        arguments[i+1].setAttribute("disabled", "disabled");
 	}
+}
 }
