@@ -61,7 +61,8 @@ $APPLICATION->IncludeComponent(
 		"PREVIEW_TRUNCATE_LEN" => "",
 		"PROPERTY_CODE" => array(
 			0 => "IN_TOP",
-			1 => "",
+			1 => "MAIN_SORT",
+			2 => "",
 		),
 		"SET_BROWSER_TITLE" => "N",
 		"SET_LAST_MODIFIED" => "N",
@@ -70,9 +71,9 @@ $APPLICATION->IncludeComponent(
 		"SET_STATUS_404" => "N",
 		"SET_TITLE" => "N",
 		"SHOW_404" => "N",
-		"SORT_BY1" => "SORT",
+		"SORT_BY1" => "PROPERTY_MAIN_SORT",
 		"SORT_BY2" => "ID",
-		"SORT_ORDER1" => "DESC",
+		"SORT_ORDER1" => "ASC",
 		"SORT_ORDER2" => "ASC",
 		"COMPONENT_TEMPLATE" => "top_main"
 	),
@@ -386,8 +387,8 @@ $APPLICATION->IncludeComponent(
 
 <div class="see marg-t-40">
 	<div class="see__icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/trip.svg">Your browser does not support SVGs</object></div>
-	<a href="" class="see__text">Посмотрите наши экскурсии</a>
-	<a href="" class="btn visible-adaptive-768">Перейти</a>
+	<a href="/excursion/" class="see__text">Посмотрите наши экскурсии</a>
+	<a href="/excursion/" class="btn visible-adaptive-768">Перейти</a>
 </div>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

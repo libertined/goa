@@ -22,11 +22,12 @@ $this->setFrameMode(true);
 </div>
 
 <div class="js-extab" data-tab="extab-description">
-  <?=$arResult["DETAIL_TEXT"]?>
-  <?if(!empty($arResult["GALLERY"]["ITEMS"])):?>
+  <?=$arResult["ITEM"]["DETAIL_TEXT"]?>
+
+  <?if(!empty($arResult["ITEM"]["GALLERY"]["ITEMS"])):?>
     <div class="slider-exs marg-t-40">
       <div class="bxslider_exs_2">
-        <?foreach($arResult["GALLERY"]["ITEMS"] as $photo):?>
+        <?foreach($arResult["ITEM"]["GALLERY"]["ITEMS"] as $photo):?>
         <div class="slider-exs__item">
           <img src="<?=$photo["URL"]?>" alt="<?=$photo["NAME"]?>" />
         </div>
@@ -35,7 +36,7 @@ $this->setFrameMode(true);
 
       <div class="slider-exs__open visible-adaptive-768">
         <div class="slider-exs__open-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/faceless.svg">Your browser does not support SVGs</object></div>
-        <a href="<?=$arResult["GALLERY"]["URL"]?>" class="slider-exs__open-text">Открыть галерею</a>
+        <a href="<?=$arResult["ITEM"]["GALLERY"]["URL"]?>" class="slider-exs__open-text">Открыть галерею</a>
       </div>
     </div>
   <?endif;?>
@@ -52,11 +53,16 @@ $this->setFrameMode(true);
 </div>
 
 <div class="js-extab" data-tab="extab-programm" style="display: none;">
-  <h2>Программа</h2>
-  <?=$arResult["DISPLAY_PROPERTIES"]["PROGRAM"]["DISPLAY_VALUE"]?>
+  <?if(!empty($arResult["ITEM"]["PROP_PROGRAM"]["TEXT"])):?>
+    <h2>Программа</h2>
+    <?=$arResult["ITEM"]["PROP_PROGRAM"]["TEXT"]?>
+  <?endif;?>
 
-  <h2>Стоимость</h2>
-  <?=$arResult["DISPLAY_PROPERTIES"]["PRICE"]["DISPLAY_VALUE"]?>
+
+  <?if(!empty($arResult["ITEM"]["PROP_PRICE"]["TEXT"])):?>
+    <h2>Стоимость</h2>
+    <?=$arResult["ITEM"]["PROP_PRICE"]["TEXT"]?>
+  <?endif;?>
 
   <p>Внимание! Теперь вы можете оплатить экскурсии банковскими картами, мы делаем все для вашего удобства.<br />Наличными мы принимаем деньги в любой валюте: доллары, евро, рупии, рубли.</p>
 
@@ -75,10 +81,9 @@ $this->setFrameMode(true);
     "goa:reviews",
     "tour_detail_page",
     array(
-      "CACHE_TYPE" => "A",
-      "CACHE_TIME" => "3600",
+      "CACHE_TYPE" => "N",
       "COMPONENT_TEMPLATE" => "tour_detail_page",
-      "TOUR_ID" => $arResult["ID"],
+      "TOUR_ID" => $arResult["ITEM"]["ID"],
       "PER_PAGE" => "1",
       "REVIEWS_PAGE_NUM" => ""
     ),

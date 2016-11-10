@@ -20,7 +20,7 @@ $this->setFrameMode(true);
           <div class="right-side__top5-hover-wrap">
             <div class="vert-middle">
               <div class="vert-middle__inner">
-                <div class="right-side__top5-hover">Весь гоа за один день</div>
+                <div class="right-side__top5-hover"><?=$arResult["ITEMS"][0]["NAME"]?></div>
               </div>
             </div>
           </div>
@@ -32,7 +32,7 @@ $this->setFrameMode(true);
           <div class="right-side__top5-hover-wrap">
             <div class="vert-middle">
               <div class="vert-middle__inner">
-                <div class="right-side__top5-hover">Биджапур</div>
+                <div class="right-side__top5-hover"><?=$arResult["ITEMS"][1]["NAME"]?></div>
               </div>
             </div>
           </div>
@@ -55,7 +55,7 @@ $this->setFrameMode(true);
                         <div class="right-side__top5-hover-wrap">
                           <div class="vert-middle">
                             <div class="vert-middle__inner">
-                              <div class="right-side__top5-hover">Биджапур</div>
+                              <div class="right-side__top5-hover"><?=$arResult["ITEMS"][2]["NAME"]?></div>
                             </div>
                           </div>
                         </div>
@@ -67,7 +67,7 @@ $this->setFrameMode(true);
                         <div class="right-side__top5-hover-wrap">
                           <div class="vert-middle">
                             <div class="vert-middle__inner">
-                              <div class="right-side__top5-hover">Биджапур</div>
+                              <div class="right-side__top5-hover"><?=$arResult["ITEMS"][3]["NAME"]?></div>
                             </div>
                           </div>
                         </div>
@@ -79,7 +79,7 @@ $this->setFrameMode(true);
                         <div class="right-side__top5-hover-wrap">
                           <div class="vert-middle">
                             <div class="vert-middle__inner">
-                              <div class="right-side__top5-hover">Биджапур</div>
+                              <div class="right-side__top5-hover"><?=$arResult["ITEMS"][4]["NAME"]?></div>
                             </div>
                           </div>
                         </div>
