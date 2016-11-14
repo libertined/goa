@@ -2949,6 +2949,7 @@ ul li.pseudo-select__option:hover {
   top: 20%;
   box-shadow: 0 20px 40px rgba(0,0,0,0.75);
   text-align: center;
+  z-index: 100;
 }
 
 .modal-close {
@@ -2960,7 +2961,6 @@ ul li.pseudo-select__option:hover {
   width: 70px;
   height: 70px;
   display: block;
-  outline: 1px dashed red;
 }
 /* Styles for drag&drop zone*/
 label.form__file {

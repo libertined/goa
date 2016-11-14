@@ -1,6 +1,7 @@
 //document.addEventListener("DOMContentLoaded", formInitialization);
 var servicesSelect = document.getElementById("service-list"),
-	form = document.forms.orderForm;
+	form = document.forms.orderForm,
+	modalWindow = document.querySelector(".modal-order");
 
 servicesSelect.addEventListener("change", formHandler);
 form.addEventListener("submit", formSubmit);
@@ -95,7 +96,7 @@ function formSubmit(e) {
 			formHeader = document.querySelector("div.form__header");
 		if (xhr.readyState !== XMLHttpRequest.DONE ) return;
 		if (xhr.status == 200 ) {
-			document.querySelector(".modal-window").classList.remove("hidden");
+			modalWindow.classList.remove("hidden");
 			form.reset();
 
 		} else {
@@ -109,5 +110,5 @@ function formSubmit(e) {
 
 function closeModal(e) {
 	e.preventDefault();
-	document.querySelector(".modal-window").classList.add("hidden");
+	modalWindow.classList.add("hidden");
 }
