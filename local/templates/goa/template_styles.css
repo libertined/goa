@@ -2936,6 +2936,7 @@ ul li.pseudo-select__option:hover {
   padding: 0;
 }
 
+/* Styles for modal window in order section*/
 .modal-window {
   box-sizing: border-box;
   width: 650px;
@@ -2960,4 +2961,27 @@ ul li.pseudo-select__option:hover {
   height: 70px;
   display: block;
   outline: 1px dashed red;
+}
+/* Styles for drag&drop zone*/
+label.form__file {
+  display: block;
+  cursor: pointer;
+  text-align: center;
+  overflow: hidden;
+  min-height: 60px;
+}
+input[type="file"] {
+  display: none;
+}
+
+.dropzone {
+  outline: none;
+}
+
+form.advanced .dropzone{
+  outline: 2px dashed black;
+}
+
+form.advanced .dragover {
+  outline: 2px dashed green;
 }
