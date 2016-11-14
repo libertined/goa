@@ -2937,7 +2937,7 @@ ul li.pseudo-select__option:hover {
 }
 
 /* Styles for modal window in order section*/
-.modal-window {
+.modal-order {
   box-sizing: border-box;
   width: 650px;
   padding: 50px 80px;
