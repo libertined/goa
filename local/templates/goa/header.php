@@ -26,8 +26,7 @@ IncludeTemplateLangFile(__FILE__);
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/jquery.jscrollpane.min.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/scripts.js');
 	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/modal-window.js');
-    $oAsset->addJs(SITE_TEMPLATE_PATH.'/js/matches.js');
-	$oAsset->addJs(SITE_TEMPLATE_PATH.'/js/form.js');
+
 
 	$APPLICATION->ShowHeadStrings();
 	$APPLICATION->ShowHead();
