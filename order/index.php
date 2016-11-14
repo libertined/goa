@@ -1,7 +1,16 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Заказ услуг");?>
 
-    <form action="" method="post" name="">
+  <div class="modal-window hidden" id="modal-order">
+    <div class="modal-close"></div>
+    <h1 class="modal-window__header">Спасибо за Ваш заказ!</h1>
+    <p class="modal-window__text">В ближайшее время на Вашу почту должно поступить автоматическое уведомление с деталями Вашего заказа.</p>
+    <p class="modal-window__text">Если по какой-то причине Вы не получите емейл - просим связаться с нами любым удобным для Вас способом, т.к., вероятно, при вводе емейл адреса была допущена ошибка.</p>
+    <p class="modal-window__text"></p>
+    <a href="#" class="modal-close__link">OK</a>
+
+  </div>
+    <form action="order.php" method="post" name="orderForm" enctype="multipart/form-data">
         <div class="form form--yellow form--w670">
 		  
           <div class="form__wrap marg-b-15">
@@ -132,4 +141,4 @@ $APPLICATION->SetTitle("Заказ услуг");?>
   </form>
 
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
-<script src="/order/form.js"></script>
+<script src="/order/form/form.js"></script>
