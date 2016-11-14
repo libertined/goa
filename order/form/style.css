@@ -1,3 +1,30 @@
 .hidden {
 	display: none;
 }
+
+.modal-window {
+	box-sizing: border-box;
+	width: 650px;
+	padding: 50px 80px;
+/*	margin-left: -315px;
+	margin-top: -200px;*/
+	background: white;
+	position: fixed;
+	left: calc(50% - 325px);
+	top: 20%;
+	box-shadow: 0 20px 40px rgba(0,0,0,0.75);
+	text-align: center;
+}
+
+.modal-close {
+	cursor: pointer;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	background: url("img/btn_close.png") 0px 0px no-repeat;
+	width: 70px;
+	height: 70px;
+	display: block;
+	outline: 1px dashed red;
+}
+

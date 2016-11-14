@@ -1,6 +1,12 @@
 //document.addEventListener("DOMContentLoaded", formInitialization);
-var servicesSelect = document.getElementById("service-list");
+var servicesSelect = document.getElementById("service-list"),
+	form = document.forms.orderForm;
+
 servicesSelect.addEventListener("change", formHandler);
+form.addEventListener("submit", formSubmit);
+document.querySelector(".modal-close").addEventListener("click", closeModal);
+document.querySelector(".modal-close__link").addEventListener("click", closeModal);
+
 
 //для тестов, показываем все скрытые блоки
 /*var hiddenBlocks = document.querySelectorAll(".hidden");
@@ -74,4 +80,34 @@ function toggleInputAvailability(){
 	    else
 	        arguments[i+1].setAttribute("disabled", "disabled");
 	}
+}
+
+function formSubmit(e) {
+	e.preventDefault();
+	var data = new FormData(form),
+	xhr = new XMLHttpRequest();
+
+	xhr.open(form.method, form.action);
+	xhr.send(data);
+
+	xhr.onload = function() {
+		var response = xhr.response,
+			formHeader = document.querySelector("div.form__header");
+		if (xhr.readyState !== XMLHttpRequest.DONE ) return;
+		if (xhr.status == 200 ) {
+			document.querySelector(".modal-window").classList.remove("hidden");
+			form.reset();
+
+		} else {
+
+			// TODO - добавить вывод в форму сообщения об ошибке
+			formHeader.innerHTML = "При отправке произошла ошибка";
+			formHeader.style = "color: red";
+		}
+	}
+}
+
+function closeModal(e) {
+	e.preventDefault();
+	document.querySelector(".modal-window").classList.add("hidden");
 }
