@@ -44,8 +44,8 @@ $this->setFrameMode(true);
   <div class="right-side__share visible-adaptive-768">
     <div class="right-side__share-title">Поделиться:</div>
     <div class="right-side__share-body">
-      <script src="//yastatic.net/share2/share.js"></script>
-      <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,gplus,twitter" data-counter=""></div>
+      <script async="async" src="//yastatic.net/share2/share.js"></script>
+      <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,gplus,twitter,viber,whatsapp,telegram" data-counter=""></div>
     </div>
   </div>
 
