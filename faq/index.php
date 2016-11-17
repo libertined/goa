@@ -62,7 +62,7 @@ $APPLICATION->SetTitle("FAQ");?>
     </li>
 </ul>
 
-<form action="#" method="post" name="ask-question" enctype="multipart/form-data" id="ask-question">
+<form action="faq.php" method="post" name="askQuestion" enctype="multipart/form-data" id="ask-question">
     <div class="form form--grey form--w670 form--center">
         <div class="form__header">Задать свой вопрос</div>
         <p class="warning pos-center">Пожалуйста, внимательно указывайте свой емейл, т.к. в случае неверного емейл адреса мы не сможем ответить Вам</p>
@@ -94,5 +94,5 @@ $APPLICATION->SetTitle("FAQ");?>
     </div>
 </form>
 
-
+<script src="ask-question.js"></script>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
