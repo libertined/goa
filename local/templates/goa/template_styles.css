@@ -141,6 +141,7 @@ aside,
 footer {
   display: block;
 }
+
 /********************* Стили под iPad BEGIN *********************/
 input[type="submit"] {
   -webkit-appearance: none;
@@ -250,6 +251,10 @@ body {
   color: #333333;
   font: normal 15px/normal OpenSans, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+p strong {
+	font-family: 'OpenSansSemibold';
+}
+
 .page-content-inner {
   margin: 0 auto;
   width: 1440px;
