@@ -62,4 +62,37 @@ $APPLICATION->SetTitle("FAQ");?>
     </li>
 </ul>
 
+<form action="#" method="post" name="ask-question" enctype="multipart/form-data" id="ask-question">
+    <div class="form form--grey form--w670 form--center">
+        <div class="form__header">Задать свой вопрос</div>
+        <p class="warning">Пожалуйста, внимательно указывайте свой емейл, т.к. в случае неверного емейл адреса мы не сможет ответить Вам</p>
+        <div class="marg-b-15">
+            <div class="form__wrap">
+                <label for="label-name" class="form__title">Представьтесь, пожалуйста*</label>
+                <div class="form__field"><input id="label-name" placeholder="" name="name" value="" type="text" class="form__input" required="" /></div>
+            </div>
+        </div>
+
+        <div class="marg-b-15">
+            <div class="form__wrap">
+                <label for="label-email" class="form__title">Ваш емейл адрес*</label>
+                <div class="form__field"><input id="label-email" placeholder="" name="email" value="" type="email" class="form__input" required /></div>
+            </div>
+        </div>
+
+        <div class="marg-b-15">
+            <div class="form__wrap">
+                <label for="label-review-text" class="form__title">Текст вопроса*</label>
+                <div class="form__field"><textarea id="label-review-text" class="form__textarea" name="questionText" required=""></textarea></div>
+            </div>
+        </div>
+
+        <div class="form__wrap">
+            <div class="form__title visible-adaptive-768">&nbsp;</div>
+            <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Отправить</button></div>
+        </div>
+    </div>
+</form>
+
+
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

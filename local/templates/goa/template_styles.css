@@ -2999,3 +2999,7 @@ form.advanced .dragover {
 .ya-share2 .ya-share2__container_size_m .ya-share2__item {
 	margin-right: 10px;
 }
+
+.warning {
+	color: #ff7866;
+}
