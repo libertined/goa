@@ -16,7 +16,7 @@ function formSubmit(e) {
 		if (xhr.status == 200 ) {
 			formHeader.innerHTML = "Ваш вопрос успешно отправлен. Мы ответим Вам в ближайшее время";
 			formHeader.style = "color: green";
-			if (modal) { modalWindow.classList.remove("hidden"); }
+			if (modal !== undefined) { modalWindow.classList.remove("hidden"); }
 			form.reset();
 		} else {
 			formHeader.innerHTML = "При отправке произошла ошибка";
