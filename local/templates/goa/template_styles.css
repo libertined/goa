@@ -3004,6 +3004,6 @@ form.advanced .dragover {
 	color: #ff7866;
 }
 
-.questions--list a {
+.questions--list a:hover {
 	font-family: 'OpenSansSemibold';
 }
