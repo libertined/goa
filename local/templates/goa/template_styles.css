@@ -3003,3 +3003,7 @@ form.advanced .dragover {
 .warning {
 	color: #ff7866;
 }
+
+.questions--list a {
+	font-family: 'OpenSansSemibold';
+}

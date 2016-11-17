@@ -6,7 +6,7 @@ $APPLICATION->SetTitle("FAQ");?>
     <h2 id="questions" class="left">Вопросы</h2>
     <a href="#ask-question" class="btn right">Задать вопрос</a>
 </div>
-<ul>
+<ul class="questions--list">
     <li><a href="#1">Когда лучше всего ехать в Гоа?</a></li>
     <li><a href="#2">Как купить местную сим-карту?</a></li>
     <li><a href="#3">Южный Гоа или Северный Гоа?</a></li>
@@ -65,7 +65,7 @@ $APPLICATION->SetTitle("FAQ");?>
 <form action="#" method="post" name="ask-question" enctype="multipart/form-data" id="ask-question">
     <div class="form form--grey form--w670 form--center">
         <div class="form__header">Задать свой вопрос</div>
-        <p class="warning">Пожалуйста, внимательно указывайте свой емейл, т.к. в случае неверного емейл адреса мы не сможет ответить Вам</p>
+        <p class="warning pos-center">Пожалуйста, внимательно указывайте свой емейл, т.к. в случае неверного емейл адреса мы не сможем ответить Вам</p>
         <div class="marg-b-15">
             <div class="form__wrap">
                 <label for="label-name" class="form__title">Представьтесь, пожалуйста*</label>
