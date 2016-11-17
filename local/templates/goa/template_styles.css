@@ -2985,3 +2985,12 @@ form.advanced .dropzone{
 form.advanced .dragover {
   outline: 2px dashed green;
 }
+
+.ya-share2 .ya-share2__container_size_m .ya-share2__icon {
+	width: 30px;
+	height: 30px;
+}
+
+.ya-share2 .ya-share2__container_size_m .ya-share2__item {
+	margin-right: 10px;
+}
