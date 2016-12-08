@@ -28,3 +28,17 @@ function clearMainPageSliderComponentCache(  )
 
     $CACHE_MANAGER->ClearByTag("mainpage_slider_component");
 }
+
+/*
+ * Clear goa:faq.list component cache
+ * */
+$eventManager->addEventHandler('', HLFaqModel::ENTITY_NAME . 'OnAfterUpdate', 'clearFaqListComponentCache');
+$eventManager->addEventHandler('', HLFaqModel::ENTITY_NAME . 'OnAfterAdd', 'clearFaqListComponentCache');
+$eventManager->addEventHandler('', HLFaqModel::ENTITY_NAME . 'OnAfterDelete', 'clearFaqListComponentCache');
+
+function clearFaqListComponentCache(  )
+{
+    global $CACHE_MANAGER;
+
+    $CACHE_MANAGER->ClearByTag("faq_list_component");
+}
