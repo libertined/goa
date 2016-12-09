@@ -1,4 +1,8 @@
 <?
+/*
+ * Bitrix logs now will stored - its very useful! :)
+ * */
+define("LOG_FILENAME", $_SERVER["DOCUMENT_ROOT"] . "/_logs/bx/" . date("Y_m_d") . ".log");
 
 spl_autoload_register(function ($class) {
 	$file = $_SERVER["DOCUMENT_ROOT"] . '/local/lib/' . $class . '.php';

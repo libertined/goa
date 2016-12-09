@@ -42,7 +42,9 @@
 </ul>
 
 
-<form action="faq.php" method="post" name="askQuestion" enctype="multipart/form-data" id="ask-question">
+<form action="" method="post" name="askQuestion" enctype="multipart/form-data" id="ask-question">
+    <input type="hidden" name="subject" value="<?// antibot field?>">
+
     <div class="form form--grey form--w670 form--center">
         <div class="form__header">Задать свой вопрос</div>
         <p class="warning pos-center">Пожалуйста, внимательно указывайте свой емейл, т.к. в случае неверного емейл адреса мы не сможем ответить Вам</p>
@@ -73,5 +75,3 @@
         </div>
     </div>
 </form>
-
-<script src="ask-question.js"></script>
