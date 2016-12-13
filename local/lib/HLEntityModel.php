@@ -25,7 +25,7 @@ class HLEntityModel
     /**
      * Returns reviews from HL iblock with given params
      */
-    protected static function get( $params = array() )
+    public static function get( $params = array() )
     {
         $entity = static::getEntity();
 
@@ -47,7 +47,7 @@ class HLEntityModel
     /**
      * Returns entity instance for work with HL iblock table.
      */
-    protected static function getEntity(  )
+    public static function getEntity(  )
     {
         if (!static::$entity) {
 

@@ -9,6 +9,8 @@
  *
  */
 
+use Bitrix\Main\Application;
+
 /**
  * This class provide work with HL table of "Reviews" entity.
  * */
@@ -17,6 +19,17 @@ class HLReviewModel extends HLEntityModel
     const ENTITY_ID         = 1;
     const ENTITY_NAME       = "Reviews";
     const ENTITY_TABLE_NAME = "a_reviews";
+
+    /**
+     * Add form field names
+     * */
+    const
+        FORM_ADD_FIELD_USER_NAME_NAME        = "name",
+        FORM_ADD_FIELD_USER_SOCIAL_LINK_NAME = "link",
+        FORM_ADD_FIELD_TOUR_ID_NAME          = "excursion",
+        FORM_ADD_FIELD_TEXT_NAME             = "reviewText",
+        FORM_ADD_FIELD_PHOTOS_NAME           = "photos"
+    ;
 
     /**
      * Returns reviews of given tours with pagenav params.
@@ -164,5 +177,61 @@ class HLReviewModel extends HLEntityModel
 
         return $result;
     }
-
+    
+    
+    /**
+     * Adds new review by fields given in $_POST array.
+     *
+     * Waiting for fields:
+     * - name
+     * - link (social)
+     * - reviewText
+     * - excursion
+     * - photos (array of files)
+     *
+     * All fileds checks by forSql() method.
+     * */
+    static function addFromPost( )
+    {
+        $connection = Application::getConnection();
+        $sqlHelper = $connection->getSqlHelper();
+    
+        $fields = [
+            "UF_ACTIVE" => 0,
+            "UF_DATE"   => date("d.m.Y H:i:s"),
+            "UF_USER_NAME"    => $sqlHelper->forSql($_POST[ static::FORM_ADD_FIELD_USER_NAME_NAME], 100),
+            "UF_USER_SOC_URL" => $sqlHelper->forSql($_POST[ static::FORM_ADD_FIELD_USER_SOCIAL_LINK_NAME ], 100),
+            "UF_TEXT"         => htmlspecialchars($_POST[ static::FORM_ADD_FIELD_TEXT_NAME ]),
+            "UF_TOUR_ID"      => [
+                intval($_POST[ static::FORM_ADD_FIELD_TOUR_ID_NAME ])
+            ],
+            "UF_IMG" => FileHelper::savePostMultiFile(static::FORM_ADD_FIELD_PHOTOS_NAME, "/reviews_add_form/")
+        ];
+    
+        return static::add($fields);
+    }
+    
+    /**
+     * Adds new review by fields given in $fields array.
+     *
+     * */
+    static function add( $fields)
+    {
+        \Bitrix\Main\Loader::includeModule("highloadblock");
+    
+        $className = HLReviewModel::getEntity();
+    
+        /**@var $model \Bitrix\Highloadblock\HighloadBlockTable */
+        $model = new $className;
+        
+        $res = $model->add($fields);
+        
+        if (!$res->isSuccess()) {
+            AddMessage2Log($res->getErrorMessages(), "ERROR while add new review");
+            AddMessage2Log($fields, "fields");
+        }
+        
+        return $res->getId();
+    }
+    
 }
