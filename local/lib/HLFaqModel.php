@@ -34,9 +34,9 @@ class HLFaqModel extends HLEntityModel
         }
 
         $params = array(
-            //"filter" => array(
-            //    "UF_ACTIVE" => 1
-            //),
+            "filter" => array(
+                "UF_ACTIVE" => 1
+            ),
             "limit"  => $perPage,
             "offset" => $perPage * ($pageNum - 1),
             "order"  => array("UF_SORT" => "ASC"),
@@ -80,7 +80,7 @@ class HLFaqModel extends HLEntityModel
             "UF_ACTIVE" => 0,
             "UF_SORT"   => 500,
             "UF_DATE"   => date("d.m.Y"),
-            "UF_QUESTION"    => $sqlHelper->forSql($_POST["questionText"], 500),
+            "UF_QUESTION"    => htmlspecialchars($_POST["questionText"]),
             "UF_USER_NAME"   => $sqlHelper->forSql($_POST["name"], 100),
             "UF_USER_EMAIL"  => $sqlHelper->forSql($_POST["email"], 100)
         ];
