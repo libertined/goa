@@ -243,13 +243,13 @@ $(document).ready( function() {
 			el.addClass("check");
 			el.find(".form__viber-real").prop("checked","true");
 			el.closest(".form__wrap").find(".form__input").attr("value", phoneNumber);
-			el.closest(".form__wrap").find(".form__input").attr("disabled","disabled");
+			el.closest(".form__wrap").find(".form__input").attr("readonly","readonly");
 		}
 		if(check=="y") {
 			el.removeClass("check");
 			el.find(".form__viber-real").prop("checked","");
 			el.closest(".form__wrap").find(".form__input").attr("value", "");
-			el.closest(".form__wrap").find(".form__input").removeAttr("disabled");
+			el.closest(".form__wrap").find(".form__input").removeAttr("readonly");
 		}
 	});
 
