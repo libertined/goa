@@ -3,7 +3,13 @@ $(function () {
         form = document.forms.orderForm,
         modalWindow = document.querySelector(".modal-order");
 
-    servicesSelect.addEventListener("change", formHandler);
+    /*
+    * On tour detail page - select does not exists
+    * */
+    if (servicesSelect != null){
+        servicesSelect.addEventListener("change", formHandler);
+    }
+
     form.addEventListener("submit", formSubmit);
     document.querySelector(".modal-close").addEventListener("click", closeModal);
     document.querySelector(".modal-close__link").addEventListener("click", closeModal);

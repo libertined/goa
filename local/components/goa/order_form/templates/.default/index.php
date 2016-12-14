@@ -31,27 +31,33 @@
 
     <div class="form form--yellow form--w670">
 
-        <div class="form__wrap marg-b-15">
-            <label for="service-list" class="form__title">Что заказываем</label>
-            <label class="form__field select">
-                <select name="<?=OrderHelper::FORM_ADD_FIELD_ORDER_ENTITY_NAME?>" id="service-list" class="form__input">
-                    <?foreach ( getEnumValues(ORDER_IBOCK_ID, "ORDER_ENTITY") as $id => $data ){?>
-                        <option value="<?=$id?>" data-js_value="<?=$data["XML_ID"]?>"><?=$data["NAME"]?></option>
-                    <?}?>
-                </select>
-            </label>
-        </div>
+        <? if ( $arParams["TOUR_DETAIL"] == "Y" ) { ?>
+            <input type="hidden" name="<?=OrderHelper::FORM_ADD_FIELD_TOUR_ID_NAME?>" value="<?=$arParams["TOUR_ID"]?>">
+            <input type="hidden" name="<?=OrderHelper::FORM_ADD_FIELD_ORDER_ENTITY_NAME?>" value="<?=OrderHelper::FORM_ADD_FIELD_ORDER_ENTITY_TOUR_VALUE_ID?>">
+        <? } else {?>
+            <div class="form__wrap marg-b-15">
+                <label for="service-list" class="form__title">Что заказываем</label>
+                <label class="form__field select">
+                    <select name="<?=OrderHelper::FORM_ADD_FIELD_ORDER_ENTITY_NAME?>" id="service-list" class="form__input">
+                        <?foreach ( getEnumValues(ORDER_IBOCK_ID, "ORDER_ENTITY") as $id => $data ){?>
+                            <option value="<?=$id?>" data-js_value="<?=$data["XML_ID"]?>"><?=$data["NAME"]?></option>
+                        <?}?>
+                    </select>
+                </label>
+            </div>
 
-        <div class="form__wrap marg-b-15 form__exhib-select">
-            <label for="excursions-list" class="form__title">Выберите экскурсию</label>
-            <label class="form__field select">
-                <select name="<?=OrderHelper::FORM_ADD_FIELD_TOUR_ID_NAME?>" id="excursions-list" class="form__input">
-                    <?foreach ( HLReviewModel::getAllToursInfo(true) as $id => $tour ){?>
-                        <option value="<?=$id?>"><?=$tour["NAME"]?></option>
-                    <?}?>
-                </select>
-            </label>
-        </div>
+            <div class="form__wrap marg-b-15 form__exhib-select">
+                <label for="excursions-list" class="form__title">Выберите экскурсию</label>
+                <label class="form__field select">
+                    <select name="<?=OrderHelper::FORM_ADD_FIELD_TOUR_ID_NAME?>" id="excursions-list" class="form__input">
+                        <?foreach ( HLReviewModel::getAllToursInfo(true) as $id => $tour ){?>
+                            <option value="<?=$id?>"><?=$tour["NAME"]?></option>
+                        <?}?>
+                    </select>
+                </label>
+            </div>
+        <? } ?>
+
 
         <div class="form__wrap marg-b-15 hidden">
             <label for="celebration-type" class="form__title">Тип праздника</label>

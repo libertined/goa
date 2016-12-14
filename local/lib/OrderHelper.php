@@ -15,6 +15,10 @@ use Bitrix\Main\Application;
  * */
 class OrderHelper
 {
+    const
+        FORM_ADD_FIELD_ORDER_ENTITY_TOUR_VALUE_ID = 2
+    ;
+
     /**
      * Add form field names
      *

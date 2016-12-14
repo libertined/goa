@@ -95,67 +95,15 @@ $this->setFrameMode(true);
 <div class="js-extab" data-tab="extab-order" style="display: none;">
   <p>Пожалуйста, обращайте внимание на правильность заполнения полей Емейл и Телефон. Если эти данные будут введены неверно, мы не сможем связаться с вами.</p>
 
-  <form action="" method="post" name="">
-    <div class="form form--yellow form--w670">
-      <div class="form__wrap marg-b-15">
-        <label for="label-date" class="form__title">Ориентировочная дата*</label>
-        <div class="form__field form--field-date form--icon form--icon-date">
-          <input id="label-date" placeholder="" name="" value="" type="date" class="form__input js-datepicker-after" required />
-        </div>
-      </div>
-
-      <div class="form__wrap marg-b-15">
-        <label for="label-hotel" class="form__title">Название отеля, № комнаты</label>
-        <div class="form__field"><input id="label-hotel" placeholder="" name="" value="" type="text" class="form__input" /></div>
-      </div>
-
-      <div class="form__wrap marg-b-15">
-        <label for="label-counter" class="form__title">Количество людей*</label>
-        <div class="form__field">
-          <div class="form__counter">
-            <div class="form__counter-btn form--counter-minus"></div>
-            <input id="label-counter" placeholder="" name="" value="1" type="text" class="form__input form--input-counter" readonly />
-            <div class="form__counter-btn form--counter-plus"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form__wrap marg-b-15">
-        <label for="label-name" class="form__title">Имя*</label>
-        <div class="form__field"><input id="label-name" placeholder="" name="" value="" type="text" class="form__input" required /></div>
-      </div>
-
-      <div class="form__wrap marg-b-15">
-        <label for="label-email" class="form__title">Email*</label>
-        <div class="form__field"><input id="label-email" placeholder="" name="" value="" type="email" class="form__input" required /></div>
-      </div>
-
-      <div class="form__wrap marg-b-15">
-        <label for="label-phone" class="form__title">Телефон*</label>
-        <div class="form__field"><input id="label-phone" placeholder="+7(999)999-99-99" name="" value="" type="tel" class="form__input" pattern="(\+?\d[- . \( \)]*){7,15}" required /></div>
-      </div>
-
-      <div class="form__wrap marg-b-15">
-		<label for="viber-phone" class="form__title">Viber, WhatsApp</label>
-        <div class="form__field">
-			<input id="viber-phone" placeholder="+7(999)999-99-99" name="" value="" type="tel" class="form__input" pattern="(\+?\d[- . \( \)]*){7,15}" />
-			<div class="form--title-viber">
-			совпадает с основным телефоном <input id="viber-phone" name="close" value="yes" type="checkbox" class="form__viber-real" />
-			</div>
-			
-		</div>  
-          
-	  </div>
-
-      <div class="form__wrap marg-b-15">
-        <label for="label-info" class="form__title">Дополнительная информация</label>
-        <div class="form__field"><textarea id="label-info" class="form__textarea"></textarea></div>
-      </div>
-
-      <div class="form__wrap">
-        <div class="form__title visible-adaptive-768">&nbsp;</div>  
-        <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Заказать</button></div>
-      </div>
-    </div>
-  </form>
+    <?$APPLICATION->IncludeComponent(
+        "goa:order_form",
+        "",
+        array(
+            "CACHE_TYPE" => "N",
+            "TOUR_DETAIL" => "Y",
+            "TOUR_ID" => $arResult["ITEM"]["ID"],
+        ),
+        $component
+    );
+    ?>
 </div>
