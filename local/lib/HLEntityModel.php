@@ -63,4 +63,27 @@ class HLEntityModel
 
         return static::$entity;
     }
+    
+    /**
+     * Adds new review by fields given in $fields array.
+     *
+     * */
+    public static function add( $fields)
+    {
+        \Bitrix\Main\Loader::includeModule("highloadblock");
+        
+        $className = static::getEntity();
+        
+        /**@var $model \Bitrix\Highloadblock\HighloadBlockTable */
+        $model = new $className;
+        
+        $res = $model->add($fields);
+        
+        if (!$res->isSuccess()) {
+            AddMessage2Log($res->getErrorMessages(), "ERROR while add new review");
+            AddMessage2Log($fields, "fields");
+        }
+        
+        return $res->getId();
+    }
 }

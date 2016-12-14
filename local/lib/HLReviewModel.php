@@ -211,27 +211,4 @@ class HLReviewModel extends HLEntityModel
         return static::add($fields);
     }
     
-    /**
-     * Adds new review by fields given in $fields array.
-     *
-     * */
-    static function add( $fields)
-    {
-        \Bitrix\Main\Loader::includeModule("highloadblock");
-    
-        $className = HLReviewModel::getEntity();
-    
-        /**@var $model \Bitrix\Highloadblock\HighloadBlockTable */
-        $model = new $className;
-        
-        $res = $model->add($fields);
-        
-        if (!$res->isSuccess()) {
-            AddMessage2Log($res->getErrorMessages(), "ERROR while add new review");
-            AddMessage2Log($fields, "fields");
-        }
-        
-        return $res->getId();
-    }
-    
 }

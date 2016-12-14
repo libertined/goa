@@ -9,6 +9,8 @@
  *
  */
 
+use Bitrix\Main\Application;
+
 /**
  * This class provide work with HL table of "Faq" entity.
  * */
@@ -56,4 +58,33 @@ class HLFaqModel extends HLEntityModel
         return $result;
     }
 
+
+    /**
+     * Adds new item by fields given in $_POST array.
+     *
+     * Waiting for fields:
+     * - name
+     * - link (social)
+     * - reviewText
+     * - excursion
+     * - photos (array of files)
+     *
+     * All fileds checks by forSql() method.
+     * */
+    static function addFromPost( )
+    {
+        $connection = Application::getConnection();
+        $sqlHelper = $connection->getSqlHelper();
+
+        $fields = [
+            "UF_ACTIVE" => 0,
+            "UF_SORT"   => 500,
+            "UF_DATE"   => date("d.m.Y"),
+            "UF_QUESTION"    => $sqlHelper->forSql($_POST["questionText"], 500),
+            "UF_USER_NAME"   => $sqlHelper->forSql($_POST["name"], 100),
+            "UF_USER_EMAIL"  => $sqlHelper->forSql($_POST["email"], 100)
+        ];
+
+        return static::add($fields);
+    }
 }
