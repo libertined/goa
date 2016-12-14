@@ -32,6 +32,7 @@ if (!$_REQUEST["subject"]) {
         $eventFields["PEOPLE_COUNT"] = htmlspecialchars($_POST[ OrderHelper::FORM_ADD_FIELD_PEOPLE_COUNT_NAME ]);
         $eventFields["TOUR_ID"]      = $tours[ intval($_POST[ OrderHelper::FORM_ADD_FIELD_TOUR_ID_NAME ]) ]["NAME"];
 
+        $eventFields["HOTEL_NAME"]  = htmlspecialchars($_POST[ OrderHelper::FORM_ADD_FIELD_HOTEL_NAME_NAME ]);
         $eventFields["EVENT_TYPE"]  = $eventTypes[ intval($_POST[ OrderHelper::FORM_ADD_FIELD_EVENT_TYPE_NAME ]) ]["NAME"];
         $eventFields["DIRECTION"]   = htmlspecialchars($_POST[ OrderHelper::FORM_ADD_FIELD_DIRECTION_NAME ]);
         $eventFields["HOUSE_TYPE"]  = $houseTypes[ intval($_POST[ OrderHelper::FORM_ADD_FIELD_HOUSE_TYPE_NAME ]) ]["NAME"];
