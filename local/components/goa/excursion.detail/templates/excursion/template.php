@@ -84,7 +84,7 @@ $this->setFrameMode(true);
       "CACHE_TYPE" => "N",
       "COMPONENT_TEMPLATE" => "tour_detail_page",
       "TOUR_ID" => $arResult["ITEM"]["ID"],
-      "PER_PAGE" => "1",
+      "PER_PAGE" => "10",
       "REVIEWS_PAGE_NUM" => ""
     ),
     $component
