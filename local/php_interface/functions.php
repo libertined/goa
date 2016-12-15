@@ -1,18 +1,18 @@
 <?
 
 /**
- * Ìàñøòàáèðóåò ôîòî, ñîõðàíÿåò êîïèþ ôàéëà è âîçâðàùàåò ïóòü ê íåìó
- * ëèáî âîçâðàùàåò ññûëêó íà êàðòèíêó-çàãëóøêó
- * TODO èñïîëüçîâàòü ýòó ôóíêöèþ ! :)
+ * ÐœÐ°ÑÑˆÑ‚Ð°Ð±Ð¸Ñ€ÑƒÐµÑ‚ Ñ„Ð¾Ñ‚Ð¾, ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÑ‚ ÐºÐ¾Ð¿Ð¸ÑŽ Ñ„Ð°Ð¹Ð»Ð° Ð¸ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¿ÑƒÑ‚ÑŒ Ðº Ð½ÐµÐ¼Ñƒ
+ * Ð»Ð¸Ð±Ð¾ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ ÑÑÑ‹Ð»ÐºÑƒ Ð½Ð° ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÑƒ-Ð·Ð°Ð³Ð»ÑƒÑˆÐºÑƒ
+ * TODO Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ ÑÑ‚Ñƒ Ñ„ÑƒÐ½ÐºÑ†Ð¸ÑŽ ! :)
  *
  * @param $imgId
  * @param $width int
- * @param $height int Åñëè íå çàäàíî, áóäåò ðàâíî øèðèíå
+ * @param $height int Ð•ÑÐ»Ð¸ Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ð¾, Ð±ÑƒÐ´ÐµÑ‚ Ñ€Ð°Ð²Ð½Ð¾ ÑˆÐ¸Ñ€Ð¸Ð½Ðµ
  *
  * @throws Exception File dimensions can not be a null
  *
  *
- * @return string Ïóòü ê èçìåíåííîìó ôàéëó
+ * @return string ÐŸÑƒÑ‚ÑŒ Ðº Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð½Ð¾Ð¼Ñƒ Ñ„Ð°Ð¹Ð»Ñƒ
  *
  *
  * @author dev@dermanov.ru
@@ -48,7 +48,7 @@ function getResizedImgOrPlaceholder( $imgId, $width, $height = 0, $proportional 
 
     $resizedImg = CFile::ResizeImageGet($imgId, array("width"=>$width, "height"=>$height), $resizeParam, false, false, false, 100);
 
-    /* åñëè ôàéë ïî êàêèì-òî ïðè÷èíàì íå ñîçäàëñÿ */
+    /* ÐµÑÐ»Ð¸ Ñ„Ð°Ð¹Ð» Ð¿Ð¾ ÐºÐ°ÐºÐ¸Ð¼-Ñ‚Ð¾ Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°Ð¼ Ð½Ðµ ÑÐ¾Ð·Ð´Ð°Ð»ÑÑ */
     if (!file_exists($_SERVER["DOCUMENT_ROOT"] . $resizedImg['src'])) {
         return getResizedImgOrPlaceholder(false, $width, $height, $proportional);
     }
@@ -57,13 +57,13 @@ function getResizedImgOrPlaceholder( $imgId, $width, $height = 0, $proportional 
 }
 
 /**
- * Ôîðìàòèðóåò äàòó
+ * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸Ñ€ÑƒÐµÑ‚ Ð´Ð°Ñ‚Ñƒ
  *
- * @param $date string Äàòà (íàðèìåð, íà÷àëî àêòèâíîñòè ýëåìåíòà)
+ * @param $date string Ð”Ð°Ñ‚Ð° (Ð½Ð°Ñ€Ð¸Ð¼ÐµÑ€, Ð½Ð°Ñ‡Ð°Ð»Ð¾ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾ÑÑ‚Ð¸ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°)
  *
- * @param $format string Ôîðìàò äàòû (â ðàìêàõ Bitrix API)
+ * @param $format string Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹ (Ð² Ñ€Ð°Ð¼ÐºÐ°Ñ… Bitrix API)
  *
- * @return string Ïðèìåð 05.11.2015 15:37:00 => 5 Íîÿáðÿ 2015
+ * @return string ÐŸÑ€Ð¸Ð¼ÐµÑ€ 05.11.2015 15:37:00 => 5 ÐÐ¾ÑÐ±Ñ€Ñ 2015
  *
  *
  * @author dev@dermanov.ru
@@ -73,10 +73,10 @@ function formatDateCustom ($date, $format = "j F Y") {
 }
 
 /**
- * Ôóíêöèÿ âîçâðàùàåò îêîí÷àíèå äëÿ ìíîæåñòâåííîãî ÷èñëà ñëîâà íà îñíîâàíèè ÷èñëà è ìàññèâà îêîí÷àíèé
- * @param  $number Integer ×èñëî íà îñíîâå êîòîðîãî íóæíî ñôîðìèðîâàòü îêîí÷àíèå
- * @param  $endingArray Array  Array Ìàññèâ ñëîâ èëè îêîí÷àíèé äëÿ ÷èñåë (1, 4, 5),
- *         íàïðèìåð array('ÿáëîêî', 'ÿáëîêà', 'ÿáëîê')
+ * Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸Ðµ Ð´Ð»Ñ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²ÐµÐ½Ð½Ð¾Ð³Ð¾ Ñ‡Ð¸ÑÐ»Ð° ÑÐ»Ð¾Ð²Ð° Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ð°Ð½Ð¸Ð¸ Ñ‡Ð¸ÑÐ»Ð° Ð¸ Ð¼Ð°ÑÑÐ¸Ð²Ð° Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸Ð¹
+ * @param  $number Integer Ð§Ð¸ÑÐ»Ð¾ Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ðµ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð½ÑƒÐ¶Ð½Ð¾ ÑÑ„Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸Ðµ
+ * @param  $endingArray Array  Array ÐœÐ°ÑÑÐ¸Ð² ÑÐ»Ð¾Ð² Ð¸Ð»Ð¸ Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸Ð¹ Ð´Ð»Ñ Ñ‡Ð¸ÑÐµÐ» (1, 4, 5),
+ *         Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ array('ÑÐ±Ð»Ð¾ÐºÐ¾', 'ÑÐ±Ð»Ð¾ÐºÐ°', 'ÑÐ±Ð»Ð¾Ðº')
  * @return String
  */
 function getNumEnding($number, $endingArray) {
@@ -97,4 +97,38 @@ function getNumEnding($number, $endingArray) {
     }
 
     return $ending;
+}
+
+
+
+/**
+ * ÐŸÐ¾Ð»ÑƒÑ‡Ð°ÐµÑ‚ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ ÑÐ¿Ð¸ÑÐºÐ¾Ð²Ð¾Ð³Ð¾ ÑÐ²-Ð²Ð° Ð¿Ð¾ ÐµÐ³Ð¾ ÐºÐ¾Ð´Ñƒ Ð¸ Ð˜Ð” Ð¸Ð±Ð»Ð¾ÐºÐ°.
+ * */
+function getEnumValues( $IBLOCK_ID, $ENUM_CODE )
+{
+    if (!$IBLOCK_ID)
+        throw new Exception ( '$IBLOCK_ID can not be void' );
+    
+    if (!$ENUM_CODE)
+        throw new Exception ( '$ENUM_CODE can not be void' );
+    
+    CModule::IncludeModule("iblock");
+    
+    $result = array();
+    
+    $res = CIBlockPropertyEnum::GetList(array(
+        "SORT" => "ASC",
+        "NAME" => "ASC",
+    ), array(
+        "IBLOCK_ID" => $IBLOCK_ID,
+        "CODE"      => $ENUM_CODE,
+    ));
+    
+    while ($ob = $res->Fetch())
+        $result[ $ob["ID"] ] = [
+            "NAME"   => $ob["VALUE"],
+            "XML_ID" => $ob["XML_ID"],
+        ];
+    
+    return $result;
 }

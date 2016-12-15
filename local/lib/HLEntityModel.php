@@ -25,7 +25,7 @@ class HLEntityModel
     /**
      * Returns reviews from HL iblock with given params
      */
-    protected static function get( $params = array() )
+    public static function get( $params = array() )
     {
         $entity = static::getEntity();
 
@@ -47,7 +47,7 @@ class HLEntityModel
     /**
      * Returns entity instance for work with HL iblock table.
      */
-    protected static function getEntity(  )
+    public static function getEntity(  )
     {
         if (!static::$entity) {
 
@@ -62,5 +62,28 @@ class HLEntityModel
         }
 
         return static::$entity;
+    }
+    
+    /**
+     * Adds new review by fields given in $fields array.
+     *
+     * */
+    public static function add( $fields)
+    {
+        \Bitrix\Main\Loader::includeModule("highloadblock");
+        
+        $className = static::getEntity();
+        
+        /**@var $model \Bitrix\Highloadblock\HighloadBlockTable */
+        $model = new $className;
+        
+        $res = $model->add($fields);
+        
+        if (!$res->isSuccess()) {
+            AddMessage2Log($res->getErrorMessages(), "ERROR while add new review");
+            AddMessage2Log($fields, "fields");
+        }
+        
+        return $res->getId();
     }
 }

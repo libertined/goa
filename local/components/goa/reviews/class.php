@@ -51,6 +51,14 @@ class Reviews extends CProjectBlockComponent
         }
 
 
+        /*
+         * On detail page we will recieve single id.
+         * */
+        if (count($arParams["TOUR_ID"]) == 1){
+            $arParams["TOUR_ID"] = $arParams["TOUR_ID"][0];
+        }
+
+
         return parent::onPrepareComponentParams($arParams);
     }
     

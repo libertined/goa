@@ -58,7 +58,7 @@ require_once __DIR__ . "/inc_filter.php";
                  <?}?>
 
 
-                <div class="modal-window" id="modal-gallery-<?=$item["ID"]?>">
+                <div class="modal-window js-window" id="modal-gallery-<?=$item["ID"]?>">
                     <div class="modal-window__body">
                         <div class="gallery">
 
