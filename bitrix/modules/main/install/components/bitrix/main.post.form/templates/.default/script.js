@@ -44,7 +44,7 @@ BX.util.object_search = function(needle, haystack)
 		{
 			if (haystack[i] == needle)
 				return true;
-			else if (typeof haystack[i] == "object")
+			else if (typeof haystack[i] == "object" && haystack[i] !== null)
 			{
 				var result = BX.util.object_search_key(needle, haystack[i]);
 				if (result !== false)
@@ -201,7 +201,7 @@ diskController.prototype = {
 										blob.referrerToEditor = imageBase64;
 										if (diskController.dndCatcher[id]["catch"] === true)
 											diskController.dndCatcher[id]["drop"]([blob]);
-										else if (this.handler && this.handler.addFile["addFile"])
+										else if (this.handler && this.handler["addFile"])
 											this.handler.addFile(blob);
 
 										BX.onCustomEvent(editor, "OnImageDataUriCaught", [imageBase64]);
@@ -1050,7 +1050,7 @@ LHEPostForm.prototype = {
 			if (params['arSize']['height'])
 				style += 'max-height:' + params['arSize']['height'] + 'px;';
 			if (style !== '')
-				this.parser['postimage']['wysiwyg'] = this.parser['postimage']['wysiwyg'].replace('#ADDITIONAL#', 'style="' + style + '" #ADDITIONAL#');
+				this.parser['postimage']['wysiwyg'] = this.parser['postimage']['wysiwyg'].replace('#ADDITIONAL#', ' style="' + style + '" #ADDITIONAL#');
 		}
 	},
 	initFiles : function(formID, params)
@@ -1139,7 +1139,7 @@ LHEPostForm.prototype = {
 			{
 				var regs = this.getFileToInsert(file, controller);
 				BX.onCustomEvent(blob["referrerToEditor"], "OnImageDataUriCaughtUploaded", [regs]);
-				BX.onCustomEvent(this.editor, "OnImageDataUriCaughtUploaded", [blob["referrerToEditor"]]);
+				BX.onCustomEvent(this.oEditor, "OnImageDataUriCaughtUploaded", [blob["referrerToEditor"], file, regs]);
 			}
 			else if (uploaded === true && file.isImage && this.insertImageAfterUpload)
 			{
@@ -1154,7 +1154,7 @@ LHEPostForm.prototype = {
 		if (blob && blob["referrerToEditor"])
 		{
 			BX.onCustomEvent(blob["referrerToEditor"], "OnImageDataUriCaughtFailed", []);
-			BX.onCustomEvent(this.editor, "OnImageDataUriCaughtFailed", []);
+			BX.onCustomEvent(this.editor, "OnImageDataUriCaughtFailed", [blob["referrerToEditor"]]);
 		}
 	},
 	OnFileUploadRemove : function(file, controller)
@@ -1281,26 +1281,25 @@ LHEPostForm.prototype = {
 					);
 				}
 			}
-			if (this.monitoring.savedFiles.join(',') != this.monitoring.files.join(','))
+			if (this.monitoring.savedFiles.join(',') !== this.monitoring.files.join(','))
 			{
-
-				var files = this.monitoring.files.join('|') + '|', id;
-				for (ii = 0; ii < this.monitoring.savedFiles.length; ii++)
+				var files = {}, id;
+				while (id = this.monitoring.savedFiles.pop())
 				{
-					id = this.monitoring.savedFiles[ii];
-					if (files.indexOf(id + '|') >= 0)
-						files = files.replace(id + '|', '');
-					else
-					{
-						id = id.split('/');
-						this.monitoringSetStatus(id[0], id[1], false);
-					}
+					files[id] = null;
 				}
-				files = files.substring(0, files.length - 1).split('|');
-				for (ii = 0; ii < files.length; ii++)
+				for (ii = 0; ii < this.monitoring.files.length; ii++)
 				{
-					id = id = files[ii].split('/');
-					this.monitoringSetStatus(id[0], id[1], true);
+					id = this.monitoring.files[ii];
+					files[id] = (files[id] >= 0 ? (files[id] + 1) : 1);
+				}
+				for (ii in files)
+				{
+					if (files.hasOwnProperty(ii))
+					{
+						id = ii.split('/');
+						this.monitoringSetStatus(id[0], id[1], (files[ii] > 0));
+					}
 				}
 			}
 			this.monitoring.savedFiles = this.monitoring.files;
@@ -1373,10 +1372,9 @@ LHEPostForm.prototype = {
 				pattern = (editorMode == "wysiwyg" ? this.parser["postimage"][editorMode] : pattern);
 				if (file.width > 0 && file.height > 0 && editor.sEditorMode == "html" )
 				{
-					params = ' style="width:' + file.width + 'px;height:' + file.height + 'px;" onload="this.style=\' \'"';
+					params = ' style="width:' + file.width + 'px;height:' + file.height + 'px;" onload="this.style.width=\'auto\';this.style.height=\'auto\';"';
 				}
 			}
-
 			if(editorMode == 'wysiwyg') // WYSIWYG
 			{
 				pattern = pattern.
@@ -1514,7 +1512,7 @@ LHEPostForm.prototype = {
 
 							if (strAdditional === "" && file["width"] > 0 && file["height"] > 0)
 							{
-								strAdditional = ' style="width:' + file["width"] + 'px;height:' + file["height"] + 'px;" onload="this.style=\' \'"';
+								strAdditional = ' style="width:' + file["width"] + 'px;height:' + file["height"] + 'px;" onload="this.style.width=\'auto\';this.style.height=\'auto\';"';
 							}
 						}
 
@@ -1851,7 +1849,6 @@ LHEPostForm.prototype = {
 			{
 				BX.removeClass(this.pCont, 'bxhtmled-button-toolbar-pined');
 				BX.removeClass(this.pCont, 'bxhtmled-button-toolbar-pin');
-				//console.info('but.prototype.OnClick', , but.pCont);
 				if (_this.pinEditorPanel)
 				{
 					_this.pinEditorPanel = false;
@@ -1880,6 +1877,7 @@ LHEPostForm.prototype = {
 		BX.addCustomEvent(editor, "OnIframeDragOver", BX.proxy(function(){BX.onCustomEvent(this.eventNode, "OnIframeDragOver", arguments);}, this));
 		BX.addCustomEvent(editor, "OnIframeDragLeave", BX.proxy(function(){BX.onCustomEvent(this.eventNode, "OnIframeDragLeave", arguments);}, this));
 		BX.addCustomEvent(editor, "OnImageDataUriHandle", BX.proxy(function(){BX.onCustomEvent(this.eventNode, "OnImageDataUriHandle", arguments);}, this));
+
 		BX.addCustomEvent(editor, "OnAfterUrlConvert", this.OnAfterUrlConvert.bind(this));
 		BX.addCustomEvent(editor, "OnBeforeCommandExec", this.OnBeforeCommandExec.bind(this));
 		// Contextmenu changing for images/files
@@ -2027,7 +2025,7 @@ LHEPostForm.prototype = {
 	},
 	OnBeforeCommandExec: function(isContentAction, action, oAction, value)
 	{
-		if(this.urlPreview && action == 'createLink' && value.hasOwnProperty('href'))
+		if(this.urlPreview && action == 'createLink' && BX.type.isPlainObject(value) && value.hasOwnProperty('href'))
 		{
 			this.urlPreview.attachUrlPreview({url: value.href});
 		}
@@ -2125,7 +2123,7 @@ window.BXPostFormTags.prototype.show = function()
 			autoHide: true,
 			angle : true,
 			closeByEsc: true,
-			zIndex: -910,
+			zIndex: -840,
 			buttons: [
 				new BX.PopupWindowButton({
 					text : BX.message("TAG_ADD"),
@@ -2215,6 +2213,78 @@ window.BXPostFormTags.prototype.onKeyPress = function(event)
 	}
 };
 
+window.BXPostFormImportant = function(formID, buttonID, inputName)
+{
+	if (inputName)
+	{
+		this.formID = formID;
+		this.buttonID = buttonID;
+		this.inputName = inputName;
+
+		this.fireButton = null;
+		this.activeBlock = null;
+		this.hiddenField = null;
+
+		BX.ready(BX.proxy(this.init, this));
+	}
+
+	return false;
+};
+window.BXPostFormImportant.prototype.init = function()
+{
+	this.fireButton = BX(this.buttonID);
+	this.activeBlock = BX(this.buttonID + '-active');
+
+	var form = BX(this.formID);
+	if (form)
+	{
+		this.hiddenField = form[this.inputName];
+		if (
+			this.hiddenField
+			&& this.hiddenField.value == 1
+		)
+		{
+			this.showActive();
+		}
+	}
+
+	BX.bind(this.fireButton, "click", BX.proxy(function(event) {
+		event = event || window.event;
+		this.showActive();
+		BX.PreventDefault(event);
+	}, this));
+
+	BX.bind(this.activeBlock, "click", BX.proxy(function(event) {
+		event = event || window.event;
+		this.hideActive();
+		BX.PreventDefault(event);
+	}, this));
+};
+window.BXPostFormImportant.prototype.showActive = function(event)
+{
+	BX.hide(this.fireButton);
+	BX.show(this.activeBlock, 'inline-block');
+
+	if (this.hiddenField)
+	{
+		this.hiddenField.value = 1;
+	}
+
+	return false;
+};
+window.BXPostFormImportant.prototype.hideActive = function(event)
+{
+	BX.hide(this.activeBlock);
+	BX.show(this.fireButton, 'inline-block');
+
+	if (this.hiddenField)
+	{
+		this.hiddenField.value = 0;
+	}
+
+	return false;
+};
+
 var lastWaitElement = null;
 window.MPFbuttonShowWait = function(el)
 {
@@ -2270,7 +2340,7 @@ var MPFMention = {
 	bSearch: false
 };
 
-window.BXfpdSelectCallback = function(item, type, search, bUndeleted)
+window.BXfpdSelectCallback = function(item, type, search, bUndeleted, name, state)
 {
 	BX.SocNetLogDestination.BXfpSelectCallback({
 		item: item,
@@ -2281,7 +2351,8 @@ window.BXfpdSelectCallback = function(item, type, search, bUndeleted)
 		formName: window.BXSocNetLogDestinationFormName,
 		tagInputName: 'bx-destination-tag',
 		tagLink1: BX.message('BX_FPD_LINK_1'),
-		tagLink2: BX.message('BX_FPD_LINK_2')
+		tagLink2: BX.message('BX_FPD_LINK_2'),
+		state: (typeof state != 'undefined' ? state : null)
 	});
 };
 
@@ -2549,13 +2620,14 @@ window.onTextareaKeyUpHandler = function(e, editor, formID)
 
 					mentText = mentText.replace(/^[\+@]*/, '');
 
-					if(!BX.SocNetLogDestination.isOpenDialog())
+					if(BX.SocNetLogDestination && !BX.SocNetLogDestination.isOpenDialog())
 					{
 						BX.SocNetLogDestination.openDialog(window['BXSocNetLogDestinationFormNameMent' + formID]);
 					}
 
 					MPFMention.bSearch = (mentText.length > 0);
-					BX.SocNetLogDestination.search(mentText, true, window['BXSocNetLogDestinationFormNameMent' + formID], BX.message("MPF_NAME_TEMPLATE"));
+					if (BX.SocNetLogDestination)
+						BX.SocNetLogDestination.search(mentText, true, window['BXSocNetLogDestinationFormNameMent' + formID], BX.message("MPF_NAME_TEMPLATE"));
 
 					if (MPFMention.leaveContent && MPFMention._lastText && mentTextOrig === '')
 					{
@@ -2564,7 +2636,8 @@ window.onTextareaKeyUpHandler = function(e, editor, formID)
 					else if (MPFMention.leaveContent && MPFMention.lastText && mentTextOrig !== '' && mentText === '')
 					{
 						window['BXfpdStopMent' + formID]();
-						BX.SocNetLogDestination.openDialog(window['BXSocNetLogDestinationFormNameMent' + formID]);
+						if (BX.SocNetLogDestination)
+							BX.SocNetLogDestination.openDialog(window['BXSocNetLogDestinationFormNameMent' + formID]);
 					}
 
 					MPFMention.lastText = mentText;
@@ -2712,52 +2785,11 @@ window.BxInsertMention = function (params)
 	}
 };
 
-window.buildDepartmentRelation = function(department)
-{
-	var relation = {}, p, iid;
-	for(iid in department)
-	{
-		if (department.hasOwnProperty(iid))
-		{
-			p = department[iid]['parent'];
-			if (!relation[p])
-				relation[p] = [];
-			relation[p][relation[p].length] = iid;
-		}
-	}
-	function makeDepartmentTree(id, relation)
-	{
-		var arRelations = {}, relId, arItems;
-		if (relation[id])
-		{
-			for (var x in relation[id])
-			{
-				if (relation[id].hasOwnProperty(x))
-				{
-					relId = relation[id][x];
-					arItems = [];
-					if (relation[relId] && relation[relId].length > 0)
-						arItems = makeDepartmentTree(relId, relation);
-
-					arRelations[relId] = {
-						id: relId,
-						type: 'category',
-						items: arItems
-					};
-				}
-			}
-		}
-
-		return arRelations;
-	}
-	return makeDepartmentTree('DR0', relation);
-};
-
 window.MPFMentionInit = function(formId, params)
 {
 	if (!params["items"]["departmentRelation"])
 	{
-		params["items"]["departmentRelation"] = window.buildDepartmentRelation(params["items"]["department"]);
+		params["items"]["departmentRelation"] = BX.SocNetLogDestination.buildDepartmentRelation(params["items"]["department"]);
 	}
 
 	window["departmentRelation"] = params["items"]["departmentRelation"]; // for calendar - do not remove
@@ -2818,9 +2850,18 @@ window.MPFMentionInit = function(formId, params)
 			useClientDatabase: (!!params["useClientDatabase"]),
 			destSort: params["destSort"],
 			allowAddUser: params["allowAddUser"],
-			userNameTemplate: (typeof params["userNameTemplate"] != 'undefined' ? params["userNameTemplate"] : '')
+			allowAddCrmContact: params["allowAddCrmContact"],
+			allowSearchCrmEmailUsers: (typeof params["allowSearchCrmEmailUsers"] != 'undefined' ? !!params["allowSearchCrmEmailUsers"] : false),
+			userNameTemplate: (typeof params["userNameTemplate"] != 'undefined' ? params["userNameTemplate"] : ''),
+			allowSonetGroupsAjaxSearch: (typeof params["allowSonetGroupsAjaxSearch"] != 'undefined' ? params["allowSonetGroupsAjaxSearch"] : false),
+			allowSonetGroupsAjaxSearchFeatures: (typeof params["allowSonetGroupsAjaxSearchFeatures"] != 'undefined' ? params["allowSonetGroupsAjaxSearchFeatures"] : {})
 		});
 		BX.bind(BX('feed-add-post-destination-input'), 'keyup', BX.delegate(BX.SocNetLogDestination.BXfpSearch, {
+			formName: window.BXSocNetLogDestinationFormName,
+			inputName: 'feed-add-post-destination-input',
+			tagInputName: 'bx-destination-tag'
+		}));
+		BX.bind(BX('feed-add-post-destination-input'), 'paste', BX.delegate(BX.SocNetLogDestination.BXfpSearch, {
 			formName: window.BXSocNetLogDestinationFormName,
 			inputName: 'feed-add-post-destination-input',
 			tagInputName: 'bx-destination-tag'
@@ -2848,7 +2889,17 @@ window.MPFMentionInit = function(formId, params)
 			{
 				if (params["itemsHidden"].hasOwnProperty(ii))
 				{
-					window.BXfpdSelectCallback({id:('SG'+params["itemsHidden"][ii]["ID"]), name:params["itemsHidden"][ii]["NAME"]}, 'sonetgroups', '', true);
+					window.BXfpdSelectCallback(
+						{
+							id: (typeof params["itemsHidden"][ii]["PREFIX"] != 'undefined' ? params["itemsHidden"][ii]["PREFIX"] : 'SG') + params["itemsHidden"][ii]["ID"],
+							name: params["itemsHidden"][ii]["NAME"]
+						},
+						(typeof params["itemsHidden"][ii]["TYPE"] != 'undefined' ? params["itemsHidden"][ii]["TYPE"] : 'sonetgroups'),
+						'',
+						true,
+						'',
+						'init'
+					);
 				}
 			}
 		}
@@ -2926,7 +2977,7 @@ window.MPFMentionInit = function(formId, params)
 				params["items"]["departmentExtranet"][key] = params["items"]["extranetRoot"][key];
 			}
 		}
-		params["items"]["departmentRelationExtranet"] = window.buildDepartmentRelation(params["items"]["departmentExtranet"]);
+		params["items"]["departmentRelationExtranet"] = BX.SocNetLogDestination.buildDepartmentRelation(params["items"]["departmentExtranet"]);
 	}
 
 	BX.SocNetLogDestination.init({

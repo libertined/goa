@@ -7,7 +7,8 @@ Loc::loadMessages(__FILE__);
 
 if(!defined('B24NETWORK_URL'))
 {
-	define('B24NETWORK_URL', 'https://www.bitrix24.net');
+	$defaultValue = \Bitrix\Main\Config\Option::get('socialservices', 'network_url', 'https://www.bitrix24.net');
+	define('B24NETWORK_URL', $defaultValue);
 }
 
 class CSocServBitrix24Net extends CSocServAuth
@@ -73,9 +74,9 @@ class CSocServBitrix24Net extends CSocServAuth
 			(defined("ADMIN_SECTION") && ADMIN_SECTION == true ? 'admin=1' : 'site_id='.SITE_ID)
 			.'&backurl='.urlencode($GLOBALS["APPLICATION"]->GetCurPageParam(
 				'check_key='.CSocServAuthManager::GetUniqueKey(),
-				array(
-					"logout", "auth_service_error", "auth_service_id", "check_key"
-				)
+				array_merge(array(
+					"auth_service_error", "auth_service_id", "check_key"
+				), \Bitrix\Main\HttpRequest::getSystemParameters())
 			))
 			.'&mode='.$mode;
 
@@ -189,7 +190,7 @@ class CSocServBitrix24Net extends CSocServAuth
 			self::SetOption("bitrix24net_domain", ($request->isHttps() ? "https://" : "http://").$request->getHttpHost());
 		}
 
-		$aRemove = array("logout", "auth_service_error", "auth_service_id", "code", "error_reason", "error", "error_description", "check_key", "current_fieldset", "checkword");
+		$aRemove = array_merge(array("auth_service_error", "auth_service_id", "code", "error_reason", "error", "error_description", "check_key", "current_fieldset", "checkword"), \Bitrix\Main\HttpRequest::getSystemParameters());
 
 		$url = ($APPLICATION->GetCurDir() == "/login/") ? "" : $APPLICATION->GetCurDir();
 
@@ -292,6 +293,7 @@ class CSocServBitrix24Net extends CSocServAuth
 </script>
 <?
 
+		\CMain::FinalActions();
 		die();
 	}
 
@@ -345,6 +347,7 @@ class CBitrix24NetOAuthInterface
 	protected $code = false;
 	protected $access_token = false;
 	protected $accessTokenExpires = 0;
+	protected $lastAuth = null;
 	protected $refresh_token = '';
 	protected $scope = array(
 		'auth',
@@ -485,6 +488,11 @@ class CBitrix24NetOAuthInterface
 			"&checkword=".$checkword;
 	}
 
+	public function getLastAuth()
+	{
+		return $this->lastAuth;
+	}
+
 	public function GetAccessToken($redirect_uri = '')
 	{
 		if($this->code === false)
@@ -527,7 +535,14 @@ class CBitrix24NetOAuthInterface
 			'grant_type' => 'authorization_code',
 		)));
 
-		$arResult = Json::decode($result);
+		try
+		{
+			$arResult = Json::decode($result);
+		}
+		catch(\Bitrix\Main\ArgumentException $e)
+		{
+			$arResult = array("error" => "ERROR_RESPONSE", "error_description" => "Wrong response from Network");
+		}
 
 		if(isset($arResult["access_token"]) && $arResult["access_token"] <> '')
 		{
@@ -538,6 +553,8 @@ class CBitrix24NetOAuthInterface
 
 			$this->access_token = $arResult["access_token"];
 			$this->accessTokenExpires = time() + $arResult["expires_in"];
+
+			$this->lastAuth = $arResult;
 
 			return true;
 		}
@@ -568,7 +585,14 @@ class CBitrix24NetOAuthInterface
 			'grant_type' => 'refresh_token',
 		)));
 
-		$arResult = Json::decode($result);
+		try
+		{
+			$arResult = Json::decode($result);
+		}
+		catch(\Bitrix\Main\ArgumentException $e)
+		{
+			$arResult = array("error" => "ERROR_RESPONSE", "error_description" => "Wrong response from Network");
+		}
 
 		if(isset($arResult["access_token"]) && $arResult["access_token"] <> '')
 		{

@@ -117,34 +117,54 @@
 					width = sourceImageWidth;
 					height = sourceImageHeight;
 				}
-
-				if (resizeType == "circumscribed")
+				if (resizeType == "exact")
 				{
-					ResizeCoeff = {
-						width : (width > 0 ? arSize["width"] / width : 1),
-						height: (height > 0 ? arSize["height"] / height : 1)};
+					var
+						ratio = (sourceImageWidth / sourceImageHeight < arSize["width"] / arSize["height"] ? arSize["width"] / sourceImageWidth : arSize["height"] / sourceImageHeight),
+						x = Math.max(0, Math.round(sourceImageWidth / 2 - (arSize["width"] / 2) / ratio)),
+						y = Math.max(0, Math.round(sourceImageHeight / 2 - (arSize["height"] / 2) / ratio));
 
-					iResizeCoeff = Math.max(ResizeCoeff["width"], ResizeCoeff["height"], 1);
+					res.bNeedCreatePicture = true;
+					res.coeff = ratio;
+
+					res.destin["width"] = arSize["width"];
+					res.destin["height"] = arSize["height"];
+
+					res.source["x"] = x;
+					res.source["y"] = y;
+					res.source["width"] = Math.round(arSize["width"] / ratio, 0);
+					res.source["height"] = Math.round(arSize["height"] / ratio, 0);
 				}
 				else
 				{
-					ResizeCoeff = {
-						width : (width > 0 ? arSize["width"] / width : 1),
-						height: (height > 0 ? arSize["height"] / height : 1)};
+					if (resizeType == "circumscribed")
+					{
+						ResizeCoeff = {
+							width : (width > 0 ? arSize["width"] / width : 1),
+							height: (height > 0 ? arSize["height"] / height : 1)};
 
-					iResizeCoeff = Math.min(ResizeCoeff["width"], ResizeCoeff["height"], 1);
-					iResizeCoeff = (0 < iResizeCoeff ? iResizeCoeff : 1);
+						iResizeCoeff = Math.max(ResizeCoeff["width"], ResizeCoeff["height"], 1);
+					}
+					else
+					{
+						ResizeCoeff = {
+							width : (width > 0 ? arSize["width"] / width : 1),
+							height: (height > 0 ? arSize["height"] / height : 1)};
+
+						iResizeCoeff = Math.min(ResizeCoeff["width"], ResizeCoeff["height"], 1);
+						iResizeCoeff = (0 < iResizeCoeff ? iResizeCoeff : 1);
+					}
+					res.bNeedCreatePicture = (iResizeCoeff != 1);
+					res.coeff = iResizeCoeff;
+					res.destin["width"] = Math.max(1, parseInt(iResizeCoeff * sourceImageWidth));
+					res.destin["height"] = Math.max(1, parseInt(iResizeCoeff * sourceImageHeight));
+
+					res.source["x"] = 0;
+					res.source["y"] = 0;
+					res.source["width"] = sourceImageWidth;
+					res.source["height"] = sourceImageHeight;
 				}
 
-				res.bNeedCreatePicture = (iResizeCoeff != 1);
-				res.coeff = iResizeCoeff;
-				res.destin["width"] = Math.max(1, parseInt(iResizeCoeff * sourceImageWidth));
-				res.destin["height"] = Math.max(1, parseInt(iResizeCoeff * sourceImageHeight));
-
-				res.source["x"] = 0;
-				res.source["y"] = 0;
-				res.source["width"] = sourceImageWidth;
-				res.source["height"] = sourceImageHeight;
 			}
 			return res;
 		},
@@ -291,11 +311,11 @@
 				}
 
 				if('mozSlice' in file)
-					blob = file.mozSlice(start, end);
+					blob = file.mozSlice(start, end, file.type);
 				else if ('webkitSlice' in file)
-					blob = file.webkitSlice(start, end);
+					blob = file.webkitSlice(start, end, file.type);
 				else if ('slice' in file)
-					blob = file.slice(start, end);
+					blob = file.slice(start, end, file.type);
 				else
 					blob = file.Slice(start, end, file.type);
 

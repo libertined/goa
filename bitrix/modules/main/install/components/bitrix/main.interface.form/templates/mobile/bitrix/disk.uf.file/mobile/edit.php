@@ -11,7 +11,7 @@
 /** @var string $componentPath */
 /** @var \Bitrix\Disk\Internals\BaseComponent $component */
 $this->IncludeLangFile("edit.php");
-CJSCore::Init(array("core", "uploader", "canvas"));
+CJSCore::Init(array("core", "uploader"));
 
 $m = GetMessage("MPF_ERROR1");
 $thumb = <<<HTML
@@ -48,7 +48,7 @@ $uploadedFile = <<<HTML
 HTML;
 $thumb = preg_replace("/[\n\t]+/", "", $thumb);
 $uploadedFile =  preg_replace("/[\n\t]+/", "", $uploadedFile);
-
+?><input type="hidden" name="<?=htmlspecialcharsbx($arResult['controlName'])?>" value="" /><?
 ?><div id="diskuf-placeholder-<?=$arResult['UID']?>"><?
 foreach ($arResult['FILES'] as $file)
 {
@@ -88,9 +88,6 @@ BX.ready(function(){
 	});
 });
 BX.message({
-	MPF_CANCEL : '<?=GetMessageJS("MPF_CANCEL")?>',
-	MPF_PHOTO_CAMERA : '<?=GetMessageJS("MPF_PHOTO_CAMERA")?>',
-	MPF_PHOTO_GALLERY : '<?=GetMessageJS("MPF_PHOTO_GALLERY")?>',
 	MPF_PHOTO_DISK : '<?=GetMessageJS("MPF_PHOTO_DISK")?>',
 	MPF_INCORRECT_RESPONSE : '<?=GetMessageJS("MPF_INCORRECT_RESPONSE")?>',
 	DISK_NODE : '<?=CUtil::JSEscape($thumb)?>'

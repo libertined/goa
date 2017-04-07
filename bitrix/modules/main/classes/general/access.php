@@ -90,7 +90,7 @@ class CAccess
 		global $USER;
 
 		$USER_ID = 0;
-		if(isset($arParams["USER_ID"]))
+		if(is_array($arParams) && isset($arParams["USER_ID"]))
 			$USER_ID = intval($arParams["USER_ID"]);
 		elseif(is_object($USER) && $USER->IsAuthorized())
 			$USER_ID = intval($USER->GetID());

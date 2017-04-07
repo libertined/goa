@@ -560,7 +560,7 @@ span.bxhtmled-top-bar-dd-active:before {
 	overflow: hidden;
 	padding-bottom: 1px;
 	position: relative;
-	vertical-align: top;
+	vertical-align: top !important;
 }
 
 .bxhtmled-split-btn-r {width: 21px;}
@@ -611,6 +611,7 @@ span.bxhtmled-top-bar-dd-active:before {
 .bxhtmled-split-btn-r .bxhtmled-split-btn-bg {
 	margin-left: -5px;
 	width: 24px;
+	vertical-align: middle;
 }
 
 .bxhtmled-split-btn-r .bxhtmled-split-btn-bg:before {
@@ -654,7 +655,7 @@ span.bxhtmled-top-bar-dd-active:before {
 }
 
 .bxhtmled-toolbar{ text-align: left !important;}
-.bxhtmled-area-cnt{position: absolute; top: 34px; left: -5px; z-index: 100;}
+.bxhtmled-area-cnt{position: absolute; top: 34px; left: 0; z-index: 100;}
 .bxhtmled-iframe-cnt{
 	position: absolute; top: 0; left: 0; background-color: #FFF !important;
 	overflow: auto!important;
@@ -715,7 +716,7 @@ span.bxhtmled-top-bar-dd-active:before {
 	bottom: auto;
 	box-shadow: none;
 	clear: none;
-	display: inline;
+	display: block;
 	float: none;
 	left: auto;
 	margin: 0;
@@ -727,6 +728,7 @@ span.bxhtmled-top-bar-dd-active:before {
 	top: auto;
 	vertical-align: text-bottom;
 	z-index: auto;
+	line-height: 2px!important;
 }
 
 .bx-editor-css-iframe{
@@ -740,6 +742,8 @@ span.bxhtmled-top-bar-dd-active:before {
 .bxhtmled-textarea{
 	width: 100% !important;
 	height: 100% !important;
+	min-height: none!important;
+	max-height: none!important;
 	background-color: #fefefe !important;
 	color: #000000 !important;
 	cursor: text !important;
@@ -1203,6 +1207,10 @@ span.bxhtmled-top-bar-dd-active:before {
 {
 	width: 90%;
 }
+
+.bxhtmled-video-error-cell{padding: 10px; text-align: center !important;}
+.bxhtmled-video-error{font-size: 110% !important;color: #790000 !important;font-weight: bold !important;}
+
 .bxhtmled-video-empty .bxhtmled-video-ext-row {display: none;}
 .bxhtmled-video-local .bxhtmled-video-ext-loc-row {display: none;}
 .bxhtmled-video-preview-cnt{
@@ -1427,9 +1435,8 @@ border-radius: 2px; cursor: pointer;
 /* Colorpicker END */
 
 .bxhtmled-inp-popup {padding: 2px;}
-.bxhtmled-inp-popup-item{padding: 4px 7px; cursor: pointer;border-radius: 2px;}
+.bxhtmled-inp-popup-item{padding: 4px 7px; cursor: pointer; border-radius: 1px; width:100%;}
 .bxhtmled-inp-popup-item:hover{background-color: #bfe2f1 !important;}
-
 
 
 /* ~~~ Popup with corner ~~~ */

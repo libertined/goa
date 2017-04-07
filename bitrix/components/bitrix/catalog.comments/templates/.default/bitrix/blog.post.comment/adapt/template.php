@@ -506,9 +506,7 @@ else
 							<span class="blog-vert-separator"></span>
 							<?
 						}
-						?>
-						<span class="blog-comment-link"><a href="#<?=$comment["ID"]?>"><?=GetMessage("B_B_MS_LINK")?></a></span>
-						<?
+
 						if($comment["CAN_EDIT"] == "Y")
 						{
 							?>
@@ -607,9 +605,9 @@ else
 						$level = 0;
 						$commentPreview = Array(
 								"ID" => "preview",
-								"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-								"TextFormated" => $_POST["commentFormated"],
-								"AuthorName" => $User["NAME"],
+								"TitleFormated" => htmlspecialcharsbx($_POST["subject"]),
+								"TextFormated" => htmlspecialcharsbx($_POST["commentFormated"]),
+								"AuthorName" => htmlspecialcharsbx($User["NAME"]),
 								"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 							);
 						ShowComment($commentPreview, (IntVal($_POST["edit_id"]) == $comment["ID"] && $comment["CAN_EDIT"] == "Y") ? $level : ($level+1), 2.5, false, Array(), false, false, false, $arParams);

@@ -43,6 +43,7 @@ $arJSCoreConfig = array(
 	),
 	'webrtc' => array(
 		'js' => $pathJS.'/core_webrtc.js',
+		'rel' => array('webrtc_adapter')
 	),
 	'popup' => array(
 		'js' => $pathJS.'/core_popup.js',
@@ -79,6 +80,7 @@ $arJSCoreConfig = array(
 		'css' => $pathCSS.'/core_viewer.css',
 		'lang' => $pathLang.'/js_core_viewer.php',
 		'rel' => array('ls', 'ajax', 'popup'),
+		'lang_additional' => array('DISK_MYOFFICE' => COption::GetOptionString('disk', 'demo_myoffice', false))
 	),
 	'window' => array(
 		'js' => $pathJS.'/core_window.js',
@@ -118,7 +120,12 @@ $arJSCoreConfig = array(
 		'js' => $pathJS . '/core_frame_cache.js',
 		'rel' => array('db','ajax', 'ls', 'fx')
 	),
-
+	'avatar_editor' => array(
+		'js' => $pathJS.'/core_avatar_editor.js',
+		'css' => $pathCSS.'/core_avatar_editor.css',
+		'lang' => $pathLang.'/js_core_avatar_editor.php',
+		'rel' => array('canvas', 'popup', 'dd', 'uploader'),
+	),
 	'canvas' => array(
 		'js' => $pathJS.'/core_canvas.js',
 		'css' => $pathCSS.'/core_canvas.css',
@@ -137,7 +144,7 @@ $arJSCoreConfig = array(
 			"phpPostMaxSize" => CUtil::Unformat(ini_get("post_max_size")),
 			"phpUploadMaxFilesize" => CUtil::Unformat(ini_get("upload_max_filesize")),
 			"bxImageExtensions" => CFile::GetImageExtensions(),
-			"bxUploaderLog" => COption::GetOptionString("main", "uploaderLog", "N")
+			"bxUploaderLog" => COption::GetOptionString("main", "uploaderLog", "N"),
 		),
 		'lang' => $pathLang.'/js_core_uploader.php',
 		'rel' => array('ajax', 'dd')
@@ -157,6 +164,36 @@ $arJSCoreConfig = array(
 		'css' => $pathCSS.'/core_fileinput.css',
 		'lang' => $pathLang.'/js_core_fileinput.php',
 		'rel' => array("ajax", "window", "popup", "uploader", "canvas", "dd")
+	),
+	'clipboard' => array(
+		'js' => $pathJS.'/core_clipboard.js',
+		'lang' => $pathLang.'/js_core_clipboard.php',
+		'rel' => array("popup")
+	),
+	'recorder' => array(
+		'js' => '/bitrix/js/main/recorder/recorder.js',
+		'rel' => array('lamejs')
+	),
+	'pin' => array(
+		'js' => '/bitrix/js/main/pin/pin.js',
+		'css' => '/bitrix/js/main/pin/css/pin.css'
+	),
+	'ui_select' => array(
+		'js' => $pathJS.'/core_ui_select.js',
+		'rel' => array('popup')
+	),
+	'ui_date' => array(
+		'js' => $pathJS.'/core_ui_date.js'
+	),
+	'ui' => array(
+		'js' => $pathJS.'/core_ui_factory.js',
+		'rel' => array('ui_select', 'ui_date', 'decl')
+	),
+	'decl' => array(
+		'js' => $pathJS.'/core_decl.js'
+	),
+	'drag_drop' => array(
+		'js' => $pathJS.'/core_dragdrop.js'
 	),
 
 	/* external libs */
@@ -227,6 +264,12 @@ $arJSCoreConfig = array(
 		'js' => '/bitrix/js/main/helper/helper.js',
 		'css' => '/bitrix/js/main/helper/css/helper.css',
 	),
+	'webrtc_adapter' => array(
+		'js' => '/bitrix/js/main/webrtc/adapter.js'
+	),
+	'lamejs' => array(
+		'js' => '/bitrix/js/main/recorder/recorder.js'
+	)
 );
 
 foreach ($arJSCoreConfig as $ext => $arExt)

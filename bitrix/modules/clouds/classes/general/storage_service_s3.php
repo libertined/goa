@@ -280,12 +280,12 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		if(isset($additional_headers["Content-Type"]))
 		{
 			$ContentType = $additional_headers["Content-Type"];
-			unset($additional_headers["Content-Type"]);
 		}
 		else
 		{
 			$ContentType = $content != ""? 'text/plain': '';
 		}
+		unset($additional_headers["Content-Type"]);
 
 		foreach($this->set_headers as $key => $value)
 		{
@@ -539,9 +539,34 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 	*/
 	function GetFileSRC($arBucket, $arFile)
 	{
+		$proto = CMain::IsHTTPS()? "https": "http";
+
 		if($arBucket["CNAME"] != "")
 		{
 			$host = $arBucket["CNAME"];
+			$pref = "";
+		}
+		elseif ($proto === "https" && strpos($arBucket["BUCKET"], ".") !== false)
+		{
+			switch($arBucket["LOCATION"])
+			{
+			case "us-west-1":
+				$host = "s3-us-west-1.amazonaws.com";
+				break;
+			case "eu-west-1":
+				$host = "s3-eu-west-1.amazonaws.com";
+				break;
+			case "ap-southeast-1":
+				$host = "s3-ap-southeast-1.amazonaws.com";
+				break;
+			case "ap-northeast-1":
+				$host = "s3-ap-northeast-1.amazonaws.com";
+				break;
+			default:
+				$host = "s3.amazonaws.com";
+				break;
+			}
+			$pref = $arBucket["BUCKET"];
 		}
 		else
 		{
@@ -563,6 +588,7 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 				$host = $arBucket["BUCKET"].".s3.amazonaws.com";
 				break;
 			}
+			$pref = "";
 		}
 
 		if(is_array($arFile))
@@ -570,13 +596,16 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		else
 			$URI = ltrim($arFile, "/");
 
-		if($arBucket["PREFIX"] != "")
+		if ($arBucket["PREFIX"] != "")
 		{
 			if(substr($URI, 0, strlen($arBucket["PREFIX"])+1) !== $arBucket["PREFIX"]."/")
 				$URI = $arBucket["PREFIX"]."/".$URI;
 		}
 
-		$proto = CMain::IsHTTPS()? "https": "http";
+		if ($pref !== "")
+		{
+			$URI = $pref."/".$URI;
+		}
 
 		return $proto."://$host/".CCloudUtil::URLEncode($URI, "UTF-8");
 	}
@@ -732,12 +761,19 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		{
 			return true;
 		}
+		elseif ($this->status == 400 && strpos($this->result, 'ExpiredToken') !== false)
+		{
+			$this->tokenHasExpired = true;
+			return false;
+		}
 		elseif($this->status == 403)
 		{
+			AddMessage2Log($this);
 			return false;
 		}
 		else
 		{
+			AddMessage2Log($this);
 			$APPLICATION->ResetException();
 			return false;
 		}
@@ -833,6 +869,11 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 
 				break;
 			}
+			elseif ($this->status == 400 && strpos($this->result, 'ExpiredToken') !== false)
+			{
+				$this->tokenHasExpired = true;
+				return false;
+			}
 			else
 			{
 				return false;
@@ -901,7 +942,7 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		return 5*1024*1024; //5MB
 	}
 
-	function UploadPart($arBucket, &$NS, $data)
+	function UploadPartNo($arBucket, &$NS, $data, $part_no)
 	{
 		$filePath = '/'.trim($NS["filePath"], '/');
 		if($arBucket["PREFIX"])
@@ -917,19 +958,24 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 			'PUT',
 			$arBucket["BUCKET"],
 			$filePath,
-			'?partNumber='.(count($NS["Parts"])+1).'&uploadId='.urlencode($NS["UploadId"]),
+			'?partNumber='.($part_no + 1).'&uploadId='.urlencode($NS["UploadId"]),
 			$data
 		);
 
 		if($this->status == 200 && is_array($this->headers) && isset($this->headers["ETag"]))
 		{
-			$NS["Parts"][] = $this->headers["ETag"];
+			$NS["Parts"][$part_no] = $this->headers["ETag"];
 			return true;
 		}
 		else
 		{
 			return false;
 		}
+	}
+
+	function UploadPart($arBucket, &$NS, $data)
+	{
+		return $this->UploadPartNo($arBucket, $NS, $data, count($NS["Parts"]));
 	}
 
 	function CompleteMultipartUpload($arBucket, &$NS)
@@ -942,9 +988,12 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		}
 		$filePath = CCloudUtil::URLEncode($filePath, "UTF-8");
 
+		ksort($NS["Parts"]);
 		$data = "";
 		foreach($NS["Parts"] as $PartNumber => $ETag)
+		{
 			$data .= "<Part><PartNumber>".($PartNumber+1)."</PartNumber><ETag>".$ETag."</ETag></Part>\n";
+		}
 
 		$this->SetLocation($arBucket["LOCATION"]);
 		$this->SendRequest(

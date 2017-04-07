@@ -38,8 +38,8 @@
 				}
 			}, this),
 
-			OnUCUserQuote : BX.delegate(function(entityId, author, res, safeEdit, loaded)
-			{
+			OnUCUserQuote : BX.delegate(function(entityId, author, res, safeEdit, loaded) {
+				var origRes = BX.util.htmlspecialchars(res);
 				if (this.entitiesId[entityId])
 				{
 					if (!this._checkTextSafety([entityId, 0], safeEdit))
@@ -59,7 +59,7 @@
 					}
 					else
 					{
-						res = BX.util.htmlspecialchars(res);
+						res = origRes;
 						if (this.handler.oEditor.GetViewMode() == 'wysiwyg') // BB Codes
 						{
 							res = res.replace(/\n/g, '<br/>');
@@ -100,10 +100,14 @@
 							// Here we take selected text via editor tools
 							// we don't use "res"
 							this.handler.oEditor.action.actions.quote.setExternalSelectionFromRange();
-							if (author !== '')
+							var extSel = this.handler.oEditor.action.actions.quote.getExternalSelection();
+							if (extSel === '' && origRes !== '')
 							{
-								this.handler.oEditor.action.actions.quote.setExternalSelection(author + this.handler.oEditor.action.actions.quote.getExternalSelection());
+								extSel = origRes;
 							}
+							extSel = (BX.type.isNotEmptyString(author) ? author : '') + extSel;
+							if (BX.type.isNotEmptyString(extSel))
+								this.handler.oEditor.action.actions.quote.setExternalSelection(extSel);
 						}
 						else
 						{
@@ -115,8 +119,7 @@
 				}
 			}, this),
 
-			OnUCUserReply : BX.delegate(function(entityId, authorId, authorName, safeEdit)
-			{
+			OnUCUserReply : BX.delegate(function(entityId, authorId, authorName, safeEdit) {
 				if (!this._checkTextSafety([entityId, 0], safeEdit))
 					return;
 
@@ -137,8 +140,7 @@
 				}
 			}, this),
 
-			OnUCAfterRecordEdit : BX.delegate(function(entityId, id, data, act)
-			{
+			OnUCAfterRecordEdit : BX.delegate(function(entityId, id, data, act) {
 				if (!!this.entitiesId[entityId]) {
 					if (act === "EDIT")
 					{
@@ -161,8 +163,10 @@
 						}
 					}
 				} }, this),
+
 			OnUCUsersAreWriting : BX.delegate(function(entityId, authorId, authorName, authorAvatar, timeL) {
 				if (!!this.entitiesId[entityId]) { this.showAnswering([entityId, 0], authorId, authorName, authorAvatar, timeL); } }, this),
+
 			OnUCRecordHasDrawn :  BX.delegate(function(entityId, id, data/*, params*/) {
 				if (!!this.entitiesId[entityId]) {
 					var authorId = parseInt(data && data["AUTHOR"] ? data["AUTHOR"]["ID"] : 0);
@@ -237,10 +241,10 @@
 			BX.onCustomEvent(this.eventNode, 'OnUCFormInit', [this]);
 		}
 		this.id = null;
+		this.jsCommentId = null;
 	};
 	window.FCForm.prototype = {
-		linkEntity : function(Ent)
-		{
+		linkEntity : function(Ent) {
 			if (!!Ent)
 			{
 				for(var ii in Ent)
@@ -263,8 +267,7 @@
 				this.windowEventsSet = true;
 			}
 		},
-		_checkTextSafety : function(id, checkObj)
-		{
+		_checkTextSafety : function(id, checkObj) {
 			if (checkObj === true)
 			{
 				checkObj = id;
@@ -283,7 +286,7 @@
 					time = 2000;
 				if(content.length >= 4 && this.__content_length != content.length && !!this.id)
 				{
-					BX.onCustomEvent(window, 'OnUCUserIsWriting', [this.id[0], this.id[1]]);
+					BX.onCustomEvent(window, 'OnUCUserIsWriting', [this.id[0], this.id[1], this.jsCommentId]);
 					time = 30000;
 				}
 				this._checkWriteTimeout = setTimeout(func, time);
@@ -293,7 +296,6 @@
 		_getPlacehoder : function(res) {res = (!!res ? res : this.id); return (!!res ? BX('record-' + res.join('-') + '-placeholder') : null); },
 		_getSwitcher : function(res) {res = (!!res ? res : this.id); return (!!res ? BX('record-' + res[0] + '-switcher') : null); },
 		hide : function(quick) {if (this.eventNode.style.display != 'none') { BX.onCustomEvent(this.eventNode, 'OnShowLHE', [(quick === true ? false : 'hide')]); } if (quick) { document.body.appendChild(this.form); }},
-
 		clear : function() {
 			//var form = this.form, filesForm = null;
 			this.editing = false;
@@ -323,6 +325,7 @@
 				BX.cleanNode(filesForm, false);
 
 			this.id = null;
+			this.jsCommentId = null;
 		},
 		show : function(id, text, data)
 		{
@@ -332,6 +335,7 @@
 				this.hide(true);
 
 			this.id = id;
+			this.jsCommentId = BX.util.getRandomString(20);
 
 			var node = this._getPlacehoder();
 			node.appendChild(this.form);
@@ -340,8 +344,7 @@
 			BX.onCustomEvent(this.eventNode, 'OnUCFormAfterShow', [this, text, data]);
 			return true;
 		},
-		submit : function()
-		{
+		submit : function() {
 			if (this.busy === true)
 				return 'busy';
 
@@ -362,6 +365,8 @@
 			post_data['MODE'] = "RECORD";
 			post_data['AJAX_POST'] = "Y";
 			post_data['id'] = this.id;
+			if (this.jsCommentId !== null)
+				post_data['COMMENT_EXEMPLAR_ID'] = this.jsCommentId;
 			post_data['SITE_ID'] = BX.message("SITE_ID");
 			post_data['LANGUAGE_ID'] = BX.message("LANGUAGE_ID");
 
@@ -385,9 +390,13 @@
 						data = this.OnUCFormResponseData;
 					if (!!data)
 					{
-						if (!!data['errorMessage'])
+						if (data['errorMessage'])
 						{
 							this.showError(data['errorMessage']);
+						}
+						else if (data["status"] == "error")
+						{
+							this.showError((BX.type.isNotEmptyString(data["message"]) ? data["message"] : ""));
 						}
 						else
 						{

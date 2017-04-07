@@ -166,8 +166,7 @@ HTML
 		$replace = array(
 			"#input_name#" => $inputs["name"],
 			"#input_value#" => "",
-			"#description_name#" => self::getInputName($inputs["name"], "_descr"),
-			"#description#" => ""
+			"#description_name#" => self::getInputName($inputs["name"], "_descr")
 		);
 		$this->templates["new"] = str_replace(array_keys($replace), array_values($replace), $this->templates["new"]);
 		$inputs = array_merge($this->uploadSetts, $params);
@@ -267,7 +266,7 @@ HTML
 
 		$settings = \CUserOptions::GetOption('main', 'fileinput');
 		$settings = (is_array($settings) ? $settings : array(
-			"frameFiles" => "Y",
+			"frameFiles" => "N",
 			"pinDescription" => "N",
 			"mode" => "mode-pict",
 			"presets" => array(
@@ -489,6 +488,21 @@ HTML;
 			return $inputName;
 		$p = strpos($inputName, "[");
 		return  ($p > 0) ? substr($inputName, 0, $p).$type.substr($inputName, $p) : $inputName.$type;
+	}
+
+	/**
+	 * Prepares file array for saving. It is important to use if BX_TEMPORARY_FILES_DIRECTORY is defined.
+	 * @param $file
+	 * @return array|null
+	 */
+	public static function prepareFile($file)
+	{
+		$return = null;
+		if (is_array($file) && isset($file["tmp_name"]) && !empty($file["tmp_name"]))
+		{
+
+		}
+		return $file;
 	}
 }
 ?>

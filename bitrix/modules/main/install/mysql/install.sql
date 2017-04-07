@@ -95,6 +95,7 @@ CREATE TABLE b_event_message
 	FIELD2_VALUE varchar(255),
 	SITE_TEMPLATE_ID varchar(255) DEFAULT NULL,
 	ADDITIONAL_FIELD text NULL,
+	LANGUAGE_ID char(2) NULL,
 	PRIMARY KEY (ID),
 	INDEX ix_b_event_message_name (EVENT_NAME(50))
 );
@@ -103,6 +104,7 @@ CREATE TABLE b_event_attachment
 (
   EVENT_ID int(18) not null,
   FILE_ID int(18) not null,
+  IS_FILE_COPIED char(1) not null default 'Y',
   PRIMARY KEY (EVENT_ID, FILE_ID)
 );
 
@@ -124,6 +126,7 @@ CREATE TABLE b_event
 	DATE_EXEC datetime,
 	SUCCESS_EXEC char(1) not null default 'N',
 	DUPLICATE char(1) not null default 'Y',
+	LANGUAGE_ID char(2) NULL,
 	PRIMARY KEY (ID),
 	INDEX ix_success (SUCCESS_EXEC),
 	INDEX ix_b_event_date_exec (DATE_EXEC)
@@ -227,7 +230,7 @@ CREATE TABLE b_user_field_confirm
 (
 	ID INT(18) not null auto_increment,
 	USER_ID INT(18) not null,
-	DATE_CHANGE timestamp not null,
+	DATE_CHANGE timestamp,
 	FIELD varchar(255) not null,
 	FIELD_VALUE varchar(255) not null,
 	CONFIRM_CODE varchar(32) not null,
@@ -238,7 +241,7 @@ CREATE TABLE b_user_field_confirm
 CREATE TABLE b_module
 (
 	ID VARCHAR(50) not null,
-	DATE_ACTIVE timestamp not null,
+	DATE_ACTIVE timestamp,
 	PRIMARY KEY (ID)
 );
 
@@ -256,7 +259,7 @@ CREATE TABLE b_option
 CREATE TABLE b_module_to_module
 (
 	ID int not null auto_increment,
-	TIMESTAMP_X TIMESTAMP not null,
+	TIMESTAMP_X TIMESTAMP,
 	SORT INT(18) not null default '100',
 	FROM_MODULE_ID VARCHAR(50) not null,
 	MESSAGE_ID VARCHAR(255) not null,
@@ -292,7 +295,7 @@ CREATE TABLE b_agent
 CREATE TABLE b_file
 (
 	ID INT(18) not null auto_increment,
-	TIMESTAMP_X TIMESTAMP not null,
+	TIMESTAMP_X TIMESTAMP,
 	MODULE_ID varchar(50),
 	HEIGHT INT(18),
 	WIDTH INT(18),
@@ -358,10 +361,10 @@ CREATE TABLE b_site_template
 	SITE_ID char(2) not null,
 	`CONDITION` varchar(255),
 	SORT int not null default '500',
-	TEMPLATE varchar(50) not null,
-	PRIMARY KEY (ID)
+	TEMPLATE varchar(255) not null,
+	PRIMARY KEY (ID),
+	INDEX ix_site_template_site (SITE_ID)
 );
-ALTER TABLE b_site_template ADD UNIQUE INDEX UX_B_SITE_TEMPLATE(SITE_ID, `CONDITION`, TEMPLATE);
 
 CREATE TABLE b_event_message_site
 (
@@ -373,13 +376,13 @@ CREATE TABLE b_event_message_site
 CREATE TABLE b_user_option
 (
 	ID int not null auto_increment,
-	USER_ID int null,
+	USER_ID int not null,
 	CATEGORY varchar(50) not null,
 	NAME varchar(255) not null,
 	VALUE mediumtext null,
 	COMMON char(1) not null default 'N',
 	PRIMARY KEY (ID),
-	INDEX ix_user_option_user(USER_ID, CATEGORY)
+	UNIQUE INDEX ux_user_category_name(USER_ID, CATEGORY, NAME)
 );
 
 CREATE TABLE b_captcha
@@ -618,9 +621,9 @@ CREATE TABLE b_rating_rule
 	CONDITION_MODULE varchar(50),
 	CONDITION_CLASS varchar(255) not null,
 	CONDITION_METHOD varchar(255) not null,
-	CONDITION_CONFIG text not null,
+	CONDITION_CONFIG text,
 	ACTION_NAME varchar(200) not null,
-	ACTION_CONFIG text not null,
+	ACTION_CONFIG text,
 	ACTIVATE char(1) not null default 'N',
 	ACTIVATE_CLASS varchar(255) not null,
 	ACTIVATE_METHOD varchar(255) not null,
@@ -682,7 +685,7 @@ CREATE TABLE b_event_log
 (
 	/*SYSTEM GENERATED*/
 	ID INT(18) not null auto_increment,
-	TIMESTAMP_X TIMESTAMP not null,
+	TIMESTAMP_X TIMESTAMP,
 
 	/*CALLER INFO*/
 	SEVERITY VARCHAR(50) not null, /*SECURITY, WARNING, NOTICE*/
@@ -723,7 +726,7 @@ CREATE TABLE b_user_hit_auth
 	HASH varchar(32) not null,
 	URL varchar(255) not null,
 	SITE_ID char(2),
-	TIMESTAMP_X datetime not null,
+	TIMESTAMP_X timestamp,
 	PRIMARY KEY (ID),
 	INDEX IX_USER_HIT_AUTH_1(HASH),
 	INDEX IX_USER_HIT_AUTH_2(USER_ID),
@@ -753,7 +756,7 @@ CREATE TABLE b_checklist
 (
 	ID int(11) not null AUTO_INCREMENT,
 	DATE_CREATE varchar(255),
-	TESTER varchar(50),
+	TESTER varchar(255),
 	COMPANY_NAME varchar(255),
 	PICTURE int(11),
 	TOTAL int(11),
@@ -816,7 +819,7 @@ CREATE TABLE b_user_counter
 	TIMESTAMP_X datetime not null default '3000-01-01 00:00:00',
 	TAG varchar(255),
 	PARAMS text,
-	SENT char(1) null,
+	SENT char(1) null default '0',
 	PRIMARY KEY (USER_ID, SITE_ID, CODE),
 	INDEX ix_buc_tag (TAG),
 	INDEX ix_buc_code (CODE),
@@ -950,6 +953,7 @@ CREATE TABLE b_admin_notify
 	MESSAGE text,
 	ENABLE_CLOSE char(1) NULL default 'Y',
 	PUBLIC_SECTION char(1) NOT NULL default 'N',
+	NOTIFY_TYPE char(1) NOT NULL default 'M',
 	PRIMARY KEY (ID),
 	KEY IX_AD_TAG (TAG)
 );

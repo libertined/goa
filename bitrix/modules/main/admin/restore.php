@@ -8,7 +8,7 @@ if (getenv('BITRIX_VA_VER'))
 	define('VMBITRIX', 'defined');
 
 if (version_compare(phpversion(),'5.3.0','<'))
-	die('Error: PHP5.3 is required');
+	die('Error: PHP version 5.3 or higher is required');
 
 if(realpath(dirname(__FILE__)) != realpath($_SERVER['DOCUMENT_ROOT']))
 	die('Error: this script must be started from Web Server\'s DOCUMENT ROOT');
@@ -58,8 +58,6 @@ if (!function_exists('htmlspecialcharsbx'))
 }
 
 
-# http://bugs.php.net/bug.php?id=48886 - We have 2Gb file limit on Linux
-
 #@set_time_limit(0);
 ob_start();
 
@@ -87,7 +85,7 @@ $mArr_ru =  array(
 			<li>Перейдите в административную панель своего сайта на страницу <b>Настройки &gt; Инструменты &gt; Резервное копирование</b>
 			<li>Создайте полную резервную копию, которая будет включать <b>публичную часть</b>, <b>ядро</b> и <b>базу данных</b>
 			</ul>
-			<b>Документация:</b> <a href='http://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=35&LESSON_ID=2031' target='_blank'>http://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=35&LESSON_ID=2031</a>
+			<b>Документация:</b> <a href='https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=35&LESSON_ID=2031' target='_blank'>https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=35&LESSON_ID=2031</a>
 			</p>
 			",
 			"ARC_DOWN" => "Скачать резервную копию с дальнего сайта",
@@ -184,7 +182,7 @@ $mArr_en = array(
 			<li>Open Control Panel section of your old site and select <b>Settings &gt; Tools &gt; Backup</b>
 			<li>Create full archive which contains <b>public site files</b>, <b>kernel files</b> and <b>database dump</b>
 			</ul>
-			<b>Documentation:</b> <a href='http://www.bitrixsoft.com/support/training/course/lesson.php?COURSE_ID=12&ID=441' target='_blank'>learning course</a>
+			<b>Documentation:</b> <a href='https://training.bitrix24.com/support/training/course/?COURSE_ID=12&LESSON_ID=5913&LESSON_PATH=3884.5489.5913' target='_blank'>learning course</a>
 			</p>
 			",
 			"ARC_DOWN" => "Download from remote server",
@@ -382,7 +380,7 @@ if (!$Step && $_SERVER['REQUEST_METHOD'] == 'GET')
 	$form = '';
 
 	// Check for updates
-	$res = @fsockopen($bx_host, 80, $errno, $errstr, 3);
+	$res = fsockopen('ssl://'.$bx_host, 443, $errno, $errstr, 3);
 
 	if($res)
 	{
@@ -394,12 +392,12 @@ if (!$Step && $_SERVER['REQUEST_METHOD'] == 'GET')
 
 		while ($line = fgets($res, 4096))
 		{
-			if (@preg_match("/Content-Length: *([0-9]+)/i", $line, $regs))
+			if (preg_match("/Content-Length: *([0-9]+)/i", $line, $regs))
 			{
 				if (filesize(__FILE__) != trim($regs[1]))
 				{
 					$tmp_name = $this_script_name.'.tmp';
-					if (LoadFile('http://'.$bx_host.$bx_url, $tmp_name))
+					if (LoadFile('https://'.$bx_host.$bx_url, $tmp_name))
 					{
 						if (rename($_SERVER['DOCUMENT_ROOT'].'/'.$tmp_name,__FILE__))
 						{
@@ -423,7 +421,7 @@ if (!$Step && $_SERVER['REQUEST_METHOD'] == 'GET')
 if ($_REQUEST['LoadFileList'])
 {
 	$strLog = '';
-	if (LoadFile("http://www.1c-bitrix.ru/buy_tmp/backup.php?license=".md5(trim($_REQUEST['license_key']))."&lang=".LANG."&action=get_info", $file = $_SERVER['DOCUMENT_ROOT'].'/file_list.xml') && ($str = file_get_contents($file)))
+	if (LoadFile("https://www.1c-bitrix.ru/buy_tmp/backup.php?license=".md5(trim($_REQUEST['license_key']))."&lang=".LANG."&action=get_info", $file = $_SERVER['DOCUMENT_ROOT'].'/file_list.xml') && ($str = file_get_contents($file)))
 	{
 		if (preg_match_all('/<file name="([^"]+)" size="([^"]+)".*?\\/>/', $str, $regs))
 		{
@@ -477,7 +475,7 @@ elseif ($Step == 2 && !$bSelectDumpStep)
 	{
 		$source = 'download';
 		$strLog = '';
-		if (LoadFile('http://www.1c-bitrix.ru/buy_tmp/backup.php?license='.md5(trim($_REQUEST['license_key'])).'&lang='.LANG.'&action=read_file&file_name='.urlencode($_REQUEST['bitrixcloud_backup']).'&check_word='.CTar::getCheckword($_REQUEST['EncryptKey']), $file = $_SERVER['DOCUMENT_ROOT'].'/file_info.xml') && ($str = file_get_contents($file)))
+		if (LoadFile('https://www.1c-bitrix.ru/buy_tmp/backup.php?license='.md5(trim($_REQUEST['license_key'])).'&lang='.LANG.'&action=read_file&file_name='.urlencode($_REQUEST['bitrixcloud_backup']).'&check_word='.CTar::getCheckword($_REQUEST['EncryptKey']), $file = $_SERVER['DOCUMENT_ROOT'].'/file_info.xml') && ($str = file_get_contents($file)))
 		{
 			unlink($file);
 //			echo htmlspecialcharsbx($str);
@@ -524,7 +522,7 @@ elseif ($Step == 2 && !$bSelectDumpStep)
 	{
 		$strUrl = $_REQUEST['arc_down_url'];
 
-		if (!preg_match('#http://#',$strUrl))
+		if (!preg_match('#https?://#',$strUrl))
 			$strUrl = 'http://'.$strUrl;
 		$arc_name = trim(basename($strUrl));
 
@@ -578,16 +576,17 @@ elseif ($Step == 2 && !$bSelectDumpStep)
 			}
 			else
 			{
+				$tar = new CTar();
 				$text .= '<input type=hidden name=try_next value=Y>';
 				if (count($arHeaders)) // bitrixcloud
 				{
 					$text .= '<input type=hidden name=source value=bitrixcloud>';
-					$text .= '<input type=hidden name="bitrixcloud_backup" value="'.htmlspecialcharsbx(CTar::getNextName($_REQUEST['bitrixcloud_backup'])).'">';
+					$text .= '<input type=hidden name="bitrixcloud_backup" value="'.htmlspecialcharsbx($tar->getNextName($_REQUEST['bitrixcloud_backup'])).'">';
 				}
 				else
 				{
 					$text .= '<input type=hidden name=source value=download>';
-					$text .= '<input type=hidden name=arc_down_url value="'.htmlspecialcharsbx(CTar::getNextName($strUrl)).'">';
+					$text .= '<input type=hidden name=arc_down_url value="'.htmlspecialcharsbx($tar->getNextName($strUrl)).'">';
 				}
 			}
 		}
@@ -855,7 +854,7 @@ elseif($Step == 2)
 					$ArchiveSize = filesize($file) * 2; // for standard gzip files
 				$DataSize = $ArchiveSize;
 
-				while(file_exists($file1 = CTar::getNextName($file1)))
+				while(file_exists($file1 = $tar->getNextName($file1)))
 					$DataSize += $ArchiveSize;
 
 				$r = true;
@@ -901,7 +900,7 @@ elseif($Step == 2)
 				'<input type="hidden" name="ReadBlockCurrent" value="'.$tar->ReadBlockCurrent.'">'.
 				'<input type="hidden" name="EncryptKey" value="'.htmlspecialcharsbx($tar->EncryptKey).'">'.
 				'<input type="hidden" name="DataSize" value="'.$DataSize.'">'.
-				'<input type="hidden" name="arc_name" value="'.$arc_name.'">';
+				'<input type="hidden" name="arc_name" value="'.htmlspecialcharsbx($arc_name).'">';
 	
 				if($r === false) // Error
 					showMsg(getMsg("ERR_EXTRACT", LANG), $status.$hidden.'<div style="color:red">'.$strErrMsg.'</div>', $bottom.$skip);
@@ -918,7 +917,7 @@ elseif($Step == 2)
 			$text = ($tar->EncryptKey ? '<div style="color:red">'.getMsg('WRONG_PASS').'</div>' : '').
 			getMsg('FILE_IS_ENC').
 			'<input type="password" size=30 name="EncryptKey" autocomplete="off">'.
-			'<input type="hidden" name="arc_name" value="'.$arc_name.'">'.
+			'<input type="hidden" name="arc_name" value="'.htmlspecialcharsbx($arc_name).'">'.
 			'<input type="hidden" name="Step" value="2">';
 			$bottom .= ' <input type="button" id="start_button" value="'.getMsg("BUT_TEXT1", LANG).'" onClick="reloadPage(2, \''. LANG.'\')">';
 			showMsg(getMsg('TITLE_PROCESS1'),$text,$bottom);
@@ -1009,7 +1008,7 @@ elseif($Step == 2)
 				}
 				else
 				{
-					$DBHost = 'localhost'.(@file_exists($_SERVER['DOCUMENT_ROOT'].'/../BitrixEnv.exe') ? ':31006' : '');
+					$DBHost = 'localhost'.(file_exists($_SERVER['DOCUMENT_ROOT'].'/../BitrixEnv.exe') ? ':31006' : '');
 					$DBLogin = 'root';
 					$DBPassword = '';
 					$DBName = 'bitrix_'.(rand(11,99));
@@ -1036,7 +1035,7 @@ elseif($Step == 2)
 					'TITLE' => getMsg("TITLE2", LANG),
 					'TEXT' =>
 						($strWarning ? '<div style="color:red;text-align:center"><b>'.getMsg('WARNING').'</b></div> <ul style="color:red">'.$strWarning.'</ul>' : '').
-						'<input type="hidden" name="arc_name" value="'.$arc_name.'">'.
+						'<input type="hidden" name="arc_name" value="'.htmlspecialcharsbx($arc_name).'">'.
 						(count($arDName)>1 ? getMsg("DB_SELECT").' <select name="dump_name">'.$strDName.'</select>' : '<input type=hidden name=dump_name value="'.htmlspecialcharsbx($arDName[0]).'">').
 						'<div style="border:1px solid #aeb8d7;padding:5px;margin-top:4px;margin-bottom:4px;">
 						<div style="text-align:center;color:#aeb8d7;margin:4px"><b>'.getMsg("DB_SETTINGS", LANG).'</b></div>
@@ -1130,10 +1129,10 @@ elseif($Step == 3)
 			{
 				if (is_array($ar['connections']['value']['default']))
 				{
-					$ar['connections']['value']['default']['host'] = str_replace('$','\$',addslashes($_REQUEST['DBHost']));
-					$ar['connections']['value']['default']['database'] = str_replace('$','\$',addslashes($_REQUEST['DBName']));
-					$ar['connections']['value']['default']['login'] = str_replace('$','\$',addslashes($_REQUEST['DBLogin']));
-					$ar['connections']['value']['default']['password'] = str_replace('$','\$',addslashes($_REQUEST['DBPassword']));
+					$ar['connections']['value']['default']['host'] = $_REQUEST['DBHost'];
+					$ar['connections']['value']['default']['database'] = $_REQUEST['DBName'];
+					$ar['connections']['value']['default']['login'] = $_REQUEST['DBLogin'];
+					$ar['connections']['value']['default']['password'] = $_REQUEST['DBPassword'];
 					$data = var_export($ar, true);
 					file_put_contents($config, "<"."?php\nreturn ".$data.";\n");
 				}
@@ -1194,9 +1193,9 @@ elseif($Step == 4) // последний экран: удалять или нет?
 		$oDB = new CDBRestore($_REQUEST["DBHost"], $_REQUEST["DBName"], $_REQUEST["DBLogin"], $_REQUEST["DBPassword"], $_REQUEST["dump_name"], $d_pos);
 		if ($oDB->Connect())
 		{
-			if ($rs = $oDB->Query('SELECT * FROM b_lang WHERE DOC_ROOT != "'.mysql_real_escape_string($_SERVER['DOCUMENT_ROOT']).'" AND DOC_ROOT IS NOT NULL AND DOC_ROOT != ""'))
+			if ($rs = $oDB->Query('SELECT * FROM b_lang WHERE DOC_ROOT != "'.$oDB->escapeString($_SERVER['DOCUMENT_ROOT']).'" AND DOC_ROOT IS NOT NULL AND DOC_ROOT != ""'))
 			{
-				if (mysql_fetch_assoc($rs))
+				if ($oDB->Fetch($rs))
 				{
 					$oDB->Query('UPDATE b_lang SET DOC_ROOT = "" ');
 					$strWarning .= '<li>'.getMsg('DOC_ROOT_WARN');
@@ -1204,15 +1203,16 @@ elseif($Step == 4) // последний экран: удалять или нет?
 			}
 
 			$rs = $oDB->Query('SHOW TABLES LIKE "b_bitrixcloud_option"');
-			if (mysql_fetch_assoc($rs))
+			if ($oDB->Fetch($rs))
 			{
 				$rs = $oDB->Query('SELECT * FROM b_bitrixcloud_option WHERE NAME="cdn_config_active" AND PARAM_VALUE=1');
-				if (mysql_fetch_assoc($rs))
+				if ($oDB->Fetch($rs))
 				{
 					$rs = $oDB->Query('SELECT * FROM b_bitrixcloud_option WHERE NAME="cdn_config_domain"');
-					if (($f = mysql_fetch_assoc($rs)) && $f['PARAM_VALUE'] != $_SERVER['HTTP_HOST'])
+					if (($f = $oDB->Fetch($rs)) && $f['PARAM_VALUE'] != $_SERVER['HTTP_HOST'])
 					{
 						$oDB->Query('UPDATE b_bitrixcloud_option SET PARAM_VALUE=0 WHERE NAME="cdn_config_active"');
+						$oDB->Query('UPDATE b_bitrixcloud_option SET PARAM_VALUE='.(time() + 86400 * 3650).' WHERE NAME="cdn_config_expire_time"');
 						$strWarning .= '<li>'.getMsg('CDN_WARN');
 					}
 				}
@@ -1220,10 +1220,10 @@ elseif($Step == 4) // последний экран: удалять или нет?
 
 			if ($rs = $oDB->Query('SELECT * FROM b_module_to_module WHERE FROM_MODULE_ID="main" AND MESSAGE_ID="OnPageStart" AND TO_CLASS="Bitrix\\\\Security\\\\HostRestriction"'))
 			{
-				if ($f = mysql_fetch_assoc($rs)) // host restriction is turned on
+				if ($f = $oDB->Fetch($rs)) // host restriction is turned on
 				{
 					$rs0 = $oDB->Query('SELECT * FROM b_option WHERE MODULE_ID="security" AND NAME="restriction_hosts_hosts"');
-					if ($f0 = mysql_fetch_assoc($rs0))
+					if ($f0 = $oDB->Fetch($rs0))
 					{
 						if (strpos($f0['VALUE'], $_SERVER['HTTP_HOST']) === false)
 						{
@@ -1236,7 +1236,7 @@ elseif($Step == 4) // последний экран: удалять или нет?
 
 		}
 		else
-			$strWarning .= '<li>Mysql Error: '.mysql_error();
+			$strWarning .= '<li>'.$oDB->getError();
 	}
 
 	$text = 
@@ -1266,7 +1266,7 @@ elseif($Step == 5)
 	}
 
 	foreach(array('cache','stack_cache','managed_cache') as $dir)
-		@DeleteDirRec($_SERVER['DOCUMENT_ROOT'].'/bitrix/'.$dir);
+		DeleteDirRec($_SERVER['DOCUMENT_ROOT'].'/bitrix/'.$dir);
 
 	if (!$ok)
 		showMsg(getMsg("FINISH_ERR_DELL_TITLE", LANG), getMsg("FINISH_ERR_DELL", LANG));
@@ -1278,9 +1278,6 @@ elseif($Step == 5)
 }
 
 #################### END ############
-
-
-
 
 class CDBRestore
 {
@@ -1296,14 +1293,9 @@ class CDBRestore
 	var $start;
 	var $d_pos;
 	var $_dFile;
+	var $mysqli;
 
-
-	function Query($sql)
-	{
-		return mysql_query($sql, $this->db_Conn);
-	}
-
-	function CDBRestore($DBHost, $DBName, $DBLogin, $DBPassword, $DBdump, $d_pos)
+	public function __construct($DBHost, $DBName, $DBLogin, $DBPassword, $DBdump, $d_pos)
 	{
 		$this->DBHost = $DBHost;
 		$this->DBLogin = $DBLogin;
@@ -1311,48 +1303,47 @@ class CDBRestore
 		$this->DBName = $DBName;
 		$this->DBdump = $_SERVER["DOCUMENT_ROOT"]."/bitrix/backup/".$DBdump;
 		$this->d_pos = $d_pos;
+		$this->mysqli = function_exists('mysqli_connect');
 	}
 
-	//Соединяется с базой данных
+	function Query($sql)
+	{
+		$rs = $this->mysqli ? mysqli_query($this->db_Conn, $sql) : mysql_query($sql, $this->db_Conn);
+		if (!$rs)
+		{
+			$this->db_Error = "<font color=#ff0000>MySQL query error!</font><br>".($this->mysqli ? mysqli_error($this->db_Conn) : mysql_error()).'<br><br>'.htmlspecialcharsbx($sql);
+			return false;
+		}
+		return $rs;
+	}
+
 	function Connect()
 	{
-
-		$this->type="MYSQL";
-		if (!defined("DBPersistent")) define("DBPersistent",false);
-		if (DBPersistent)
+		$this->db_Conn = $this->mysqli ? @mysqli_connect($this->DBHost, $this->DBLogin, $this->DBPassword) : @mysql_connect($this->DBHost, $this->DBLogin, $this->DBPassword);
+		if (!$this->db_Conn)
 		{
-			$this->db_Conn = @mysql_pconnect($this->DBHost, $this->DBLogin, $this->DBPassword);
-		}
-		else
-		{
-			$this->db_Conn = @mysql_connect($this->DBHost, $this->DBLogin, $this->DBPassword);
-		}
-
-		if(!($this->db_Conn))
-		{
-			if (DBPersistent) $s = "mysql_pconnect"; else $s = "mysql_connect";
-			if(($str_err = mysql_error()) != "")
-				$this->db_Error .= "<br><font color=#ff0000>Error! ".$s."('-', '-', '-')</font><br>".$str_err."<br>";
+			$this->db_Error = "<font color=#ff0000>MySQL connect error!</font><br>".($this->mysqli ? mysqli_connect_error() : mysql_error()).'<br>';
 			return false;
 		}
 
-		mysql_query('SET FOREIGN_KEY_CHECKS = 0', $this->db_Conn);
+		$this->Query('SET FOREIGN_KEY_CHECKS = 0');
 
-		if(!@mysql_select_db($this->DBName, $this->db_Conn))
+		$dbExists = $this->mysqli ? @mysqli_select_db($this->db_Conn, $this->DBName) : @mysql_select_db($this->DBName, $this->db_Conn);
+		if(!$dbExists)
 		{
 			if (@$_REQUEST["create_db"]=="Y")
 			{
-				if(!@mysql_query("CREATE DATABASE `".mysql_real_escape_string($this->DBName)."`", $this->db_Conn))
+				if(!@$this->Query("CREATE DATABASE `".$this->escapeString($this->DBName)."`"))
 				{
-					$this->db_Error = getMsg("ERR_CREATE_DB", LANG).': '.mysql_error();
+					$this->db_Error = getMsg("ERR_CREATE_DB", LANG).': '.($this->mysqli ? mysqli_error($this->db_Conn) : mysql_error());
 					return false;
 				}
-				@mysql_select_db($this->DBName, $this->db_Conn);
+				$dbExists = $this->mysqli ? @mysqli_select_db($this->db_Conn, $this->DBName) : @mysql_select_db($this->DBName, $this->db_Conn);
 			}
 
-			if(($str_err = mysql_error($this->db_Conn)) != "")
+			if(!$dbExists)
 			{
-				$this->db_Error = "<font color=#ff0000>Error! mysql_select_db($this->DBName)</font><br>".$str_err."<br>";
+				$this->db_Error = "<font color=#ff0000>Error! mysql".($this->mysqli ? 'i' : '')."_select_db(".htmlspecialcharsbx($this->DBName).")</font><br>".($this->mysqli ? mysqli_error($this->db_Conn) : mysql_error())."<br>";
 				return false;
 			}
 		}
@@ -1364,11 +1355,22 @@ class CDBRestore
 			foreach($arSql as $sql)
 			{
 				$sql = str_replace('<DATABASE>', $this->DBName, $sql);
-				mysql_query($sql, $this->db_Conn);
+				if (trim($sql))
+					$this->Query($sql);
 			}
 		}
 
 		return true;
+	}
+	
+	function Fetch($rs)
+	{
+		return $this->mysqli ? mysqli_fetch_assoc($rs) : mysql_fetch_assoc($rs);
+	}
+
+	function escapeString($str)
+	{
+		return $this->mysqli ? mysqli_real_escape_string($this->db_Conn, $str) : mysql_real_escape_string($str, $this->db_Conn);
 	}
 
 	function readSql()
@@ -1436,26 +1438,21 @@ class CDBRestore
 				}
 			}
 
-			$result = @mysql_query($sql, $this->db_Conn);
+			$rs = @$this->Query($sql);
 
-			if(!$result && mysql_errno() != 1062)
+			if(!$rs && ($this->mysqli ? mysqli_errno($this->db_Conn) : mysql_errno()) != 1062)
 			{
-				$this->db_Error .= mysql_error().'<br><br>'.htmlspecialcharsbx($sql);
+				$this->db_Error .= $this->getError().'<br><br>'.htmlspecialcharsbx($sql);
 				return false;
 			}
 			$sql = "";
 		}
-		mysql_query('SET FOREIGN_KEY_CHECKS = 1', $this->db_Conn);
+		$this->Query('SET FOREIGN_KEY_CHECKS = 1');
 
 		if($sql != "")
 		{
-			$result = @mysql_query($sql, $this->db_Conn);
-
-			if(!$result)
-			{
-				$this->db_Error .= mysql_error().'<br><br>'.htmlspecialcharsbx($sql);
+			if(!$this->Query($sql))
 				return false;
-			}
 			$sql = "";
 		}
 
@@ -1472,7 +1469,7 @@ class CDBRestore
 				foreach($arFiles as $file)
 				{
 					if ($id = intval($file))
-						mysql_query('UPDATE b_file SET SUBDIR = CONCAT("'.$name.'/'.$id.'/", SUBDIR), HANDLER_ID=NULL WHERE HANDLER_ID ='.$id);
+						$this->Query('UPDATE b_file SET SUBDIR = CONCAT("'.$name.'/'.$id.'/", SUBDIR), HANDLER_ID=NULL WHERE HANDLER_ID ='.$id);
 				}
 			}
 		}
@@ -1660,16 +1657,16 @@ function html($ar)
 		</tr>
 		<tr>
 			<td bgcolor="#FFFFFF">&nbsp;</td>
-			<td bgcolor="#FFFFFF" style="padding:20x;font-size:10pt" valign="middle" align="right" height="40px"><?=$ar['BOTTOM']?></td>
+			<td bgcolor="#FFFFFF" style="padding:20px;font-size:10pt" valign="middle" align="right" height="40px"><?=$ar['BOTTOM']?></td>
 			<td bgcolor="#FFFFFF">&nbsp;</td>
 		</tr>
 		<tr>
-			<td><div style="background:#FFF url(<?=img('corner_bottom_left.gif')?>);width:11;height:23"></td>
+			<td><div style="background:#FFF url(<?=img('corner_bottom_left.gif')?>);width:11px;height:23px"></td>
 			<td height=23 bgcolor="#FFFFFF" background="<?=img('bottom_fill.gif')?>"></td>
-			<td><div style="background:#FFF url(<?=img('corner_bottom_right.gif')?>);width:11;height:23"></td>
+			<td><div style="background:#FFF url(<?=img('corner_bottom_right.gif')?>);width:11px;height:23px"></td>
 		</tr>
 	</table>
-	<div style="background:url(<?=img('logo_'.(LANG=='ru'?'':'en_').'installer.gif')?>); width:95; height:34">
+	<div style="background:url(<?=img('logo_'.(LANG=='ru'?'':'en_').'installer.gif')?>); width:95px; height:34px">
 	</td></tr></table>
 	</form>
 <?
@@ -1700,6 +1697,7 @@ function SetCurrentProgress($cur,$total=0,$red=true)
 function LoadFile($strRealUrl, $strFilename, $arHeaders = array())
 {
 	global $proxyaddr, $proxyport, $strUserAgent, $replycode;
+	$ssl = preg_match('#^https://#i', $strRealUrl);
 
 	$iStartSize = 0;
 	if (file_exists($strFilename.".tmp"))
@@ -1732,9 +1730,9 @@ function LoadFile($strRealUrl, $strFilename, $arHeaders = array())
 		}
 		SetCurrentStatus(str_replace("#HOST#", $host, LoaderGetMessage("LOADER_LOAD_CONN2HOST")));
 
-		$port = $port ? $port : "80";
+		$port = $port ? $port : ($ssl ? 443 : 80);
 
-		$sockethandle = @fsockopen($host, $port, $error_id, $error_msg, 10);
+		$sockethandle = fsockopen(($ssl ? 'ssl://' : '').$host, $port, $error_id, $error_msg, 10);
 		if (!$sockethandle)
 		{
 			SetCurrentStatus(str_replace("#HOST#", $host, LoaderGetMessage("LOADER_LOAD_NO_CONN2HOST"))." [".$error_id."] ".$error_msg);
@@ -1816,10 +1814,11 @@ function LoadFile($strRealUrl, $strFilename, $arHeaders = array())
 			{
 				$redirection = $strLocationUrl;
 				$redirected = true;
-				if ((strpos($redirection, "http://")===false))
+				if (!preg_match('#^https?://#', $redirection))
 					$strRealUrl = dirname($lasturl)."/".$redirection;
 				else
 					$strRealUrl = $redirection;
+				$ssl = preg_match('#^https://#i', $strRealUrl);
 			}
 
 			if (strlen($strLocationUrl))
@@ -1854,10 +1853,9 @@ function LoadFile($strRealUrl, $strFilename, $arHeaders = array())
 		$hostname = $parsedurl["host"];
 	}
 
-	$port = $port ? $port : "80";
-
+	$port = $port ? $port : ($ssl ? 443 : 80);
 	SetCurrentStatus(str_replace("#HOST#", $host, LoaderGetMessage("LOADER_LOAD_CONN2HOST")));
-	$sockethandle = @fsockopen($host, $port, $error_id, $error_msg, 10);
+	$sockethandle = fsockopen(($ssl ? 'ssl://' : '').$host, $port, $error_id, $error_msg, 10);
 	if (!$sockethandle)
 	{
 		SetCurrentStatus(str_replace("#HOST#", $host, LoaderGetMessage("LOADER_LOAD_NO_CONN2HOST"))." [".$error_id."] ".$error_msg);
@@ -2173,6 +2171,7 @@ class CTar
 
 		if ($header['type']=='L') // Long header
 		{
+			$filename = '';
 			$n = ceil($header['size']/512);
 			for ($i = 0; $i < $n; $i++)
 				$filename .= $this->readBlock();
@@ -2299,7 +2298,7 @@ class CTar
 		return false;
 	}
 
-	function getLastNum($file)
+	public static function getLastNum($file)
 	{
 		$file = self::getFirstName($file);
 
@@ -2576,7 +2575,7 @@ class CTar
 			fclose($this->res);
 	}
 
-	function getNextName($file = '')
+	public function getNextName($file = '')
 	{
 		if (!$file)
 			$file = $this->file;
@@ -2720,12 +2719,12 @@ class CTar
 		return $ar;
 	}
 
-	function getCheckword($key)
+	public static function getCheckword($key)
 	{
 		return md5('BITRIXCLOUDSERVICE'.$key);
 	}
 
-	function getFirstName($file)
+	public static function getFirstName($file)
 	{
 		return preg_replace('#\.[0-9]+$#','',$file);
 	}
@@ -2762,7 +2761,8 @@ class CTarRestore extends CTar
 				$header['filename'] = str_replace('dbconn.php','dbconn.restore.php',$header['filename']);
 			elseif (preg_match('#[^\x00-\x7f]#', $header['filename'])) // non ASCII character detected
 			{
-				if (false === $this->header['filename'] = $header['filename'] = $this->DecodeFileName($header['filename']))
+				$this->header['filename'] = $header['filename'] = $this->DecodeFileName($header['filename']);
+				if ($this->header['filename'] === false)
 					return false;
 			}
 		}
@@ -2811,7 +2811,7 @@ function img($name)
 {
 	if (file_exists($_SERVER['DOCUMENT_ROOT'].'/images/'.$name))
 		return '/images/'.$name;
-	return 'http://www.1c-bitrix.ru/images/bitrix_setup/'.$name;
+	return 'https://www.1c-bitrix.ru/images/bitrix_setup/'.$name;
 }
 
 function bx_accelerator_reset()

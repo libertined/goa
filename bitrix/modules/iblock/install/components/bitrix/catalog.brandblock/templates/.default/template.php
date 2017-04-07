@@ -40,35 +40,44 @@ foreach ($arResult["BRAND_BLOCKS"] as $blockId => $arBB)
 	switch ($arBB['TYPE'])
 	{
 		case 'ONLY_PIC':
-			?><div id="<?=$brandID;?>" class="bx_item_detail_inc_one_container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>><div class="wrapper">
+			?><div id="<?=$brandID;?>" class="brandblock-container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>>
+				<div class="brandblock-wrap">
 			<?
+			$tagAttrs = 'id="'.$brandID.'_vidget" class="brandblock-block" style="background-image:url('.$arBB['PICT']['SRC'].');"';
+
+			if ($usePopup)
+				$tagAttrs .= ' data-popup="'.$popupID.'"';
+
 			if ($useLink)
-				echo '<a href="'.$arBB['LINK'].'">';
-			?>
-			<span class="bx_item_vidget"  style="background-image: url(<?=$arBB['PICT']['SRC'];?>)">
-			<?
-			if ($useLink)
-				echo '</a>';
+				echo '<a '.$tagAttrs.' href="'.$arBB['LINK'].'" target="_blank">';
+			else
+				echo '<span '.$tagAttrs.' >';
 
 			if ($usePopup)
 				echo '<span class="bx_popup" id="'.$popupID.'"><span class="arrow"></span><span class="text">'.$arBB['FULL_DESCRIPTION'].'</span></span>';
+
+			if ($useLink)
+				echo '</a>';
+			else
+				echo '</span>';
+
 			?>
-			</span></div></div><?
+			</div></div><?
 			break;
 		default:
 			?>
-			<div id="<?=$brandID;?>" class="bx_item_detail_inc_one_container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>>
-				<div class="wrapper">
+			<div id="<?=$brandID;?>" class="brandblock-container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>>
+				<div class="brandblock-wrap">
 					<? $tagAttrs = 'id="'.$brandID.'_vidget"'.(
 						empty($arBB['PICT'])
-						? ' class="bx_item_vidget"'
-						: ' class="bx_item_vidget icon" style="background-image:url('.$arBB['PICT']['SRC'].');"'
+						? ' class="brandblock-block"'
+						: ' class="brandblock-block icon" style="background-image:url('.$arBB['PICT']['SRC'].');"'
 					);
 					if ($usePopup)
 						$tagAttrs .= ' data-popup="'.$popupID.'"';
 
 					if ($useLink)
-						echo '<a '.$tagAttrs.'href="'.$arBB['LINK'].'">';
+						echo '<a '.$tagAttrs.'href="'.$arBB['LINK'].'" target="_blank">';
 					else
 						echo '<span '.$tagAttrs.' >';
 
@@ -82,7 +91,7 @@ foreach ($arResult["BRAND_BLOCKS"] as $blockId => $arBB)
 					endif;
 
 					if ($arBB['DESCRIPTION'] !== false)
-						echo htmlspecialcharsex($arBB['DESCRIPTION']);
+						echo '<span class="brandblock-text">'.htmlspecialcharsbx($arBB['DESCRIPTION']).'</span>';
 
 					if ($useLink)
 						echo '</a>';

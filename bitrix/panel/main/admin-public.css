@@ -387,6 +387,15 @@
 #bx-admin-prefix .adm-input-file-new {/*margin: 0 0 14px 0!important;*/}
 #bx-admin-prefix .adm-input-cont-bordered {border-bottom: 2px solid #edefef; padding: 0 0 14px 0; margin: 0 0 14px 0!important;}
 #bx-admin-prefix .adm-input-file-not-found{color: #2D3E4A !important;display: inline-block;vertical-align:top;margin-top: 7px;}
+#bx-admin-prefix .adm-input-fake-inp {
+	width: 0!important;
+	height: 0!important;
+	line-height: 0!important;
+	position: absolute!important;
+	color: #000!important;
+	top: 2px!important;
+	opacity: 0!important;
+}
 
 #bx-admin-prefix .adm-btn-load {
 	-webkit-border-radius: 4px;
@@ -872,7 +881,11 @@
 	color: #b5cc80 !important;
 }
 
-.adm-workarea option {background: #fff; vertical-align:middle; padding:3px 5px 3px 3px;}
+.adm-workarea option {
+	background: #fff;
+	vertical-align:middle;
+	padding:3px 5px 3px 3px;
+}
 
 .adm-workarea textarea {
 	background:#fff;

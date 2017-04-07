@@ -98,6 +98,24 @@ class Date
 	 */
 	public function add($interval)
 	{
+		$i = $this->tryToCreateIntervalByDesignators($interval);
+		if ($i == null)
+		{
+			$i = \DateInterval::createFromDateString($interval);
+		}
+
+		$this->value->add($i);
+
+		return $this;
+	}
+
+	private function tryToCreateIntervalByDesignators($interval)
+	{
+		if (!is_string($interval) || strpos($interval, ' ') !== false)
+		{
+			return null;
+		}
+
 		$i = null;
 		try
 		{
@@ -125,14 +143,7 @@ class Date
 		{
 		}
 
-		if ($i == null)
-		{
-			$i = \DateInterval::createFromDateString($interval);
-		}
-
-		$this->value->add($i);
-
-		return $this;
+		return $i;
 	}
 
 	/**

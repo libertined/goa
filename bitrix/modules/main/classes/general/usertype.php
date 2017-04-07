@@ -17,6 +17,7 @@
  */
 
 use Bitrix\Main\Entity;
+use Bitrix\Main\Text;
 
 CModule::AddAutoloadClasses(
 	"main",
@@ -687,6 +688,11 @@ class CAllUserTypeEntity extends CDBResult
 					$DB->Add("b_user_field_lang", $arLangFields);
 				}
 			}
+
+			foreach (GetModuleEvents("main", "OnAfterUserTypeUpdate", true) as $arEvent)
+			{
+				ExecuteModuleEventEx($arEvent, array($arFields, $ID));
+			}
 		}
 
 		return true;
@@ -795,6 +801,11 @@ class CAllUserTypeEntity extends CDBResult
 					$DB->Query("DROP TABLE b_uts_".strtolower($arField["ENTITY_ID"]), false, "FILE: ".__FILE__."<br>LINE: ".__LINE__);
 					$rs = $DB->Query("DROP TABLE b_utm_".strtolower($arField["ENTITY_ID"]), false, "FILE: ".__FILE__."<br>LINE: ".__LINE__);
 				}
+			}
+
+			foreach (GetModuleEvents("main", "OnAfterUserTypeDelete", true) as $arEvent)
+			{
+				ExecuteModuleEventEx($arEvent, array($arField, $ID));
 			}
 		}
 		return $rs;
@@ -1328,8 +1339,7 @@ class CAllUserTypeManager
 			$arFields = array();
 		}
 
-		global $HTTP_POST_FILES;
-		$files = isset($options['FILES']) ? $options['FILES'] : $HTTP_POST_FILES;
+		$files = isset($options['FILES']) ? $options['FILES'] : $_FILES;
 		$form = isset($options['FORM']) && is_array($options['FORM']) ? $options['FORM'] : $GLOBALS;
 
 		$arUserFields = $this->GetUserFields($entity_id);
@@ -1431,12 +1441,26 @@ class CAllUserTypeManager
 		}
 	}
 
-	function AdminListAddFilterFields($entity_id, &$arFilterFields)
+	/**
+	 * Add field for filter.
+	 * @param int $entityId Entity id.
+	 * @param array $arFilterFields Array for fill.
+	 */
+	function AdminListAddFilterFields($entityId, &$arFilterFields)
 	{
-		$arUserFields = $this->GetUserFields($entity_id);
-		foreach($arUserFields as $FIELD_NAME=>$arUserField)
-			if($arUserField["SHOW_FILTER"]!="N" && $arUserField["USER_TYPE"]["BASE_TYPE"]!="file")
-				$arFilterFields[]="find_".$FIELD_NAME;
+		$arUserFields = $this->GetUserFields($entityId);
+		foreach ($arUserFields as $fieldName => $arUserField)
+		{
+			if ($arUserField['SHOW_FILTER']!='N' && $arUserField['USER_TYPE']['BASE_TYPE']!='file')
+			{
+				$arFilterFields[] = 'find_'.$fieldName;
+				if ($arUserField['USER_TYPE']['BASE_TYPE'] == 'datetime')
+				{
+					$arFilterFields[] = 'find_'.$fieldName.'_from';
+					$arFilterFields[] = 'find_'.$fieldName.'_to';
+				}
+			}
+		}
 	}
 
 	function IsNotEmpty($value)
@@ -1460,24 +1484,61 @@ class CAllUserTypeManager
 		}
 	}
 
-	function AdminListAddFilter($entity_id, &$arFilter)
+	/**
+	 * Add value for filter.
+	 * @param int $entityId Entity id.
+	 * @param array $arFilter Array for fill.
+	 */
+	function AdminListAddFilter($entityId, &$arFilter)
 	{
-		$arUserFields = $this->GetUserFields($entity_id);
-		foreach($arUserFields as $FIELD_NAME=>$arUserField)
+		$arUserFields = $this->GetUserFields($entityId);
+		foreach ($arUserFields as $fieldName => $arUserField)
 		{
-			$value = $GLOBALS["find_".$FIELD_NAME];
-			if(
-				$arUserField["SHOW_FILTER"] != "N"
-				&& $arUserField["USER_TYPE"]["BASE_TYPE"] != "file"
+			if (
+				$arUserField['SHOW_FILTER'] != 'N' &&
+				$arUserField['USER_TYPE']['BASE_TYPE'] == 'datetime'
+			)
+			{
+				$value1 = $GLOBALS['find_'.$fieldName.'_from'];
+				$value2 = $GLOBALS['find_'.$fieldName.'_to'];
+				if ($this->IsNotEmpty($value1) && \Bitrix\Main\Type\Date::isCorrect($value1))
+				{
+					$date = new \Bitrix\Main\Type\Date($value1);
+					$arFilter['>='.$fieldName] = $date;
+				}
+				if ($this->IsNotEmpty($value2) && \Bitrix\Main\Type\Date::isCorrect($value2))
+				{
+					$date = new \Bitrix\Main\Type\Date($value2);
+					if ($arUserField['USER_TYPE_ID'] != 'date')
+					{
+						$date->add('+1 day');
+					}
+					$arFilter['<='.$fieldName] = $date;
+				}
+				continue;
+			}
+			else
+			{
+				$value = $GLOBALS['find_'.$fieldName];
+			}
+			if (
+				$arUserField['SHOW_FILTER'] != 'N'
+				&& $arUserField['USER_TYPE']['BASE_TYPE'] != 'file'
 				&& $this->IsNotEmpty($value)
 			)
 			{
-				if($arUserField["SHOW_FILTER"]=="I")
-					$arFilter["=".$FIELD_NAME]=$value;
-				elseif($arUserField["SHOW_FILTER"]=="S")
-					$arFilter["%".$FIELD_NAME]=$value;
+				if ($arUserField['SHOW_FILTER'] == 'I')
+				{
+					$arFilter['='.$fieldName] = $value;
+				}
+				elseif($arUserField['SHOW_FILTER']=='S')
+				{
+					$arFilter['%'.$fieldName] = $value;
+				}
 				else
-					$arFilter[$FIELD_NAME]=$value;
+				{
+					$arFilter[$fieldName] = $value;
+				}
 			}
 		}
 	}
@@ -1875,7 +1936,7 @@ class CAllUserTypeManager
 							),
 						)
 					).'</td></tr>';
-					$html .= '<tr><td><input type="button" value="'.GetMessage("USER_TYPE_PROP_ADD").'" onClick="addNewRow(\'table_'.$arUserField["FIELD_NAME"].'_'.$row->id.'\', \'FIELDS\['.$row->id.'\]\['.$arUserField["FIELD_NAME"].'\]\')"></td></tr>'.
+					$html .= '<tr><td><input type="button" value="'.GetMessage("USER_TYPE_PROP_ADD").'" onClick="addNewRow(\'table_'.$arUserField["FIELD_NAME"].'_'.$row->id.'\', \'FIELDS\\\\['.$row->id.'\\\\]\\\\['.$arUserField["FIELD_NAME"].'\\\\]\')"></td></tr>'.
 					'</table>';
 					$row->AddEditField($arUserField["FIELD_NAME"], $html.$js.CAdminCalendar::ShowScript());
 				}
@@ -1977,9 +2038,10 @@ class CAllUserTypeManager
 	 * @param      $ID
 	 * @param      $arFields
 	 * @param bool $user_id False means current user id.
+	 * @param bool $checkRequired Whether to check required fields.
 	 * @return bool
 	 */
-	function CheckFields($entity_id, $ID, &$arFields, $user_id = false)
+	function CheckFields($entity_id, $ID, &$arFields, $user_id = false, $checkRequired = true)
 	{
 		global $APPLICATION;
 
@@ -1989,10 +2051,11 @@ class CAllUserTypeManager
 		//2 For each field
 		foreach($arUserFields as $FIELD_NAME=>$arUserField)
 		{
-			$EDIT_FORM_LABEL = strLen($arUserField["EDIT_FORM_LABEL"]) > 0 ? $arUserField["EDIT_FORM_LABEL"] : $arUserField["FIELD_NAME"];
 			//common Check for all fields
-			if($arUserField["MANDATORY"]=="Y" && ((isset($ID) && $ID <= 0) || isset($arFields[$FIELD_NAME])))
+			if($checkRequired && $arUserField["MANDATORY"]=="Y" && ((isset($ID) && $ID <= 0) || isset($arFields[$FIELD_NAME])))
 			{
+				$EDIT_FORM_LABEL = strlen($arUserField["EDIT_FORM_LABEL"]) > 0 ? $arUserField["EDIT_FORM_LABEL"] : $arUserField["FIELD_NAME"];
+
 				if($arUserField["USER_TYPE"]["BASE_TYPE"] == "file")
 				{
 					$bWasInput = false;
@@ -2140,8 +2203,94 @@ class CAllUserTypeManager
 			if($arUserField["USER_TYPE"])
 			{
 				$CLASS_NAME = $arUserField["USER_TYPE"]["CLASS_NAME"];
+				$EDIT_FORM_LABEL = strLen($arUserField["EDIT_FORM_LABEL"]) > 0 ? $arUserField["EDIT_FORM_LABEL"] : $arUserField["FIELD_NAME"];
+
 				if(array_key_exists($FIELD_NAME, $arFields) && is_callable(array($CLASS_NAME, "checkfields")))
 				{
+					// check required values
+					if ($arUserField["MANDATORY"]=="Y")
+					{
+						if($arUserField["USER_TYPE"]["BASE_TYPE"] == "file")
+						{
+							$bWasInput = false;
+							if(is_array($arUserField["VALUE"]))
+								$arDBFiles = array_flip($arUserField["VALUE"]);
+							elseif($arUserField["VALUE"] > 0)
+								$arDBFiles = array($arUserField["VALUE"] => 0);
+							elseif (is_numeric($arFields[$FIELD_NAME]))
+								$arDBFiles = array($arFields[$FIELD_NAME] => 0);
+							else
+								$arDBFiles = array();
+
+							if($arUserField["MULTIPLE"]=="N")
+							{
+								$value = $arFields[$FIELD_NAME];
+								if(is_array($value) && array_key_exists("tmp_name", $value))
+								{
+									if(array_key_exists("del", $value) && $value["del"])
+										unset($arDBFiles[$value["old_id"]]);
+									elseif(array_key_exists("size", $value) && $value["size"] > 0)
+										$bWasInput = true;
+								}
+							}
+							else
+							{
+								if(is_array($arFields[$FIELD_NAME]))
+								{
+									foreach($arFields[$FIELD_NAME] as $value)
+									{
+										if(is_array($value) && array_key_exists("tmp_name", $value))
+										{
+											if(array_key_exists("del", $value) && $value["del"])
+												unset($arDBFiles[$value["old_id"]]);
+											elseif(array_key_exists("size", $value) && $value["size"] > 0)
+												$bWasInput = true;
+										}
+									}
+								}
+							}
+
+							if(!$bWasInput && empty($arDBFiles))
+							{
+								$aMsg[] = array("id"=>$FIELD_NAME, "text"=>str_replace("#FIELD_NAME#", $EDIT_FORM_LABEL, GetMessage("USER_TYPE_FIELD_VALUE_IS_MISSING")));
+							}
+						}
+						elseif($arUserField["MULTIPLE"]=="N")
+						{
+							if(strlen($arFields[$FIELD_NAME])<=0)
+							{
+								$aMsg[] = array("id"=>$FIELD_NAME, "text"=>str_replace("#FIELD_NAME#", $EDIT_FORM_LABEL, GetMessage("USER_TYPE_FIELD_VALUE_IS_MISSING")));
+							}
+						}
+						else
+						{
+							if(!is_array($arFields[$FIELD_NAME]))
+							{
+								$aMsg[] = array("id"=>$FIELD_NAME, "text"=>str_replace("#FIELD_NAME#", $EDIT_FORM_LABEL, GetMessage("USER_TYPE_FIELD_VALUE_IS_MISSING")));
+							}
+							else
+							{
+								$bFound = false;
+								foreach($arFields[$FIELD_NAME] as $value)
+								{
+									if(
+										(is_array($value) && (strlen(implode("", $value)) > 0))
+										|| ((!is_array($value)) && (strlen($value) > 0))
+									)
+									{
+										$bFound = true;
+										break;
+									}
+								}
+								if(!$bFound)
+								{
+									$aMsg[] = array("id"=>$FIELD_NAME, "text"=>str_replace("#FIELD_NAME#", $EDIT_FORM_LABEL, GetMessage("USER_TYPE_FIELD_VALUE_IS_MISSING")));
+								}
+							}
+						}
+					}
+
+					// check regular values
 					if($arUserField["MULTIPLE"]=="N")
 					{
 						//apply appropriate check function
@@ -2216,7 +2365,9 @@ class CAllUserTypeManager
 					$arInsertType[$arUserField["ID"]] = $arUserField["USER_TYPE"];
 
 					if(is_callable(array($arUserField["USER_TYPE"]["CLASS_NAME"], "onbeforesaveall")))
+					{
 						$arInsert[$arUserField["ID"]] = call_user_func_array(array($arUserField["USER_TYPE"]["CLASS_NAME"], "onbeforesaveall"), array($arUserField, $arFields[$FIELD_NAME], $user_id));
+					}
 					else
 					{
 						foreach($arFields[$FIELD_NAME] as $value)
@@ -2235,6 +2386,10 @@ class CAllUserTypeManager
 										break;
 									case "double":
 										$value = doubleval($value);
+										if(!is_finite($value))
+										{
+											$value = 0;
+										}
 										break;
 									case "datetime":
 										//TODO: convert to valid site date/time
@@ -2338,7 +2493,6 @@ class CAllUserTypeManager
 					case "int":
 					case "file":
 					case "enum":
-						break;
 					case "double":
 						break;
 					case "datetime":
@@ -2565,6 +2719,7 @@ class CUserTypeSQL
 				"TABLE_ALIAS" => $table_alias,
 				"FIELD_NAME" => $TABLE_FIELD_NAME,
 				"FIELD_TYPE" => $arType["BASE_TYPE"],
+				"USER_TYPE_ID" => $arType["USER_TYPE_ID"],
 				"MULTIPLE" => $arField["MULTIPLE"],
 				"JOIN" => $arField["MULTIPLE"]=="N"?
 					"INNER JOIN b_uts_".$this->entity_id." ".$table_alias." ON ".$table_alias.".VALUE_ID = ".$ID:
@@ -2699,6 +2854,32 @@ class CAllSQLWhere
 	var $l_joins = array();
 	var $bDistinctReqired = false;
 
+	static $operations = array(
+		"!><" => "NB", //not between
+		"!=%" => "NM", //not Identical by like
+		"!%=" => "NM", //not Identical by like
+		"!==" => "SN", // strong negation for boolean and null
+		"!=" => "NI", //not Identical
+		"!%" => "NS", //not substring
+		"><" => "B",  //between
+		">=" => "GE", //greater or equal
+		"<=" => "LE", //less or equal
+		"=%" => "M", //Identical by like
+		"%=" => "M", //Identical by like
+		"!@" => "NIN", //not in
+		"==" => "SE",  // strong equality for boolean and null
+		"=" => "I", //Identical
+		"%" => "S", //substring
+		"?" => "?", //logical
+		">" => "G", //greater
+		"<" => "L", //less
+		"!" => "N", // not field LIKE val
+		"@" => "IN", // IN (new SqlExpression)
+		"*" => "FT", // partial full text match
+		"*=" => "FTI", // identical full text match
+		"*%" => "FTL", // partial full text match based on LIKE
+	);
+
 	function _Upper($field)
 	{
 		return "UPPER(".$field.")";
@@ -2750,32 +2931,104 @@ class CAllSQLWhere
 		return $result;
 	}
 
-	static $triple_char = array(
-		"!><"=>"NB", //not between
-		"!=%"=>"NM", //not Identical by like
-		"!%="=>"NM", //not Identical by like
-	);
+	/**
+	 * @param string $string
+	 * @return array
+	 */
+	public static function splitWords($string)
+	{
+		static $encoding = null;
+		if($encoding === null)
+		{
+			$encoding = \Bitrix\Main\Context::getCurrent()->getCulture()->getCharset();
+		}
 
-	static $double_char = array(
-		"!="=>"NI", //not Identical
-		"!%"=>"NS", //not substring
-		"><"=>"B",  //between
-		">="=>"GE", //greater or equal
-		"<="=>"LE", //less or equal
-		"=%"=>"M", //Identical by like
-		"%="=>"M", //Identical by like
-		"!@"=>"NIN", //Identical by like
-	);
+		if($encoding <> "UTF-8")
+		{
+			$string = Text\Encoding::convertEncoding($string, $encoding, "UTF-8");
+		}
 
-	static $single_char = array(
-		"="=>"I", //Identical
-		"%"=>"S", //substring
-		"?"=>"?", //logical
-		">"=>"G", //greater
-		"<"=>"L", //less
-		"!"=>"N", // not field LIKE val
-		"@"=>"IN" // IN (new SqlExpression)
-	);
+		//split to words by any non-word symbols
+		$values = preg_split("/[^\\p{L}\\d_]/u", $string);
+
+		$values = array_filter($values,
+			function($val)
+			{
+				return ($val <> '');
+			}
+		);
+		$values = array_unique($values);
+
+		if($encoding <> "UTF-8")
+		{
+			$values = Text\Encoding::convertEncoding($values, "UTF-8", $encoding);
+		}
+		return $values;
+	}
+
+	public function match($field, $fieldValue, $wildcard)
+	{
+		global $DB;
+
+		if(!is_array($fieldValue))
+		{
+			$fieldValue = array($fieldValue);
+		}
+		$orValues = array();
+		$wildcard = ($wildcard? "*" : "");
+
+		foreach($fieldValue as $value)
+		{
+			//split to words by any non-word symbols
+			$andValues = static::splitWords($value);
+			if(!empty($andValues))
+			{
+				$orValues[] = "+".implode($wildcard." +", $andValues).$wildcard;
+			}
+		}
+		if(!empty($orValues))
+		{
+			$value = "(".implode(") (", $orValues).")";
+			return "MATCH (".$field.") AGAINST ('".$DB->ForSQL($value)."' IN BOOLEAN MODE)";
+		}
+
+		return $this->_Empty($field);
+	}
+
+	public function matchLike($field, $fieldValue)
+	{
+		global $DB;
+
+		if(!is_array($fieldValue))
+		{
+			$fieldValue = array($fieldValue);
+		}
+		$orValues = array();
+
+		foreach($fieldValue as $value)
+		{
+			//split to words by any non-word symbols
+			$andValues = static::splitWords($value);
+			if(!empty($andValues))
+			{
+				$andValues = array_map(
+					function($val)
+					{
+						return CSQLWhere::ForLIKE(ToUpper($val));
+					},
+					$andValues
+				);
+
+				$orValues[] = "(".$this->_Upper($field)." like '%".implode("%' ESCAPE '!' AND ".$this->_Upper($field)." like '%", $andValues)."%' ESCAPE '!')";
+			}
+		}
+		if(!empty($orValues))
+		{
+			return "(".implode("\n OR ", $orValues).")";
+		}
+
+		return $this->_Empty($field);
+	}
 
 	function AddFields($arFields)
 	{
@@ -2790,6 +3043,7 @@ class CAllSQLWhere
 					$ar["TABLE_ALIAS"] = $arField["TABLE_ALIAS"];
 					$ar["FIELD_NAME"] = $arField["FIELD_NAME"];
 					$ar["FIELD_TYPE"] = $arField["FIELD_TYPE"];
+					$ar["USER_TYPE_ID"] = $arField["USER_TYPE_ID"];
 					$ar["MULTIPLE"] = isset($arField["MULTIPLE"])? $arField["MULTIPLE"]: "N";
 					$ar["JOIN"] = $arField["JOIN"];
 					if(isset($arField["LEFT_JOIN"]))
@@ -2810,19 +3064,27 @@ class CAllSQLWhere
 
 	public function MakeOperation($key)
 	{
-		if(isset(self::$triple_char[$op = substr($key,0,3)]))
-			return Array("FIELD"=>substr($key,3), "OPERATION"=>self::$triple_char[$op]);
-		elseif(isset(self::$double_char[$op = substr($key,0,2)]))
-			return Array("FIELD"=>substr($key,2), "OPERATION"=>self::$double_char[$op]);
-		elseif(isset(self::$single_char[$op = substr($key,0,1)]))
-			return Array("FIELD"=>substr($key,1), "OPERATION"=>self::$single_char[$op]);
+		if(isset(self::$operations[$op = substr($key, 0, 3)]))
+		{
+			return array("FIELD"=>substr($key, 3), "OPERATION"=>self::$operations[$op]);
+		}
+		elseif(isset(self::$operations[$op = substr($key, 0, 2)]))
+		{
+			return array("FIELD"=>substr($key, 2), "OPERATION"=>self::$operations[$op]);
+		}
+		elseif(isset(self::$operations[$op = substr($key, 0, 1)]))
+		{
+			return array("FIELD"=>substr($key, 1), "OPERATION"=>self::$operations[$op]);
+		}
 		else
-			return Array("FIELD"=>$key, "OPERATION"=>"E"); // field LIKE val
+		{
+			return array("FIELD"=>$key, "OPERATION"=>"E"); // field LIKE val
+		}
 	}
 
 	public static function getOperationByCode($code)
 	{
-		$all_operations = array_flip(self::$single_char + self::$double_char + self::$triple_char);
+		$all_operations = array_flip(self::$operations);
 
 		return $all_operations[$code];
 	}
@@ -2850,6 +3112,14 @@ class CAllSQLWhere
 			$logic = $arFilter["LOGIC"];
 			unset($arFilter["LOGIC"]);
 		}
+
+		$inverted = false;
+		if($logic == 'NOT')
+		{
+			$inverted = true;
+			$logic = 'AND';
+		}
+
 		if($logic !== "OR")
 			$logic = "AND";
 
@@ -2934,39 +3204,44 @@ class CAllSQLWhere
 
 					switch($FIELD_TYPE)
 					{
-					case "file":
-					case "enum":
-					case "int":
-						$this->addIntFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value);
-						break;
-					case "double":
-						$this->addFloatFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value);
-						break;
-					case "string":
-						$this->addStringFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value);
-						break;
-					case "date":
-						$this->addDateFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value, "SHORT");
-						break;
-					case "datetime":
-						$this->addDateFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value, "FULL");
-						break;
-					case "callback":
-						$res = call_user_func_array($this->fields[$key]["CALLBACK"], array(
-							$FIELD_NAME,
-							$operation,
-							$value,
-						));
-						if (strlen($res))
-							$result[] = $res;
-						break;
+						case "file":
+						case "enum":
+						case "int":
+							$this->addIntFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value);
+							break;
+						case "double":
+							$this->addFloatFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value);
+							break;
+						case "string":
+							$this->addStringFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value);
+							break;
+						case "date":
+						case "datetime":
+							if($FIELD_TYPE == "date" || $this->fields[$key]["USER_TYPE_ID"] == "date")
+							{
+								$this->addDateFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value, "SHORT");
+							}
+							else
+							{
+								$this->addDateFilter($result, $this->fields[$key]["MULTIPLE"] === "Y", $FIELD_NAME, $operation, $value, "FULL");
+							}
+							break;
+						case "callback":
+							$res = call_user_func_array($this->fields[$key]["CALLBACK"], array(
+								$FIELD_NAME,
+								$operation,
+								$value,
+							));
+							if (strlen($res))
+								$result[] = $res;
+							break;
 					}
 				}
 			}
 		}
 
 		if(count($result)>0)
-			return "\n".str_repeat("\t", $level).implode("\n".str_repeat("\t", $level).$logic." ", $result);
+			return "\n".str_repeat("\t", $level).($inverted ? 'NOT (' : '').implode("\n".str_repeat("\t", $level).$logic." ", $result).($inverted ? ')' : '');
 		else
 			return "";
 	}
@@ -2989,7 +3264,7 @@ class CAllSQLWhere
 		return implode("\n", $result);
 	}
 
-	function ForLIKE($str)
+	public static function ForLIKE($str)
 	{
 		global $DB;
 		static $search  = array( "!",  "_",  "%");
@@ -3461,6 +3736,19 @@ class CAllSQLWhere
 			else
 				$result[] = $FIELD_NAME." NOT IN ('".$FIELD_VALUE."')";
 			break;
+		case "FT":
+		case "FTI":
+			$result[] = $this->match($FIELD_NAME, $value, ($operation == "FT"));
+
+			if ($isMultiple)
+				$this->bDistinctReqired = true;
+			break;
+		case "FTL":
+			$result[] = $this->matchLike($FIELD_NAME, $value);
+
+			if ($isMultiple)
+				$this->bDistinctReqired = true;
+			break;
 		}
 	}
 
@@ -3596,6 +3884,11 @@ class CAllSQLWhere
 	}
 }
 
+/**
+ * Class CSQLWhereExpression
+ * @deprecated  use \Bitrix\Main\DB\SqlExpression instead
+ * @see \Bitrix\Main\DB\SqlExpression
+ */
 class CSQLWhereExpression
 {
 	protected

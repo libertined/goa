@@ -4,182 +4,219 @@
 	var
 		BX = window.BX,
 		statuses = { "new" : 0, ready : 1, preparing : 2, inprogress : 3, done : 4, failed : 5, stopped : 6, changed : 7, uploaded : 8},
-		cnvConstr = function(timelimit)
-		{
-			this.timeLimit = (typeof timelimit == "number" && timelimit > 0 ? timelimit : 50);
+		cnvConstr = (function(){
+			var cnvConstructor = function(timelimit) {
+				this.timeLimit = (typeof timelimit === "number" && timelimit > 0 ? timelimit : 50);
+				this.status = statuses.ready;
+				this.queue = new BX.UploaderUtils.Hash();
+				this.id = (new Date()).getTime();
+			};
+			cnvConstructor.prototype = {
+				counter : 0,
+				active : null,
+				image : null,
+				getImage : function() {
+					if (!this.image)
+						this.image = new Image();
+					return this.image;
+				},
+				canvas : null,
+				getCanvas : function() {
+					if (!this.canvas)
+					{
+						this.canvas = BX.create('CANVAS', {style : {display: "none"}});
+						document.body.appendChild(this.canvas);
+					}
+
+					return this.canvas;
+				},
+				context : null,
+				getContext : function() {
+					if (!this.context && this.getCanvas()["getContext"])
+						this.context = this.getCanvas().getContext('2d');
+					return this.context;
+				},
+				reader : null,
+				getReader : function() {
+					if (!this.reader && window["FileReader"])
+						this.reader = new FileReader();
+					return this.reader;
+				},
+				load : function(file, callback, id, callbackFail) {
+					if (this.active !== null || (this.getReader() && this.getReader().readyState == 1))
+						return;
+
+					this.counter++;
+					this.active = file;
+					var image = this.getImage();
+					BX.unbindAll(image);
+					image.onload = function(){};
+					image.onerror = function(){};
+
+					/* Almost all browsers cache images from local resource except of FF on 06.03.2017. It appears that
+					FF collect src and does not abort image uploading when src is changed. And we had a bug when in
+					onload event we got e.target.src of one element but source of image was from '/bitrix/images/1.gif'. */
+					// TODO check if chrome and other browsers cache local files for now. If it does not then delete next 2 strings
+					if (!BX.browser.IsFirefox())
+						image.src = '/bitrix/images/1.gif';
+
+					/** For Garbage collector */
+					this.onload = null;
+					delete this.onload;
+					this.onerror = null;
+					delete this.onerror;
+
+					this.onload = BX.delegate(function(e){
+						if (e && e.target && e.target.src && e.target.src.substr(-20) == "/bitrix/images/1.gif")
+							return;
+						if (!!callback)
+						{
+							try{
+								callback(BX.proxy_context, this.getCanvas(), this.getContext());
+							}
+							catch (e)
+							{
+								BX.debug(e);
+							}
+						}
+						if (!!id)
+						{
+							this.queue.removeItem(id);
+							setTimeout(BX.proxy(function() {
+								this.active = null;
+								this.exec();
+							}, this), this.timeLimit);
+						}
+						else
+							this.active = null;
+					}, this);
+					this.onerror = BX.delegate(function(){
+						if (!!callbackFail)
+						{
+							try
+							{
+								callbackFail(BX.proxy_context);
+							}
+							catch (e)
+							{
+								BX.debug(e);
+							}
+						}
+						if (!!id)
+						{
+							this.queue.removeItem(id);
+							setTimeout(BX.proxy(function() {
+								this.active = null;
+								this.exec();
+							}, this), this.timeLimit);
+						}
+						else
+							this.active = null;
+					}, this);
+
+					image.name = file.name;
+
+					image.onload = this.onload;
+					image.onerror = this.onerror;
+
+					var res = Object.prototype.toString.call(file);
+					if (file["tmp_url"])
+					{
+						image.src = file["tmp_url"] + (file["tmp_url"].indexOf("?") > 0 ? '&' : '?') + 'imageUploader' + this.id + this.counter;
+					}
+					else if (res !== '[object File]' && res !== '[object Blob]')
+					{
+						this.onerror(null);
+					}
+					else if (this.getReader() !== null)
+					{
+						this.__readerOnLoad = null;
+						delete this.__readerOnLoad;
+						this.__readerOnLoad = BX.delegate(function(e) {
+							this.__readerOnLoad = null;
+							delete this.__readerOnLoad;
+							image.src = e.target.result;
+						}, this);
+						this.getReader().onloadend = this.__readerOnLoad;
+						this.getReader().onerror = BX.proxy(function(e) { this.onerror(null); }, this);
+						this.getReader().readAsDataURL(file);
+					}
+					else if (window["URL"])
+					{
+						image.src = window["URL"]["createObjectURL"](file);
+					}
+				},
+				push : function(file, callback, failCallback) {
+					var id = BX.UploaderUtils.getId();
+					this.queue.setItem(id, [id, file, callback, failCallback]);
+					this.exec();
+				},
+				exec : function() {
+					var item = this.queue.getFirst();
+					if (!!item)
+						this.load(item[1], item[2], item[0], item[3]);
+				},
+				pack : function(fileType) {
+					return  BX.UploaderUtils.dataURLToBlob(this.getCanvas().toDataURL(fileType));
+				}
+			};
+			return cnvConstructor;
+		})();
+	BX.UploaderFileCnvConstr = cnvConstr;
+	BX.UploaderFileFileLoader = (function(){
+		var d = function(timelimit) {
+			this.timeLimit = (typeof timelimit === "number" && timelimit > 0 ? timelimit : 50);
 			this.status = statuses.ready;
 			this.queue = new BX.UploaderUtils.Hash();
+			this._exec = BX.delegate(this.exec, this);
 		};
-	cnvConstr.prototype = {
-		image : null,
-		getImage : function()
-		{
-			if (!this.image)
-				this.image = new Image();
-			return this.image;
-		},
-		canvas : null,
-		getCanvas : function()
-		{
-			if (!this.canvas)
-				this.canvas = BX.create('CANVAS');
-
-			return this.canvas;
-		},
-		context : null,
-		getContext : function()
-		{
-			if (!this.context && this.getCanvas()["getContext"])
-				this.context = this.getCanvas().getContext('2d');
-			return this.context;
-		},
-		reader : null,
-		getReader : function()
-		{
-			if (!this.reader && window["FileReader"])
-				this.reader = new FileReader();
-			return this.reader;
-		},
-		load : function(file, callback, id, callbackFail)
-		{
-			var image = this.getImage();
-
-			BX.unbindAll(image);
-			this.onload = null;
-			delete this.onload;
-			this.onerror = null;
-			delete this.onerror;
-			image.src = '/bitrix/images/1.gif';
-			this.onload = BX.delegate(function(){
-				if (!!callback)
-				{
-					try{
-						callback(BX.proxy_context, this.getCanvas(), this.getContext());
-					}
-					catch (e)
-					{
-						BX.debug(e);
-					}
-				}
-				if (!!id)
-				{
-					this.queue.removeItem(id);
-					setTimeout(BX.proxy(this.exec, this), this.timeLimit);
-				}
-			}, this);
-			this.onerror = BX.delegate(function(){
-				if (!!callbackFail)
-				{
-					try
-					{
-						callbackFail(BX.proxy_context);
-					}
-					catch (e)
-					{
-						BX.debug(e);
-					}
-				}
-				if (!!id)
-				{
-					this.queue.removeItem(id);
-					setTimeout(BX.proxy(this.exec, this), this.timeLimit);
-				}
-			}, this);
-			image.name = file.name;
-			BX.bind(image, 'load', this.onload);
-			BX.bind(image, 'error', this.onerror);
-
-			var res = Object.prototype.toString.call(file);
-			if (file["tmp_url"])
+		d.prototype = {
+			xhr : null,
+			goToNext : function(id)
 			{
-				image.src = file["tmp_url"];
-			}
-			else if (res !== '[object File]' && res !== '[object Blob]')
+				delete this.xhr;
+				this.xhr = null;
+				this.queue.removeItem(id);
+				this.status = statuses.ready;
+				setTimeout(this._exec, this.timeLimit);
+			},
+			load : function(id, path, onsuccess, onfailure)
 			{
-				this.onerror(null);
-			}
-			else if (!!window["URL"])
-			{
-				image.src = window["URL"]["createObjectURL"](file);
-			}
-			else if (this.getReader() !== null)
-			{
-				this.__readerOnLoad = BX.delegate(function(e) {
-					image.src = e.target.result;
-					this.__readerOnLoad = null;
-					delete this.__readerOnLoad;
-				}, this);
-				this.getReader().onload = this.__readerOnLoad;
-				this.getReader().readAsDataURL(file);
-			}
-		},
-		push : function(file, callback, failCallback)
-		{
-			var id = BX.UploaderUtils.getId();
-			this.queue.setItem(id, [id, file, callback, failCallback]);
-			this.exec();
-		},
-		exec : function()
-		{
-			var item = this.queue.getFirst();
-			if (!!item)
-				this.load(item[1], item[2], item[0], item[3]);
-		}
-	};
-	BX.UploaderFileCnvConstr = cnvConstr;
-	var fileLoader = function(timelimit)
-	{
-		this.timeLimit = (typeof timelimit == "number" && timelimit > 0 ? timelimit : 50);
-		this.status = statuses.ready;
-		this.queue = new BX.UploaderUtils.Hash();
-		this._exec = BX.delegate(this.exec, this);
-	};
-	fileLoader.prototype = {
-		xhr : null,
-		goToNext : function(id)
-		{
-			delete this.xhr;
-			this.xhr = null;
-			this.queue.removeItem(id);
-			this.status = statuses.ready;
-			setTimeout(this._exec, this.timeLimit);
-		},
-		load : function(id, path, onsuccess, onfailure)
-		{
-			if (this.status != statuses.ready)
-				return;
-			this.status = statuses.inprogress;
-			var _this = this;
-			this.xhr = BX.ajax({
-				'method': 'GET',
-				'data' : '',
-				'url': path,
-				'onsuccess': function(blob){if (blob === null){onfailure(blob);} else {onsuccess(blob);} _this.goToNext(id);},
-				'onfailure': function(blob){onfailure(blob); _this.goToNext(id);},
-				'start': false,
-				'preparePost':false,
-				'processData':false
-			});
-			this.xhr.withCredentials = true;
-			this.xhr.responseType = 'blob';
+				if (this.status != statuses.ready)
+					return;
+				this.status = statuses.inprogress;
+				var _this = this;
+				this.xhr = BX.ajax({
+					'method': 'GET',
+					'data' : '',
+					'url': path,
+					'onsuccess': function(blob){if (blob === null){onfailure(blob);} else {onsuccess(blob);} _this.goToNext(id);},
+					'onfailure': function(blob){onfailure(blob); _this.goToNext(id);},
+					'start': false,
+					'preparePost':false,
+					'processData':false
+				});
+				this.xhr.withCredentials = true;
+				this.xhr.responseType = 'blob';
 
 
-			this.xhr.send();
-		},
-		push : function(path, onsuccess, onfailure)
-		{
-			var id = BX.UploaderUtils.getId();
-			this.queue.setItem(id, [id, path, onsuccess, onfailure]);
-			this.exec();
-		},
-		exec : function()
-		{
-			var item = this.queue.getFirst();
-			if (!!item)
-				this.load(item[0], item[1], item[2], item[3]);
-		}
-	};
-	BX.UploaderFileFileLoader = fileLoader();
+				this.xhr.send();
+			},
+			push : function(path, onsuccess, onfailure)
+			{
+				var id = BX.UploaderUtils.getId();
+				this.queue.setItem(id, [id, path, onsuccess, onfailure]);
+				this.exec();
+			},
+			exec : function()
+			{
+				var item = this.queue.getFirst();
+				if (!!item)
+					this.load(item[0], item[1], item[2], item[3]);
+			}
+		};
+		return d;
+	})();
 	var prvw = new cnvConstr(), upld = new cnvConstr(), edtr = new cnvConstr(), canvas = BX.create('CANVAS'), ctx;
 	/**
 	 * @return {BX.UploaderFile}
@@ -189,7 +226,7 @@
 	 * @caller {BX.Uploader}
 	 * You should work with params["fields"] in case you want to change visual part
 	 */
-
+var mobileNames = {};
 	BX.UploaderFile = function (file, params, limits, caller)
 	{
 		this.dialogName = (this.dialogName ? this.dialogName : "BX.UploaderFile");
@@ -215,6 +252,16 @@
 		this.preview = '<span id="' + this.id + 'Canvas" class="bx-bxu-canvas"></span>';
 		this.nameWithoutExt = (this.name.lastIndexOf('.') > 0 ? this.name.substr(0, this.name.lastIndexOf('.')) : this.name);
 		this.ext = this.name.substr(this.nameWithoutExt.length + 1);
+
+		if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && this.nameWithoutExt == "image")
+		{
+			var nameWithoutExt = 'mobile_' + BX.date.format("Ymd_His");
+			mobileNames[nameWithoutExt] = (mobileNames[nameWithoutExt] || 0);
+			this.nameWithoutExt = nameWithoutExt + (mobileNames[nameWithoutExt] > 0 ? ("_" + mobileNames[nameWithoutExt]) : "");
+			this.name = this.nameWithoutExt + (BX.type.isNotEmptyString(this.ext) ? ("." + this.ext) : "");
+			mobileNames[nameWithoutExt]++;
+		}
+
 		this.size = '';
 		if (file.size)
 			this.size = BX.UploaderUtils.getFormattedSize(file.size, 0);
@@ -322,7 +369,7 @@
 				}
 			}
 			var res, patt = [], repl = [], tmp;
-			while ((res = /#(.+?)#/gi.exec(template)) && !!res)
+			while ((res = /#([^\\<\\>\\"\\']+?)#/gi.exec(template)) && !!res)
 			{
 				if (this[res[1]] !== undefined)
 				{
@@ -505,6 +552,8 @@
 					data[ii] = this[ii];
 				}
 			}
+			data["size"] = this.file["size"];
+			data["type"] = this["type"];
 			if (!!this.copies)
 			{
 				var copy;
@@ -646,6 +695,7 @@
 		if (!!this.canvas)
 		{
 			BX.adjust(prvw.getCanvas(), { props : { width : image.width, height : image.height } } );
+
 			prvw.getContext().drawImage(image, 0, 0);
 
 			this.applyFile(prvw.getCanvas(), false);
@@ -839,7 +889,7 @@
 				template = template.replace('#' + ii + '#',
 					(ii === "preview" ? "" :
 						('<span id="' + this.id + name + 'Editor" class="' + this.fields[ii]["className"] + '">' +
-						this.fields[ii]["editorTemplate"].replace('#' + ii + '#', (!!this[ii] ? this[ii] : '')) + '</span>')));
+						this.fields[ii]["editorTemplate"].replace('#' + ii + '#', (!!this[ii] ? BX.util.htmlspecialchars(this[ii]) : '')) + '</span>')));
 			}
 		}
 

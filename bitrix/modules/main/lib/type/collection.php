@@ -92,7 +92,7 @@ class Collection
 	/**
 	 * Takes all arguments by pairs..
 	 * Odd arguments are arrays.
-	 * Even arguments ere keys to lookup in these arrays.
+	 * Even arguments are keys to lookup in these arrays.
 	 * Keys may be arrays. In this case function will try to dig deeper.
 	 * Returns first not empty element of a[k] pair.
 	 *
@@ -137,11 +137,11 @@ class Collection
 	}
 
 	/**
-	 * convert array values to int, return unique values > 0. optionally sorted array
+	 * Convert array values to int, return unique values > 0. Optionally sorted array.
 	 *
-	 * @param array $map - array for normalize
-	 * @param bool $sorted - if sorted true, result array will be sorted
-	 * @return null
+	 * @param array &$map	Array for normalize.
+	 * @param bool $sorted	If sorted true, result array will be sorted.
+	 * @return void
 	 */
 	public static function normalizeArrayValuesByInt(&$map, $sorted = true)
 	{

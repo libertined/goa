@@ -143,6 +143,18 @@ class CAdminInformer
 		if(!$USER->IsAuthorized())
 			return false;
 
+		if ($USER->CanDoOperation("cache_control") && !CHTMLPagesCache::isOn())
+		{
+			self::AddItem(array(
+				"TITLE" => GetMessage("top_panel_ai_composite_title"),
+				"HTML" => GetMessage("top_panel_ai_composite_desc"),
+				"COLOR" => "red",
+				"FOOTER" => '<a href="/bitrix/admin/composite.php?lang='.LANGUAGE_ID.'">'.GetMessage("top_panel_ai_composite_switch_on").'</a>',
+				"ALERT" => true,
+				"SORT" => 1
+			));
+		}
+
 		//Updates
 		if($USER->IsAdmin() || $USER->CanDoOperation('install_updates'))
 		{
@@ -185,7 +197,7 @@ class CAdminInformer
 		}
 
 		//Disk space (quota)
-		$maxQuota = COption::GetOptionInt("main", "disk_space", 0)*1048576;
+		$maxQuota = (int)COption::GetOptionInt("main", "disk_space", 0)*1048576;
 		if ($maxQuota > 0)
 		{
 			$quota = new CDiskQuota();

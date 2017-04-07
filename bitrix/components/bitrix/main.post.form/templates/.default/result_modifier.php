@@ -204,13 +204,13 @@ if (array_key_exists("SMILES", $arParams))
 	if (
 		is_array($arParams["SMILES"])
 		&& array_key_exists("VALUE", $arParams["SMILES"])
+		&& !empty($arParams["SMILES"]["VALUE"])
 	) // compatibility
 	{
 		$arResult["SMILES"] = $arParams["SMILES"];
 	}
 	else if (
-		!is_array($arParams["SMILES"])
-		&& ($res = CSmileGallery::getSmilesWithSets($arParams["SMILES"]))
+		$res = CSmileGallery::getSmilesWithSets($arParams["SMILES"])
 	)
 	{
 		$arResult["SMILES"] = array(
@@ -255,4 +255,8 @@ if (
 		)
 	);
 }
+
+$arResult["ALLOW_EMAIL_INVITATION"] = (isset($arParams["ALLOW_EMAIL_INVITATION"]) && $arParams["ALLOW_EMAIL_INVITATION"] == "Y");
+$arResult["ALLOW_ADD_CRM_CONTACT"] = ($arResult["ALLOW_EMAIL_INVITATION"] && CModule::IncludeModule('crm') && CCrmContact::CheckCreatePermission());
+$arResult["ALLOW_CRM_EMAILS"] = (isset($arParams["ALLOW_CRM_EMAILS"]) && $arParams["ALLOW_CRM_EMAILS"] == 'Y');
 ?>

@@ -35,6 +35,8 @@ window.BX = function(node, bCache)
 	return null;
 };
 
+BX.debugEnableFlag = true;
+
 // language utility
 BX.message = function(mess)
 {
@@ -236,13 +238,11 @@ BX.debugEnable = function(flag)
 {
 	flag = typeof (flag) == 'boolean'? flag: true;
 	BX.debugEnableFlag = flag;
-
-	console.info('Debug mode is '+(BX.debugEnableFlag? 'ON': 'OFF'))
 };
 
 BX.debugStatus = function()
 {
-	return BX.debugEnableFlag || false;
+	return BX.debugEnableFlag || true;
 };
 
 BX.is_subclass_of = function(ob, parent_class)
@@ -355,6 +355,17 @@ BX.adjust = function(elem, data)
 		}
 	}
 
+	if (data.dataset)
+	{
+		for (j in data.dataset)
+		{
+			if(data.dataset.hasOwnProperty(j))
+			{
+				elem.dataset[j] = data.dataset[j]
+			}
+		}
+	}
+
 	if (data.children && data.children.length > 0)
 	{
 		for (j=0,len=data.children.length; j<len; j++)
@@ -370,7 +381,7 @@ BX.adjust = function(elem, data)
 		BX.cleanNode(elem);
 		elem.appendChild((elem.ownerDocument || document).createTextNode(data.text));
 	}
-	else if (data.html)
+	else if (typeof data.html !== 'undefined')
 	{
 		elem.innerHTML = data.html;
 	}
@@ -435,42 +446,58 @@ BX.html = function(node, html, parameters)
 		}
 	}
 
-	if(parameters.htmlFirst && typeof html.HTML != 'undefined')
+	if(parameters.htmlFirst && typeof html.HTML != 'undefined' && node)
+	{
 		node.innerHTML = html.HTML;
+	}
+
+	var p = new BX.Promise();
 
 	var afterAsstes = function(){
-		if(!parameters.htmlFirst && typeof html.HTML != 'undefined')
+		if(!parameters.htmlFirst && typeof html.HTML != 'undefined' && node)
+		{
 			node.innerHTML = html.HTML;
+		}
 
 		for(var k in inlineJS)
+		{
 			BX.evalGlobal(inlineJS[k]);
+		}
 
 		if(BX.type.isFunction(parameters.callback))
+		{
 			parameters.callback();
-	}
+		}
+
+		p.fulfill();
+	};
 
 	if(assets.length > 0)
 	{
 		BX.load(assets, afterAsstes);
 	}
 	else
+	{
 		afterAsstes();
-}
+	}
+
+	return p;
+};
 
 BX.insertAfter = function(node, dstNode)
 {
 	dstNode.parentNode.insertBefore(node, dstNode.nextSibling);
-}
+};
 
 BX.prepend = function(node, dstNode)
 {
 	dstNode.insertBefore(node, dstNode.firstChild);
-}
+};
 
 BX.append = function(node, dstNode)
 {
 	dstNode.appendChild(node);
-}
+};
 
 BX.addClass = function(ob, value)
 {
@@ -1359,7 +1386,15 @@ BX.fireEvent = function(ob,ev)
 			{
 				case 'MouseEvent':
 					e = document.createEvent('MouseEvent');
-					e.initMouseEvent(ev, true, true, top, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+					try
+					{
+						e.initMouseEvent(ev, true, true, top, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+					}
+					catch (initException)
+					{
+						e.initMouseEvent(ev, true, true, window, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+					}
+
 				break;
 				default:
 					e = document.createEvent('Event');
@@ -1576,6 +1611,10 @@ BX.fixEventPageY = function(event)
 	return event;
 };
 
+/**
+ * @deprecated
+ * @see e.preventDefault()
+ */
 BX.PreventDefault = function(e)
 {
 	if(!e) e = window.event;
@@ -2242,6 +2281,18 @@ BX.util = {
 
 		return first;
 	},
+	
+	array_flip: function ( object ) 
+	{
+	    var newObject = {};
+		
+	    for (var key in object) 
+		{
+	        newObject[object[key]] = key;
+	    }
+		
+	    return newObject;
+	},
 
 	array_unique: function(ar)
 	{
@@ -2426,6 +2477,24 @@ BX.util = {
 		}
 		return window.open(url, '', 'status=no,scrollbars=yes,resizable=yes,width='+width+',height='+height+',top='+Math.floor((h - height)/2-14)+',left='+Math.floor((w - width)/2-5));
 	},
+	
+	shuffle: function(array) 
+	{
+		var temporaryValue, randomIndex;
+		var currentIndex = array.length;
+		
+		while (0 !== currentIndex) 
+		{
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+			
+			temporaryValue = array[currentIndex];
+			array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+		
+		return array;
+	},
 
 	// BX.util.objectSort(object, sortBy, sortDir) - Sort object by property
 	// function params: 1 - object for sort, 2 - sort by property, 3 - sort direction (asc/desc)
@@ -2531,10 +2600,18 @@ BX.util = {
 
 				params = params.replace(new RegExp('(^|&)'+param+'=[^&#]*', 'i'), '');
 				params = params.replace(/^&/, '');
-				url = url + params;
+
+				if(BX.type.isNotEmptyString(params))
+				{
+					url = url + params;
+				}
+				else
+				{
+					//remove trailing question character
+					url = url.substr(0, url.length - 1);
+				}
 			}
 		}
-
 		return url;
 	},
 
@@ -2755,7 +2832,7 @@ BX.type = {
 		var hasProp = Object.prototype.hasOwnProperty;
 		try
 		{
-			if ( item.constructor && !hasProp.call(item, "constructor") && !hasProp.call(item.constructor.prototype, "isPrototypeOf") )
+			if (item.constructor && !hasProp.call(item, "constructor") && !hasProp.call(item.constructor.prototype, "isPrototypeOf") )
 			{
 				return false;
 			}
@@ -3340,142 +3417,29 @@ BX.getCDNPath = function(path)
 
 BX.loadScript = function(script, callback, doc)
 {
-	if (!BX.isReady)
+	if (BX.type.isString(script))
 	{
-		var _args = arguments;
-		BX.ready(function() {
-			BX.loadScript.apply(this, _args);
-		});
-		return;
+		script = [script];
 	}
 
-	doc = doc || document;
-
-	if (BX.type.isString(script))
-		script = [script];
-	var _callback = function()
-	{
-		return (callback && BX.type.isFunction(callback)) ? callback() : null
-	};
-	var load_js = function(ind)
-	{
-		if(ind >= script.length)
-			return _callback();
-
-		if(!!script[ind])
-		{
-			var fileSrc = BX.getJSPath(script[ind]);
-			if(isScriptLoaded(fileSrc))
-			{
-				load_js(++ind);
-			}
-			else
-			{
-				var oHead = doc.getElementsByTagName("head")[0] || doc.documentElement;
-				var oScript = doc.createElement('script');
-				oScript.src = script[ind];
-
-				var bLoaded = false;
-				oScript.onload = oScript.onreadystatechange = function()
-				{
-					if (!bLoaded && (!oScript.readyState || oScript.readyState == "loaded" || oScript.readyState == "complete"))
-					{
-						bLoaded = true;
-						setTimeout(function (){load_js(++ind);}, 50);
-
-						oScript.onload = oScript.onreadystatechange = null;
-						if (oHead && oScript.parentNode)
-						{
-							oHead.removeChild(oScript);
-						}
-					}
-				};
-
-				jsList.push(fileSrc);
-				return oHead.insertBefore(oScript, oHead.firstChild);
-			}
-		}
-		else
-		{
-			load_js(++ind);
-		}
-		return null;
-	};
-
-	load_js(0);
+	return BX.load(script, callback, doc);
 };
 
-BX.loadCSS = function(arCSS, doc, win)
+BX.loadCSS = function(css, doc, win)
 {
-	if (!BX.isReady)
+	if (BX.type.isString(css))
 	{
-		var _args = arguments;
-		BX.ready(function() {
-			BX.loadCSS.apply(this, _args);
+		css = [css];
+	}
+
+	if (BX.type.isArray(css))
+	{
+		css = css.map(function(url) {
+			return { url: url, ext: "css" }
 		});
-		return null;
+
+		BX.load(css, null, doc);
 	}
-
-	var bSingle = false;
-	if (BX.type.isString(arCSS))
-	{
-		bSingle = true;
-		arCSS = [arCSS];
-	}
-
-	var i,
-		l = arCSS.length,
-		lnk = null,
-		pLnk = [];
-
-	if (l == 0)
-		return null;
-
-	doc = doc || document;
-	win = win || window;
-
-	if (!win.bxhead)
-	{
-		var heads = doc.getElementsByTagName('HEAD');
-		win.bxhead = heads[0];
-
-		if (!win.bxhead)
-		{
-			return null;
-		}
-	}
-
-	for (i = 0; i < l; i++)
-	{
-		var _check = BX.getCSSPath(arCSS[i]);
-		if (isCssLoaded(_check))
-		{
-			continue;
-		}
-
-		lnk = document.createElement('LINK');
-		lnk.href = arCSS[i];
-		lnk.rel = 'stylesheet';
-		lnk.type = 'text/css';
-
-		var templateLink = getTemplateLink(win.bxhead);
-		if (templateLink !== null)
-		{
-			templateLink.parentNode.insertBefore(lnk, templateLink);
-		}
-		else
-		{
-			win.bxhead.appendChild(lnk);
-		}
-
-		pLnk.push(lnk);
-		cssList.push(_check);
-	}
-
-	if (bSingle)
-		return lnk;
-
-	return pLnk;
 };
 
 BX.load = function(items, callback, doc)
@@ -3539,19 +3503,6 @@ function loadAsync(items, callback, doc)
 		return true;
 	}
 
-	function one(callback)
-	{
-		callback = callback || BX.DoNothing;
-
-		if (callback._done)
-		{
-			return;
-		}
-
-		callback();
-		callback._done = 1;
-	}
-
 	if (!BX.type.isFunction(callback))
 	{
 		callback = null;
@@ -3565,6 +3516,7 @@ function loadAsync(items, callback, doc)
 		itemSet[item.name] = item;
 	}
 
+	var callbackWasCalled = false;
 	for (i = 0; i < items.length; i++)
 	{
 		item = items[i];
@@ -3572,7 +3524,12 @@ function loadAsync(items, callback, doc)
 		load(item, function () {
 			if (allLoaded(itemSet))
 			{
-				one(callback);
+				if (!callbackWasCalled)
+				{
+					callback && callback();
+					callbackWasCalled = true;
+				}
+
 			}
 		}, doc);
 	}
@@ -3730,11 +3687,11 @@ function loadAsset(asset, callback, doc)
 
 	if (ext === "css")
 	{
-		cssList.push(BX.getCSSPath(asset.url));
+		cssList.push(normalizeMinUrl(normalizeUrl(asset.url)));
 	}
 	else
 	{
-		jsList.push(BX.getJSPath(asset.url));
+		jsList.push(normalizeMinUrl(normalizeUrl(asset.url)));
 	}
 
 	var templateLink = null;
@@ -3778,10 +3735,38 @@ function getAsset(item)
 	return asset;
 }
 
+function normalizeUrl(url)
+{
+	if (!BX.type.isNotEmptyString(url))
+	{
+		return "";
+	}
+
+	url = BX.getJSPath(url);
+	url = url.replace(/\?[0-9]*$/, "");
+
+	return url;
+}
+
+function normalizeMinUrl(url)
+{
+	if (!BX.type.isNotEmptyString(url))
+	{
+		return "";
+	}
+
+	var minPos = url.indexOf(".min");
+	return minPos >= 0 ? url.substr(0, minPos) + url.substr(minPos + 4) : url;
+}
+
 function isCssLoaded(fileSrc)
 {
 	initCssList();
-	return (BX.util.in_array(BX.getCSSPath(fileSrc), cssList));
+
+	fileSrc = normalizeUrl(fileSrc);
+	var fileSrcMin = normalizeMinUrl(fileSrc);
+
+	return (fileSrc !== fileSrcMin && BX.util.in_array(fileSrcMin, cssList)) || BX.util.in_array(fileSrc, cssList);
 }
 
 function initCssList()
@@ -3797,7 +3782,8 @@ function initCssList()
 				var href = linksCol[i].getAttribute('href');
 				if (BX.type.isNotEmptyString(href))
 				{
-					cssList.push(BX.getCSSPath(href));
+					href = normalizeMinUrl(normalizeUrl(href));
+					cssList.push(href);
 				}
 			}
 		}
@@ -3834,7 +3820,11 @@ function getTemplateLink(head)
 function isScriptLoaded(fileSrc)
 {
 	initJsList();
-	return BX.util.in_array(BX.getJSPath(fileSrc), jsList);
+
+	fileSrc = normalizeUrl(fileSrc);
+	var fileSrcMin = normalizeMinUrl(fileSrc);
+
+	return (fileSrc !== fileSrcMin && BX.util.in_array(fileSrcMin, jsList)) || BX.util.in_array(fileSrc, jsList);
 }
 
 function initJsList()
@@ -3851,7 +3841,8 @@ function initJsList()
 
 				if (BX.type.isNotEmptyString(src))
 				{
-					jsList.push(BX.getJSPath(src));
+					src = normalizeMinUrl(normalizeUrl(src));
+					jsList.push(src);
 				}
 			}
 		}
@@ -4788,7 +4779,6 @@ function runReady()
 
 		BX.isReady = true;
 
-
 		if (readyList && readyList.length > 0)
 		{
 			var fn, i = 0;
@@ -4804,6 +4794,7 @@ function runReady()
 
 			readyList = null;
 		}
+
 		// TODO: check ready handlers binded some other way;
 	}
 	return null;
@@ -5060,7 +5051,7 @@ BX.data = function(node, key, value)
 	}
 	else
 	{
-		var data = undefined;
+		var data;
 
 		// from manager
 		if((data = dataStorage.get(node, key)) != undefined)
@@ -5070,8 +5061,15 @@ BX.data = function(node, key, value)
 		else
 		{
 			// from attribute data-*
-			if('getAttribute' in node && (data = node.getAttribute('data-'+key.toString())))
+			if('getAttribute' in node)
+			{
+				data = node.getAttribute('data-'+key.toString());
+				if(data === null)
+				{
+					return undefined;
+				}
 				return data;
+			}
 		}
 
 		return undefined;
@@ -5178,7 +5176,7 @@ BX.LazyLoad = {
 		var image = null;
 		var isImageVisible = false;
 
-		checkOwnVisibility = checkOwnVisibility === false ? false : true;
+		checkOwnVisibility = (checkOwnVisibility !== false);
 		for (var i = 0, length = this.images.length; i < length; i++)
 		{
 			image = this.images[i];
@@ -5316,6 +5314,46 @@ BX.getCookie = function (name)
 	return matches ? decodeURIComponent(matches[1]) : undefined;
 };
 
+BX.setCookie = function (name, value, options)
+{
+	options = options || {};
+
+	var expires = options.expires;
+	if (typeof(expires) == "number" && expires)
+	{
+		var currentDate = new Date();
+		currentDate.setTime(currentDate.getTime() + expires * 1000);
+		expires = options.expires = currentDate;
+	}
+
+	if (expires && expires.toUTCString)
+	{
+		options.expires = expires.toUTCString();
+	}
+
+	value = encodeURIComponent(value);
+
+	var updatedCookie = name + "=" + value;
+
+	for (var propertyName in options)
+	{
+		if (!options.hasOwnProperty(propertyName))
+		{
+			continue;
+		}
+		updatedCookie += "; " + propertyName;
+		var propertyValue = options[propertyName];
+		if (propertyValue !== true)
+		{
+			updatedCookie += "=" + propertyValue;
+		}
+	}
+
+	document.cookie = updatedCookie;
+
+	return true;
+};
+
 BX.FixFontSize = function(params)
 {
 	var widthNode, computedStyles, width;
@@ -5445,6 +5483,8 @@ BX.FixFontSize.prototype =
 					this.textWrapper.style.fontSize = ++fontSize + 'px';
 				}
 
+				fontSize--;
+
 				if(this.objList[i].smallestValue)
 				{
 					this.minFontSize = this.minFontSize ? Math.min(this.minFontSize, fontSize) : fontSize;
@@ -5561,6 +5601,221 @@ if(typeof(BX.ParamBag) === "undefined")
 		self.initialize(params);
 		return self;
 	}
+}
+
+if(typeof(BX.Promise) === "undefined")
+{
+	BX.Promise = function(fn, ctx) // fn is future-reserved
+	{
+		this.state = null;
+		this.value = null;
+		this.reason = null;
+		this.next = null;
+		this.ctx = ctx || this;
+
+		this.onFulfilled = [];
+		this.onRejected = [];
+	};
+	BX.Promise.prototype.fulfill = function(value)
+	{
+		this.checkState();
+
+		this.value = value;
+		this.state = true;
+		this.execute();
+	};
+	BX.Promise.prototype.reject = function(reason)
+	{
+		this.checkState();
+
+		this.reason = reason;
+		this.state = false;
+		this.execute();
+	};
+	BX.Promise.prototype.then = function(onFulfilled, onRejected)
+	{
+		if(BX.type.isFunction(onFulfilled))
+		{
+			this.onFulfilled.push(onFulfilled);
+		}
+		if(BX.type.isFunction(onRejected))
+		{
+			this.onRejected.push(onRejected);
+		}
+
+		if(this.next === null)
+		{
+			this.next = new BX.Promise(null, this.ctx);
+		}
+
+		if(this.state !== null) // if promise was already resolved, execute immediately
+		{
+			this.execute();
+		}
+
+		return this.next;
+	};
+	BX.Promise.prototype.setAutoResolve = function(way, ms)
+	{
+		this.timer = setTimeout(BX.delegate(function(){
+			if(this.state === null)
+			{
+				this[way ? 'fulfill' : 'reject']();
+			}
+		}, this), ms || 15);
+	};
+	BX.Promise.prototype.cancelAutoResolve = function()
+	{
+		clearTimeout(this.timer);
+	};
+	/**
+	 * Resolve function. This function allows promise chaining, like ..then().then()...
+	 * Typical usage:
+	 *
+	 * var p = new Promise();
+	 *
+	 * p.then(function(value){
+	 *  return someValue; // next promise in the chain will be fulfilled with someValue
+	 * }).then(function(value){
+	 *
+	 *  var p1 = new Promise();
+	 *  *** some async code here, that eventually resolves p1 ***
+	 *
+	 *  return p1; // chain will resume when p1 resolved (fulfilled or rejected)
+	 * }).then(function(value){
+	 *
+	 *  // you can also do
+	 *  var e = new Error();
+	 *  throw e;
+	 *  // it will cause next promise to be rejected with e
+	 *
+	 *  return someOtherValue;
+	 * }).then(function(value){
+	 *  ...
+	 * }, function(reason){
+	 *  // promise was rejected with reason
+	 * })...;
+	 *
+	 * p.fulfill('let`s start this chain');
+	 *
+	 * @param x
+	 */
+	BX.Promise.prototype.resolve = function(x)
+	{
+		var this_ = this;
+
+		if(this === x)
+		{
+			this.reject(new TypeError('Promise cannot fulfill or reject itself')); // avoid recursion
+		}
+		// allow "pausing" promise chaining until promise x is fulfilled or rejected
+		else if(x instanceof BX.Promise)
+		{
+			x.then(function(value){
+				this_.fulfill(value);
+			}, function(reason){
+				this_.reject(reason);
+			});
+		}
+		else // auto-fulfill this promise
+		{
+			this.fulfill(x);
+		}
+	};
+	BX.Promise.prototype.execute = function()
+	{
+		if(this.state === null)
+		{
+			//then() must not be called before BX.Promise resolve() happens
+			return;
+		}
+
+		var value = undefined;
+		var reason = undefined;
+		var x = undefined;
+		var k;
+		if(this.state === true) // promise was fulfill()-ed
+		{
+			if(this.onFulfilled.length)
+			{
+				try
+				{
+					for(k = 0; k < this.onFulfilled.length; k++)
+					{
+						x = this.onFulfilled[k].apply(this.ctx, [this.value]);
+						if(typeof x != 'undefined')
+						{
+							value = x;
+						}
+					}
+				}
+				catch(e)
+				{
+					if('console' in window)
+					{
+						console.dir(e);
+					}
+					BX.debug(e);
+
+					reason = e; // reject next
+				}
+			}
+			else
+			{
+				value = this.value; // resolve next
+			}
+		}
+		else if(this.state === false) // promise was reject()-ed
+		{
+			if(this.onRejected.length)
+			{
+				try
+				{
+					for(k = 0; k < this.onRejected.length; k++)
+					{
+						x = this.onRejected[k].apply(this.ctx, [this.reason]);
+						if(typeof x != 'undefined')
+						{
+							value = x;
+						}
+					}
+				}
+				catch(e)
+				{
+					if('console' in window)
+					{
+						console.dir(e);
+					}
+					BX.debug(e);
+
+					reason = e; // reject next
+				}
+			}
+			else
+			{
+				reason = this.reason; // reject next
+			}
+		}
+
+		if(this.next !== null)
+		{
+			if(typeof reason != 'undefined')
+			{
+				this.next.reject(reason);
+			}
+			else if(typeof value != 'undefined')
+			{
+				this.next.resolve(value);
+			}
+		}
+	};
+	BX.Promise.prototype.checkState = function()
+	{
+		if(this.state !== null)
+		{
+			throw new Error('You can not do fulfill() or reject() multiple times');
+		}
+	};
 }
 
 })(window);

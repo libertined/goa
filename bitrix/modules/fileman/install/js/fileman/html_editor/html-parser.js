@@ -528,6 +528,30 @@
 				}
 			}
 
+			//mantis:74639
+			if (nodeName == 'THEAD')
+			{
+				var trs = oldNode.getElementsByTagName('TR'), st;
+				for (i = 0; i < trs.length; i++)
+				{
+					if (trs[i] && trs[i].getAttribute)
+					{
+						st = trs[i].getAttribute('style');
+						if (st
+							&& st.indexOf('mso-yfti-irow') !== -1
+							&& st.indexOf('mso-yfti-irow:0') === -1
+							&& st.indexOf('mso-yfti-irow:-1') === -1
+							&& st.indexOf('mso-yfti-firstrow:yes') === -1
+						)
+						{
+							oldNode.setAttribute('data-bx-new-rule', 'rename_tag');
+							oldNode.setAttribute('data-bx-rename_tag', 'TBODY');
+							break;
+						}
+					}
+				}
+			}
+
 			// Clean pasted div's
 			if (nodeName == 'DIV' || oldNode.style.display == 'block' || nodeName == 'FORM')
 			{
@@ -546,7 +570,7 @@
 				oldNode.setAttribute('data-bx-replace_with_children', '1');
 			}
 
-			// Content pastet from google docs sometimes comes with unused <b style="font-weight: normal"> wrapping
+			// Content pasted from google docs sometimes comes with unused <b style="font-weight: normal"> wrapping
 			if (nodeName == 'B' && oldNode.style.fontWeight == 'normal')
 			{
 				oldNode.setAttribute('data-bx-new-rule', 'replace_with_children');
@@ -679,6 +703,7 @@
 							((nodeName == 'SPAN' || nodeName == 'P') && (styleName == 'width' || styleName == 'height')) || // Sizes for SPAN and P
 							(typeof whiteCssList[styleName] == 'object' && BX.util.in_array(styleValue.toLowerCase(), whiteCssList[styleName])))
 						{
+
 							continue;
 						}
 
@@ -718,7 +743,6 @@
 				node.removeAttribute('style');
 			}
 		},
-
 
 		CheckAltImage: function(img)
 		{
@@ -1351,11 +1375,10 @@
 			htmlcomment: true,
 			iframe: true,
 			video: true,
+			audio: true,
 			'object': true
 		};
 
-		//if((!this.arConfig["bWithoutPHP"] || this.limit_php_access) && this.arConfig["use_advanced_php_parser"] == 'Y')
-		//{
 		this.bUseAPP = true; // APP - AdvancedPHPParser
 		this.APPConfig =
 		{
@@ -1364,14 +1387,10 @@
 			arTags :
 			{
 				'a' : ['href','title','class','style'],
-				'img' : ['src','alt','class','style','width','height']
+				'img' : ['src','alt','class','style','width','height'],
+				'input' : ['id','name','value']
 			}
 		};
-		//}
-//		else
-//		{
-//			this.bUseAPP = false;
-//		}
 
 		this.customParsers = [];
 		this.arScripts = {}; // object which contains all php codes with indexes
@@ -1379,6 +1398,7 @@
 		this.arHtmlComments = {}; // object which contains all html comments with indexes
 		this.arIframes = {}; // object which contains all iframes with indexes
 		this.arVideos = {}; // object which contains all iframes with emeded videos
+		this.arAudio = {};
 		this.arStyles = {}; // object which contains all <style> tags with indexes
 		this.arObjects = {}; // object which contains all <object> tags with indexes
 		this.surrClass = 'bxhtmled-surrogate';
@@ -1392,6 +1412,7 @@
 			anchor: 1,
 			iframe: 1,
 			video: 1,
+			audio: 1,
 			'object': 1
 		};
 
@@ -1427,6 +1448,8 @@
 			content = this.ReplaceHtmlCommentsBySymCode(content);
 			// Iframe & Video
 			content = this.ReplaceIframeBySymCode(content);
+			// Audio
+			content = this.ReplaceAudioBySymCode(content);
 			// Style
 			content = this.ReplaceStyleBySymCode(content);
 			// Object && embed
@@ -1679,6 +1702,24 @@
 					return _this.GetPattern(index++, false, 'style');
 				}
 			);
+
+			return content;
+		},
+
+		// Example: <audio controls=""><source src="/sound.mp3" type="audio/mpeg"> => #BXAUDIO_0#
+		ReplaceAudioBySymCode: function(content)
+		{
+			this.arAudio = {};
+			var
+				_this = this,
+				index = 0;
+
+			content = content.replace(/<audio[\s\S]*?\/audio>/gi, function(s)
+				{
+					_this.arAudio[index] = s;
+					return _this.GetPattern(index++, false, 'audio');
+				}
+			);
 			return content;
 		},
 
@@ -1780,6 +1821,9 @@
 				case 'video':
 					code = '#BXVIDEO_';
 					break;
+				case 'audio':
+					code = '#BXAUDIO_';
+					break;
 				case 'object':
 					code = '#BXOBJECT_';
 					break;
@@ -1796,7 +1840,7 @@
 		{
 			var _this = this;
 
-			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|OBJECT)_(\d+)#/g, function(str, type, ind)
+			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|AUDIO|OBJECT)_(\d+)#/g, function(str, type, ind)
 			{
 				var res = '';
 				if (_this.IsAllowed(type.toLowerCase()))
@@ -1820,6 +1864,9 @@
 							break;
 						case 'VIDEO':
 							res = _this.GetVideoHTML(_this.arVideos[ind]);
+							break;
+						case 'AUDIO':
+							res = _this.GetAudioHTML(_this.arAudio[ind]);
 							break;
 						case 'OBJECT':
 							res = _this.GetObjectHTML(_this.arObjects[ind]);
@@ -1928,6 +1975,22 @@
 				'</span>';
 
 			return result;
+		},
+
+		GetAudioHTML: function(code)
+		{
+			if (typeof code !== 'string')
+				return null;
+			var
+				title = "Audio",
+				params = this.FetchVideoIframeParams(code);
+
+			if (params && params.src)
+			{
+				title += ': ' + this.GetShortTitle(BX.util.htmlspecialchars(params.src));
+			}
+
+			return this.GetSurrogateHTML("audio", title, "Audio: " + this.GetShortTitle(code), {value : code});
 		},
 
 		GetObjectHTML: function(code)
@@ -2052,7 +2115,7 @@
 		_GetUnParsedContent: function(content)
 		{
 			var _this = this;
-			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|OBJECT)_(\d+)#/g, function(str, type, ind)
+			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|AUDIO|OBJECT)_(\d+)#/g, function(str, type, ind)
 			{
 				var res;
 				switch (type)
@@ -2074,6 +2137,9 @@
 						break;
 					case 'VIDEO':
 						res = _this.arVideos[ind].html;
+						break;
+					case 'AUDIO':
+						res = _this.arAudio[ind];
 						break;
 					case 'OBJECT':
 						res = _this.arObjects[ind].html;
@@ -2475,6 +2541,12 @@
 					}
 				},
 				video: {
+					Parse: function(params)
+					{
+						return _this._GetUnParsedContent(params.value);
+					}
+				},
+				audio: {
 					Parse: function(params)
 					{
 						return _this._GetUnParsedContent(params.value);
@@ -3240,6 +3312,10 @@
 			content = content.replace(/[\r\n\s\t]*?\[\/list\]/ig, '[/LIST]');
 			content = content.replace(/[\r\n\s\t]*?\[\*\]?/ig, '[*]');
 
+			// Paragraph
+			content = content.replace(/\[p\]/ig, '<p>');
+			content = content.replace(/\[\/p\]\n?/ig, '</p>');
+
 			var
 				arSimpleTags = [
 					'b','u', 'i', ['s', 'del'], // B, U, I, S
@@ -3597,6 +3673,10 @@
 			}
 			else if(nodeName == 'LI')
 			{
+				if (oNode.node.lastChild && oNode.node.lastChild.nodeName == 'BR')
+				{
+					oNode.node.removeChild(oNode.node.lastChild);
+				}
 				oNode.bbTag = '*';
 				oNode.breakLineBefore = true;
 				oNode.hideRight = true;
@@ -3669,8 +3749,6 @@
 					oNode.hide = !BX.util.in_array(nodeName, this.editor.BBCODE_TAGS);
 				}
 			}
-
-
 			else if(!BX.util.in_array(nodeName, this.editor.BBCODE_TAGS)) //'p', 'u', 'div', 'table', 'tr', 'img', 'td', 'a'
 			{
 				oNode.hide = true;

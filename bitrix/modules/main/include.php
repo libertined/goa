@@ -98,7 +98,7 @@ if(!defined("BX_COMP_MANAGED_CACHE") && COption::GetOptionString("main", "compon
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/filter_tools.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/ajax_tools.php");
 
-/*ZDUyZmZNDkzMjRjY2I1MjY3MGY3NWE2OWI0N2U5MjkyZjdkZTg=*/$GLOBALS['____1083772685']= array(base64_decode('Z'.'G'.'VmaW'.'5l'));; function ___189350048($_1110694822){static $_1813557104= false; if($_1813557104 == false) $_1813557104=array('RU5DT0RF','WQ'.'==');return base64_decode($_1813557104[$_1110694822]);};  class CBXFeatures{ public static function IsFeatureEnabled($_1605980333){ return true;} public static function IsFeatureEditable($_1605980333){ return true;} public static function SetFeatureEnabled($_1605980333, $_145560556= true){} public static function SaveFeaturesSettings($_1023785668, $_1817223109){} public static function GetFeaturesList(){ return array();} public static function InitiateEditionsSettings($_595333150){} public static function ModifyFeaturesSettings($_595333150, $_1008392769){} public static function IsFeatureInstalled($_1605980333){ return true;}} $GLOBALS['____1083772685'][0](___189350048(0), ___189350048(1));/**/			//Do not remove this
+/*ZDUyZmZZTEyYjgxMmI5YzFmYjZlYjBmNTY4NTE0MmU3OGE3OTA=*/$GLOBALS['____1646674222']= array(base64_decode('ZG'.'VmaW5l'));; function ___1397066115($_1499463461){static $_1726265732= false; if($_1726265732 == false) $_1726265732=array(''.'R'.'U5DT'.'0RF','WQ='.'=');return base64_decode($_1726265732[$_1499463461]);};  class CBXFeatures{ public static function IsFeatureEnabled($_1379829778){ return true;} public static function IsFeatureEditable($_1379829778){ return true;} public static function SetFeatureEnabled($_1379829778, $_1001935629= true){} public static function SaveFeaturesSettings($_1695549179, $_1703590688){} public static function GetFeaturesList(){ return array();} public static function InitiateEditionsSettings($_2041751048){} public static function ModifyFeaturesSettings($_2041751048, $_247791712){} public static function IsFeatureInstalled($_1379829778){ return true;}} $GLOBALS['____1646674222'][0](___1397066115(0), ___1397066115(1));/**/			//Do not remove this
 
 //component 2.0 template engines
 $GLOBALS["arCustomTemplateEngines"] = array();
@@ -179,6 +179,19 @@ require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/ur
 		"CHTMLPagesCache" => "classes/general/cache_html.php",
 		"CFileUploader" => "classes/general/uploader.php",
 		"LPA" => "classes/general/lpa.php",
+		"CAdminFilter" => "interface/admin_filter.php",
+		"CAdminList" => "interface/admin_list.php",
+		"CAdminListRow" => "interface/admin_list.php",
+		"CAdminTabControl" => "interface/admin_tabcontrol.php",
+		"CAdminForm" => "interface/admin_form.php",
+		"CAdminFormSettings" => "interface/admin_form.php",
+		"CAdminTabControlDrag" => "interface/admin_tabcontrol_drag.php",
+		"CAdminDraggableBlockEngine" => "interface/admin_tabcontrol_drag.php",
+		"CJSPopup" => "interface/jspopup.php",
+		"CJSPopupOnPage" => "interface/jspopup.php",
+		"CAdminCalendar" => "interface/admin_calendar.php",
+		"CAdminViewTabControl" => "interface/admin_viewtabcontrol.php",
+		"CAdminTabEngine" => "interface/admin_tabengine.php",
 	)
 );
 
@@ -260,6 +273,8 @@ else
 	define("LICENSE_KEY", $LICENSE_KEY);
 
 header("X-Powered-CMS: Bitrix Site Manager (".(LICENSE_KEY == "DEMO"? "DEMO" : md5("BITRIX".LICENSE_KEY."LICENCE")).")");
+if (COption::GetOptionString("main", "update_devsrv", "") == "Y")
+	header("X-DevSrv-CMS: Bitrix");
 
 define("BX_CRONTAB_SUPPORT", defined("BX_CRONTAB"));
 
@@ -328,7 +343,7 @@ if(
 	||
 	(
 		//session manually expired, e.g. in $User->LoginHitByHash
-		isSessionExpired()
+	isSessionExpired()
 	)
 )
 {
@@ -446,11 +461,11 @@ if(!defined("NOT_CHECK_PERMISSIONS") || NOT_CHECK_PERMISSIONS!==true)
 			}
 			elseif($_REQUEST["TYPE"] == "SEND_PWD")
 			{
-				$arAuthResult = CUser::SendPassword($_REQUEST["USER_LOGIN"], $_REQUEST["USER_EMAIL"], $USER_LID);
+				$arAuthResult = CUser::SendPassword($_REQUEST["USER_LOGIN"], $_REQUEST["USER_EMAIL"], $USER_LID, $_REQUEST["captcha_word"], $_REQUEST["captcha_sid"]);
 			}
 			elseif($_SERVER['REQUEST_METHOD'] == 'POST' && $_REQUEST["TYPE"] == "CHANGE_PWD")
 			{
-				$arAuthResult = $GLOBALS["USER"]->ChangePassword($_REQUEST["USER_LOGIN"], $_REQUEST["USER_CHECKWORD"], $_REQUEST["USER_PASSWORD"], $_REQUEST["USER_CONFIRM_PASSWORD"], $USER_LID);
+				$arAuthResult = $GLOBALS["USER"]->ChangePassword($_REQUEST["USER_LOGIN"], $_REQUEST["USER_CHECKWORD"], $_REQUEST["USER_PASSWORD"], $_REQUEST["USER_CONFIRM_PASSWORD"], $USER_LID, $_REQUEST["captcha_word"], $_REQUEST["captcha_sid"]);
 			}
 			elseif(COption::GetOptionString("main", "new_user_registration", "N") == "Y" && $_SERVER['REQUEST_METHOD'] == 'POST' && $_REQUEST["TYPE"] == "REGISTRATION" && (!defined("ADMIN_SECTION") || ADMIN_SECTION!==true))
 			{
@@ -485,6 +500,9 @@ if(($applicationID = $GLOBALS["USER"]->GetParam("APPLICATION_ID")) !== null)
 	$appManager = \Bitrix\Main\Authentication\ApplicationManager::getInstance();
 	if($appManager->checkScope($applicationID) !== true)
 	{
+		$event = new \Bitrix\Main\Event("main", "onApplicationScopeError", Array('APPLICATION_ID' => $applicationID));
+		$event->send();
+
 		CHTTP::SetStatus("403 Forbidden");
 		die();
 	}

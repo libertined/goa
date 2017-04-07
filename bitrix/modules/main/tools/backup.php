@@ -73,7 +73,7 @@ if (!CLI) // hit from bitrixcloud service
 {
 	if ((!$backup_secret_key =  CPasswordStorage::Get('backup_secret_key')) || $backup_secret_key != $_REQUEST['secret_key'])
 	{
-#	echo $backup_secret_key."\n"; COption::SetOptionInt('main', 'dump_auto_enable'.'_auto', 2); # debug
+#		echo $backup_secret_key."\n"; COption::SetOptionInt('main', 'dump_auto_enable'.'_auto', 2); # debug
 		RaiseErrorAndDie('Secret key is incorrect', 10);
 	}
 	elseif ($_REQUEST['check_auth'])
@@ -88,6 +88,16 @@ if (!CLI) // hit from bitrixcloud service
 	session_id(md5($backup_secret_key));
 	session_start();
 	$NS =& $_SESSION['BX_DUMP_STATE'];
+
+	if ($NS['TIMESTAMP'] && ($i = IntOption('dump_max_exec_time_sleep')) > 0)
+	{
+		if (time() - $NS['TIMESTAMP'] < $i)
+		{
+			sleep(3);
+			echo 'NEXT';
+			exit(0);
+		}
+	}
 }
 
 if (!file_exists(DOCUMENT_ROOT.'/bitrix/backup'))
@@ -567,6 +577,7 @@ if ($NS['step'] == 7)
 	{
 		ShowBackupStatus('Deleting old backups');
 		$arFiles = array();
+		$arParts = array();
 
 		$TotalSize = $NS['arc_size'];
 
@@ -592,6 +603,7 @@ if ($NS['step'] == 7)
 					$m = filemtime($f);
 
 					$arFiles[$name] = $m;
+					$arParts[$name][] = $item;
 					$TotalSize += $s;
 				}
 				closedir($dir);
@@ -621,20 +633,16 @@ if ($NS['step'] == 7)
 			}
 
 			$cnt--;
-			$f = $p.'/'.$name;
-	//		echo "delete ".$f."\n";
-
-			$bDel = false;
-			while(file_exists($f))
+			foreach($arParts[$name] as $item)
 			{
+				$f = $p.'/'.$item;
 				$size = filesize($f);
 				$TotalSize -= $size;
-				if (($bDel = unlink($f)) && $arParams["disk_space"] > 0)
+				if (!unlink($f))
+					RaiseErrorAndDie('Could not delete file: '.$f, 700, $NS['arc_name']);
+				if ($arParams["disk_space"] > 0)
 					CDiskQuota::updateDiskQuota("file", $size , "del");
-				$f = CTar::getNextName($f);
 			}
-			if (!$bDel)
-				RaiseErrorAndDie('Could not delete file: '.$f, 700, $NS['arc_name']);
 		}
 	}
 	$NS['step'] = 8;
@@ -682,7 +690,14 @@ function ShowBackupStatus($str)
 
 function haveTime()
 {
-	if (!CLI && time() - START_TIME > 30)
+	static $timeout;
+	if (!$timeout)
+	{
+		$timeout = IntOption('dump_max_exec_time', 30);
+		if ($timeout < 5)
+			$timeout = 5;
+	}
+	if (!CLI && time() - START_TIME > $timeout)
 		return false;
 	return true;
 }
@@ -722,6 +737,7 @@ function CheckPoint()
 	
 	global $NS;
 	$NS['WORK_TIME'] = microtime(1) - START_TIME;
+	$NS['TIMESTAMP'] = time();
 	session_write_close();
 	echo "NEXT";
 	exit(0);

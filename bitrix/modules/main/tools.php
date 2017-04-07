@@ -26,7 +26,16 @@ function InputType($strType, $strName, $strValue, $strCmp, $strPrintValue=false,
 	$bLabel = false;
 	if ($strType == 'radio')
 		$bLabel = true;
-	return ($bLabel? '<label>': '').'<input type="'.$strType.'" '.$field1.' name="'.$strName.'" id="'.($strId <> ''? $strId : $strName).'" value="'.$strValue.'"'.
+
+	$bId = true;
+	if($strType == 'radio' || $strType == 'checkbox')
+	{
+		$bId = !preg_match('/^id="/', $field1) && !preg_match('/\sid="/', $field1);
+	}
+
+	return ($bLabel? '<label>': '').'<input type="'.$strType.'" '.$field1.' name="'.$strName.'"'.
+		($bId ? ' id="'.($strId <> ''? $strId : $strName).'"' : '').
+		' value="'.$strValue.'"'.
 		($bCheck? ' checked':'').'>'.($strPrintValue? $strValue:$strPrint).($bLabel? '</label>': '');
 }
 
@@ -105,7 +114,7 @@ function SelectBoxM($strBoxName, $a, $arr, $strDetText = "", $strDetText_selecte
  *
  * @param string $strBoxName Input name
  * @param array $a Array with items
- * @param array $arr Selected values
+ * @param array|false $arr Selected values
  * @param string $strDetText Empty item text
  * @param bool $strDetText_selected Allow to choose an empty item
  * @param string $size Size attribute
@@ -161,22 +170,26 @@ function SelectBoxFromArray(
 	$form="form1"
 	)
 {
+	$boxName = htmlspecialcharsbx($strBoxName);
 	if($go)
 	{
+		$funName = preg_replace("/[^a-z0-9_]/i", "", $strBoxName);
+		$jsName = CUtil::JSEscape($strBoxName);
+
 		$strReturnBox = "<script type=\"text/javascript\">\n".
-			"function ".$strBoxName."LinkUp()\n".
-			"{var number = document.".$form.".".$strBoxName.".selectedIndex;\n".
-			"if(document.".$form.".".$strBoxName.".options[number].value!=\"0\"){ \n".
-			"document.".$form.".".$strBoxName."_SELECTED.value=\"yes\";\n".
+			"function ".$funName."LinkUp()\n".
+			"{var number = document.".$form."['".$jsName."'].selectedIndex;\n".
+			"if(document.".$form."['".$jsName."'].options[number].value!=\"0\"){ \n".
+			"document.".$form."['".$jsName."_SELECTED'].value=\"yes\";\n".
 			"document.".$form.".submit();\n".
 			"}}\n".
 			"</script>\n";
-		$strReturnBox .= '<input type="hidden" name="'.$strBoxName.'_SELECTED" id="'.$strBoxName.'_SELECTED" value="">';
-		$strReturnBox .= '<select '.$field1.' name="'.$strBoxName.'" id="'.$strBoxName.'" onchange="'.$strBoxName.'LinkUp()" class="typeselect">';
+		$strReturnBox .= '<input type="hidden" name="'.$boxName.'_SELECTED" id="'.$boxName.'_SELECTED" value="">';
+		$strReturnBox .= '<select '.$field1.' name="'.$boxName.'" id="'.$boxName.'" onchange="'.$funName.'LinkUp()" class="typeselect">';
 	}
 	else
 	{
-		$strReturnBox = '<select '.$field1.' name="'.$strBoxName.'" id="'.$strBoxName.'">';
+		$strReturnBox = '<select '.$field1.' name="'.$boxName.'" id="'.$boxName.'">';
 	}
 
 	if(isset($db_array["reference"]) && is_array($db_array["reference"]))
@@ -3636,7 +3649,6 @@ function minimumPHPVersion($vercheck)
 
 function FormDecode()
 {
-	global $HTTP_ENV_VARS, $HTTP_GET_VARS, $HTTP_POST_VARS, $HTTP_POST_FILES, $HTTP_COOKIE_VARS, $HTTP_SERVER_VARS;
 	$superglobals = array(
 		'_GET'=>1, '_SESSION'=>1, '_POST'=>1, '_COOKIE'=>1, '_REQUEST'=>1, '_FILES'=>1, '_SERVER'=>1, 'GLOBALS'=>1, '_ENV'=>1,
 		'DBType'=>1,  'DBDebug'=>1, 'DBDebugToFile'=>1, 'DBHost'=>1, 'DBName'=>1, 'DBLogin'=>1, 'DBPassword'=>1,
@@ -3656,32 +3668,23 @@ function FormDecode()
 	{
 		$toGlobals = array();
 
-		$HTTP_ENV_VARS = $_ENV;
 		foreach($_ENV as $key => $val)
 			if(!isset($superglobals[$key]))
 				$toGlobals[$key] = $val;
 
-		$HTTP_GET_VARS = $_GET;
 		foreach($_GET as $key => $val)
 			if(!isset($superglobals[$key]))
 				$toGlobals[$key] = $val;
 
-		$HTTP_POST_VARS = $_POST;
 		foreach($_POST as $key => $val)
 			if(!isset($superglobals[$key]))
 				$toGlobals[$key] = $val;
 
-		$HTTP_POST_FILES = $_FILES;
-		foreach($_FILES as $key => $val)
-			if(!isset($superglobals[$key]))
-				$toGlobals[$key] = $val;
 
-		$HTTP_COOKIE_VARS = $_COOKIE;
 		foreach($_COOKIE as $key => $val)
 			if(!isset($superglobals[$key]))
 				$toGlobals[$key] = $val;
 
-		$HTTP_SERVER_VARS = $_SERVER;
 		foreach($_SERVER as $key => $val)
 			if(!isset($superglobals[$key]))
 				$toGlobals[$key] = $val;
@@ -3872,7 +3875,6 @@ function InitURLParam($url=false)
 		$length = ($end>0) ? $end-$start-1 : strlen($url);
 		$params = substr($url, $start+1, $length);
 		parse_str($params, $_GET);
-		parse_str($params, $HTTP_GET_VARS);
 		parse_str($params, $arr);
 		$_REQUEST += $arr;
 		$GLOBALS += $arr;
@@ -4069,11 +4071,7 @@ function bitrix_sess_sign()
 
 function check_bitrix_sessid($varname='sessid')
 {
-	global $USER;
-	if(defined("BITRIX_STATIC_PAGES") && (!is_object($USER) || !$USER->IsAuthorized()))
-		return true;
-	else
-		return $_REQUEST[$varname] == bitrix_sessid();
+	return $_REQUEST[$varname] == bitrix_sessid();
 }
 
 function bitrix_sessid_get($varname='sessid')
@@ -4534,28 +4532,12 @@ JS;
 		/** @global CMain $APPLICATION */
 		global $APPLICATION;
 		$jsMsg = '';
-		$mess_lang_default = Array();
-		$mess_lang = Array();
 
 		if ($lang)
 		{
-			$langSubst = LangSubst(LANGUAGE_ID);
-			if($langSubst <> LANGUAGE_ID)
-			{
-				$lang_filename = $_SERVER['DOCUMENT_ROOT'].str_replace("/lang/".LANGUAGE_ID."/", "/lang/".$langSubst."/", $lang);
-				if (file_exists($lang_filename))
-				{
-					$mess_lang_default = __IncludeLang($lang_filename, true, true);
-				}
-			}
+			$lang_filename = $_SERVER['DOCUMENT_ROOT'].str_replace("/lang/".LANGUAGE_ID."/", "/", $lang);
+			$mess_lang = \Bitrix\Main\Localization\Loc::loadLanguageFile($lang_filename);
 
-			$lang_filename = $_SERVER['DOCUMENT_ROOT'].$lang;
-			if (file_exists($lang_filename))
-			{
-				$mess_lang = __IncludeLang($lang_filename, true, true);
-			}
-
-			$mess_lang = array_merge($mess_lang_default, $mess_lang);
 			if (!empty($mess_lang))
 			{
 				$jsMsg = '(window.BX||top.BX).message('.CUtil::PhpToJSObject($mess_lang, false).');';
@@ -4563,7 +4545,9 @@ JS;
 		}
 
 		if (is_array($arAdditionalMess))
+		{
 			$jsMsg = '(window.BX||top.BX).message('.CUtil::PhpToJSObject($arAdditionalMess, false).');'.$jsMsg;
+		}
 
 		if ($jsMsg !== '')
 		{
@@ -5330,6 +5314,12 @@ class CHTTP
 
 	public function __construct()
 	{
+		$defaultOptions = \Bitrix\Main\Config\Configuration::getValue("http_client_options");
+		if(isset($defaultOptions["socketTimeout"]))
+		{
+			$this->http_timeout = intval($defaultOptions["socketTimeout"]);
+		}
+
 		$this->user_agent = 'BitrixSM ' . __CLASS__ . ' class';
 	}
 

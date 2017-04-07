@@ -401,7 +401,17 @@ class HttpRequest extends Request
 			"show_sql_stat",
 			"show_cache_stat",
 			"show_link_stat",
+			"sessid",
 		);
 		return $params;
+	}
+
+	/**
+	 * Returns raw request data from php://input.
+	 * @return bool|string
+	 */
+	public static function getInput()
+	{
+		return file_get_contents("php://input");
 	}
 }
