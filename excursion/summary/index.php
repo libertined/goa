@@ -12,6 +12,9 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
 <p class="summary__description">Мы принимаем оплату в любой валюте: доллары, евро, рупии, рубли.</p>
 <p class="right-side__red">Для групп от 6 человек цены устанавливаются индивидуально на все экскурсии!</p>
 <h3 class="right-side__red">Сводная таблица цен на однодневные экскурсии из Гоа</h3>
+<p class="right-side__red">Цена при размещении в автомобиле или миниавтобусе до 18 человек (за 1 человека)</p>
+<p class="summary__description">Если Вы хотите большего комфорта, Вам следует выбрать индивидуальную экскурсию , сообщите нам детали и мы рассчитаем для вас стоимость.
+</p>
 <table class="summary">
     <col class="summary__col summary__col--1">
     <col class="summary__col summary__col--2">
@@ -158,7 +161,13 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
             <td class="summary__text summary__text--col">поездка на сутки с 17.00 до 13.00 второго дня</td>
             <td class="summary__text summary__text--col">130$<br><span class="summary__text--smaller">номер на двоих</span></td>
         </tr>	
-
+        
+        <tr class="summary__row">
+            <td class="summary__text">Мумбай (Бомбей) переезд на автобусе</td>
+            <td class="summary__text">1 день / 2 ночи</td>
+            <td class="summary__text">165$</td>
+        </tr>
+   
         <tr class="summary__row">
             <td class="summary__text" rowspan="3">Бадами, Паттадакал, Айхоле</td>
             <td class="summary__text" rowspan="3">с 04.00 до 22.00<br >
@@ -174,5 +183,137 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
 
     </tbody>
 </table>
+
+<h3 class="right-side__red">Сводная таблица цен на двухдневные экскурсии из Гоа</h3>
+<table class="summary">
+    <col class="summary__col summary__col--1">
+    <col class="summary__col summary__col--2">
+    <thead class="summary__header">
+        <tr class="summary__row summary__row--header">
+            <td class="summary__header-text">Название экскурсии</td>
+            <td class="summary__header-text">Продолжительность</td>
+            <td class="summary__header-text">Стоимость<br>на 1 человека</td>
+        </tr>
+    </td>
+    <tbody class="summary__body">
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="3">Тигровый заповедник. Слоны. Джог Фолс. Мурудешвар</td>
+            <td class="summary__text" rowspan="3">c 04.30 до 19.00<br>
+            2 дня / 1 ночь</td>
+            <td class="summary__text">115$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">150$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">75$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
+        </tr>
+        
+        <tr class="summary__row">
+            <td class="summary__text">Отдых в горах</td>
+            <td class="summary__text">с 10.30 до 14.00<br/>
+            2 дня / 1 ночь</td>
+            <td class="summary__text">от 195$<br><span class="summary__text--smaller">за коттедж на двоих</span>
+            </td>
+        </tr>        
+        
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="3">Колхапур и Махабалешвар</td>
+            <td class="summary__text" rowspan="3">с 05.00 до 20.00<br>
+            2 дня / 1 ночь</td>
+            <td class="summary__text">170$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">190$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">90$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
+        </tr>
+        
+        <tr class="summary__row">
+            <td class="summary__text">Отдых на пляже Кола</td>
+            <td class="summary__text">с 8.00 до 14.00<br/>
+            2 дня / 1 ночь</td>
+            <td class="summary__text">90$<br><span class="summary__text--smaller">тент на двоих</span>
+            </td>
+        </tr>        
+                
+        <tr class="summary__row">
+            <td class="summary__text">отдых на пляже Агонда</td>
+            <td class="summary__text">с 10.00 до 14.00<br/>
+            2 дня / 1 ночь</td>
+            <td class="summary__text">от 210$<br><span class="summary__text--smaller">за коттедж на двоих</span></td>
+        </tr>        
+                
+        <tr class="summary__row">
+            <td class="summary__text">Мумбай (Бомбей) авиаперелет</td>
+            <td class="summary__text">кроме понедельника<br>2 дня /1 ночь с авиаперелетом</td>
+            <td class="summary__text">от 310$<br><span class="summary__text--smaller">с авиаперелетом</span></td>
+        </tr>
+
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="3">Хампи</td>
+            <td class="summary__text" rowspan="3">с 04.45 до 19.30<br >
+            2 дня</td>
+            <td class="summary__text">100$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">110$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">80$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
+        </tr>		
+        
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="3">Хампи с посещением озера</td>
+            <td class="summary__text" rowspan="3">с 04.45 до 20.30<br >
+            2 дня</td>
+            <td class="summary__text">110$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">120$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">80$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
+        </tr>		
+
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="3">Хампи и Бадами</td>
+            <td class="summary__text" rowspan="3">с 4.30 до 21.00<br >
+            2 дня / 1 ночь</td>
+            <td class="summary__text">135$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">160$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">90$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
+        </tr>		
+
+        <tr class="summary__row">
+            <td class="summary__text">Хампи и Малый Тибет</td>
+            <td class="summary__text">с 04.30 до 21.00<br>2 дня</td>
+            <td class="summary__text">180$</td>
+        </tr>        
+
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="3">Биджапур, Бадами, Паттадакал, Айхол</td>
+            <td class="summary__text" rowspan="3">c 04.45 до 19.00<br >
+            2 дня</td>
+            <td class="summary__text">160$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">180$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">90$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
+        </tr>	
+    </tbody>
+</table>
+<h3 class="right-side__red">Сводная таблица цен на трёхдневные (и более) экскурсии из Гоа</h3>
+
+
+
+
 
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
