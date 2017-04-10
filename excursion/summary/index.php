@@ -21,7 +21,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
     <thead class="summary__header">
         <tr class="summary__row summary__row--header">
             <td class="summary__header-text">Название экскурсии</td>
-            <td class="summary__header-text">Продолжительность</td>
+            <td class="summary__header-text">Продолжи&shy;тельность</td>
             <td class="summary__header-text">Стоимость<br>на 1 человека</td>
         </tr>
     </td>
@@ -191,7 +191,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
     <thead class="summary__header">
         <tr class="summary__row summary__row--header">
             <td class="summary__header-text">Название экскурсии</td>
-            <td class="summary__header-text">Продолжительность</td>
+            <td class="summary__header-text">Продолжи&shy;тельность</td>
             <td class="summary__header-text">Стоимость<br>на 1 человека</td>
         </tr>
     </td>
