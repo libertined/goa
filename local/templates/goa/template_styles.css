@@ -3044,7 +3044,7 @@ form.advanced .dragover {
   text-align: left;
 }
 .summary__text--smaller {
-  font-size: 14px;
+  font-size: 13px;
 }
 .summary__text.summary__text--col {
   text-align: center;
@@ -3056,6 +3056,6 @@ form.advanced .dragover {
   }
 }
 
-.summary__description {
+p.summary__description {
   margin: 0 0 10px;
 }

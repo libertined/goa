@@ -10,7 +10,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
 <p class="summary__description">Цены указаны для экскурсий при отправке из Северного Гоа. Доплата за трансфер для отелей Южного Гоа, для пляжей Мандрем, Морджим, Ашвем, Арамболь 5-10$ за 1 человека (в зависимости от количества человек).</p>
 <p class="summary__description">Доплата за трансфер для пляжей Палолем, Агонда 80$ (трансфер в оба конца) за машину.</p>
 <p class="summary__description">Мы принимаем оплату в любой валюте: доллары, евро, рупии, рубли.</p>
-<p class="summary__warn">Для групп от 6 человек цены устанавливаются индивидуально на все экскурсии!</p>
+<p class="right-side__red">Для групп от 6 человек цены устанавливаются индивидуально на все экскурсии!</p>
 <h3 class="right-side__red">Сводная таблица цен на однодневные экскурсии из Гоа</h3>
 <table class="summary">
     <col class="summary__col summary__col--1">
@@ -151,11 +151,11 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
             <td class="summary__text">75$</td>
         </tr>
         <tr class="summary__row">
-            <td class="summary__text">вечерняя прогулка с 16.00 до 21.00</td>
+            <td class="summary__text summary__text--col">вечерняя прогулка с 16.00 до 21.00</td>
             <td class="summary__text summary__text--col">75$</td>
         </tr>
         <tr class="summary__row">
-            <td class="summary__text">поездка на сутки с 17.00 до 13.00 второго дня</td>
+            <td class="summary__text summary__text--col">поездка на сутки с 17.00 до 13.00 второго дня</td>
             <td class="summary__text summary__text--col">130$<br><span class="summary__text--smaller">номер на двоих</span></td>
         </tr>	
 
