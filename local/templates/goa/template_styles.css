@@ -2030,6 +2030,7 @@ a.breadcrumbs--item-main:hover {
 .price-table__row--header {
   font-size: 24px;
   font-family: Scada; 
+  line-height: 28px;
 }
 .price-table__cell--header {
   font-weight: normal;
@@ -2038,6 +2039,7 @@ a.breadcrumbs--item-main:hover {
 .price-table__row {
   background-color: white;
   box-sizing: border-box;
+  height: 70px;
 }
 .price-table__row--header {
   background: #ffcc66;
@@ -2045,6 +2047,7 @@ a.breadcrumbs--item-main:hover {
 .price-table__row--promo {
   background-color: #fd7866;
   font-size: 24px;
+  line-height: 28px;
 }
 
 .smaller {
@@ -2057,14 +2060,17 @@ a.breadcrumbs--item-main:hover {
 .price-table__header-text, .price-table__cell {
   padding: 10px 30px;
 }
+
 .price-table__cell:first-child {
   border-right: solid 1px #f2f2f2;
 }
 @media only screen and (max-width: 767px) {
   .price-table__row--promo, .price-table__row--header {
     font-size: 20px;
+    line-height: 24px;
   }
 }
+
 
 .review {
   background: #fff;
