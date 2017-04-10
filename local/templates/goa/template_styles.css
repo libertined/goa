@@ -2026,6 +2026,11 @@ a.breadcrumbs--item-main:hover {
   max-width: 600px;
   width: 100%;
   border-collapse: collapse;
+  vertical-align: middle;
+  text-align: center;
+}
+.price-table__col1 {
+  width: 50%;
 }
 .price-table__row--header {
   font-size: 24px;
