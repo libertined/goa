@@ -3006,3 +3006,61 @@ form.advanced .dragover {
 .questions--list a:hover {
 	font-family: 'OpenSansSemibold';
 }
+
+.summary {
+  width: 100%;
+  border-collapse: collapse;
+  border-bottom: 2px solid #f2f2f2;
+  box-sizing: border-box;
+  margin-bottom: 30px;
+}
+
+.summary__col {
+  border-right: 2px solid #f2f2f2;
+}
+.summary__col--1 {
+  width: 50%;
+  text-align: left;
+}
+.summary__col--2 {
+  width: 20%;
+}
+
+.summary__row--header {
+  background-color: #ffcc66;
+}
+.summary__row:nth-child(2n) {
+  background-color: #eaeaea;
+}
+
+.summary__header-text, .summary__text {
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+.summary__text {
+  padding: 5px 20px;
+}
+.summary__text:first-child {
+  text-align: left;
+}
+.summary__text--smaller {
+  font-size: 13px;
+}
+.summary__text.summary__text--col {
+  text-align: center;
+}
+
+@media (max-width: 500px) {
+  .summary__header-text, .summary__text {
+    padding: 5px;
+  }
+}
+
+p.summary__description {
+  margin: 0 0 10px;
+}
