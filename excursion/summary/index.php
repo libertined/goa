@@ -310,8 +310,63 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
     </tbody>
 </table>
-<h3 class="right-side__red">Сводная таблица цен на трёхдневные (и более) экскурсии из Гоа</h3>
 
+
+<h3 class="right-side__red">Сводная таблица цен на трёхдневные (и более) экскурсии из Гоа</h3>
+<table class="summary">
+    <col class="summary__col summary__col--1">
+    <col class="summary__col summary__col--2">
+    <thead class="summary__header">
+        <tr class="summary__row summary__row--header">
+            <td class="summary__header-text">Название экскурсии</td>
+            <td class="summary__header-text">Продолжи&shy;тельность</td>
+            <td class="summary__header-text">Стоимость<br>на 1 человека</td>
+        </tr>
+    </td>
+    <tbody class="summary__body">
+
+        <tr class="summary__row">
+            <td class="summary__text">5 столиц великих империй</td>
+            <td class="summary__text">с 04.30 до 21.00<br>
+            3 дня / 2 ночи</td>
+            <td class="summary__text">300$</td>
+        </tr> 
+        
+        <tr class="summary__row">
+            <td class="summary__text">Хампи и Бадами. Малый Тибет и озеро</td>
+            <td class="summary__text">с 04.45 до 19.00<br>
+            3 дня</td>
+            <td class="summary__text">230$</td>
+        </tr>        
+        
+        <tr class="summary__row">
+            <td class="summary__text">Майсур и Сомнатхпур. Танцующие фонтаны</td>
+            <td class="summary__text">с 05.00 до 20.00<br>
+            3 дня / 2 ночи</td>
+            <td class="summary__text">380$</td>
+        </tr>        
+        
+        <tr class="summary__row">
+            <td class="summary__text">Белур, Халебид, Шраванабелагола</td>
+            <td class="summary__text">с 06.00 до 18.00<br>
+            3 дня / 2 ночи</td>
+            <td class="summary__text">380$</td>
+        </tr>        
+        
+        <tr class="summary__row">
+            <td class="summary__text">Дели, Агра, Джайпур</td>
+            <td class="summary__text">4 дня / 3 ночи</td>
+            <td class="summary__text">от 320$<br><span class="summary__text--smaller">+ а/б (от 160$)</span></td>
+        </tr>        
+        
+        <tr class="summary__row">
+            <td class="summary__text">Дели, Агра (Тадж-Махал)</td>
+            <td class="summary__text">3 дня / 2 ночи</td>
+            <td class="summary__text">от 220$<br><span class="summary__text--smaller">+ а/б (от 160$)</span></td>
+        </tr>        
+             
+    </tbody>
+</table>
 
 
 
