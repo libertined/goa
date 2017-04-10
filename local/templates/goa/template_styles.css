@@ -3012,6 +3012,7 @@ form.advanced .dragover {
   border-collapse: collapse;
   border-bottom: 2px solid #f2f2f2;
   box-sizing: border-box;
+  margin-bottom: 30px;
 }
 
 .summary__col {
@@ -3035,10 +3036,11 @@ form.advanced .dragover {
 .summary__header-text, .summary__text {
   padding: 20px;
   text-align: center;
+  vertical-align: middle;
+  hyphens: auto;
 }
 .summary__text {
   padding: 5px 20px;
-  vertical-align: middle;
 }
 .summary__text:first-child {
   text-align: left;
