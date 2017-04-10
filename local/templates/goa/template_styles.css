@@ -3037,6 +3037,9 @@ form.advanced .dragover {
   padding: 20px;
   text-align: center;
   vertical-align: middle;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
   hyphens: auto;
 }
 .summary__text {
