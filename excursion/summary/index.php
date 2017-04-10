@@ -185,6 +185,9 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
 </table>
 
 <h3 class="right-side__red">Сводная таблица цен на двухдневные экскурсии из Гоа</h3>
+<p class="right-side__red">Цена при размещении в автомобиле или миниавтобусе до 18 человек (за 1 человека)</p>
+<p class="summary__description">Если Вы хотите большего комфорта, Вам следует выбрать индивидуальную экскурсию , сообщите нам детали и мы рассчитаем для вас стоимость.
+</p>
 <table class="summary">
     <col class="summary__col summary__col--1">
     <col class="summary__col summary__col--2">
@@ -313,6 +316,9 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
 
 
 <h3 class="right-side__red">Сводная таблица цен на трёхдневные (и более) экскурсии из Гоа</h3>
+<p class="right-side__red">Цена при размещении в автомобиле или миниавтобусе до 18 человек (за 1 человека)</p>
+<p class="summary__description">Если Вы хотите большего комфорта, Вам следует выбрать индивидуальную экскурсию , сообщите нам детали и мы рассчитаем для вас стоимость.
+</p>
 <table class="summary">
     <col class="summary__col summary__col--1">
     <col class="summary__col summary__col--2">
