@@ -1,0 +1,45 @@
+  <div class="price-table">
+    <div class="price-table__line price-table--line-header">
+      <div class="price-table__cell">
+        <div class="price-table--big">6 - 12 человек</div>
+        <div>за 1 человека</div>
+      </div>
+      <div class="price-table__cell">
+        <div class="price-table--big">5 человек</div>
+        <div>за 1 человека</div>
+      </div>
+    </div>
+
+    <div class="price-table__body">
+      <div class="price-table__line">
+        <div class="price-table__cell">
+          <div class="price-table--middle">45$</div>
+        </div>
+        <div class="price-table__cell">
+          <div class="price-table--middle">50$</div>
+        </div>
+      </div>
+
+      <div class="price-table__line">
+        <div class="price-table__cell">
+          <div class="price-table--big">40$</div>
+          <div class="price-table--white">При заказе с сайта</div>
+        </div>
+        <div class="price-table__cell">
+          <div class="price-table--big">45$</div>
+          <div class="price-table--white">При заказе с сайта</div>
+        </div>
+      </div>
+
+      <div class="price-table__line">
+        <div class="price-table__cell">
+          <div class="price-table--middle">20$</div>
+          <div>Для детей от 12 лет</div>
+        </div>
+        <div class="price-table__cell">
+          <div class="price-table--middle">20$</div>
+          <div>Для детей от 12 лет</div>
+        </div>
+      </div>
+    </div>
+  </div>
