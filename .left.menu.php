@@ -16,14 +16,14 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Специальные предложения",
-		"specials/",
+		"promo/",
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Сводная таблица цен",
-		"excursion/132/",
+		"excursion/summary",
 		Array(), 
 		Array(), 
 		"" 
