@@ -23,7 +23,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Сводная таблица цен",
-		"excursion/132/",
+		"excursion/summary",
 		Array(), 
 		Array(), 
 		"" 
