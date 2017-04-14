@@ -1,9 +1,3 @@
-body {
-	/*удалить при интеграции*/
-	max-width: 990px; 
-	background: #f2f2f2;
-	margin: 0;
-}
 .promo__item {
 	padding: 30px;
 	background-color: white;
