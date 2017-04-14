@@ -1,0 +1,67 @@
+body {
+	/*удалить при интеграции*/
+	max-width: 990px; 
+	background: #f2f2f2;
+	margin: 0;
+}
+.promo__item {
+	padding: 30px;
+	background-color: white;
+	margin-bottom: 40px;
+}
+.promo__item:last-child {
+	margin-bottom: 0;
+}
+.promo__title {
+	font-family: Scada;
+	font-size: 24px;
+	line-height: 29px;
+	margin-bottom: 15px;
+	color: #333333;
+	text-decoration: none;
+}
+.promo__item:hover .promo__title {
+	color: #fd7866;
+}
+
+.promo__photo {
+	width: 33%;
+	margin-right: 2%;
+	float: left;
+
+}
+.clearfix::after {
+	content: '';
+	display: table;
+	width: 100%;
+	clear: both;
+}
+
+.promo__description {
+	overflow: hidden;
+}
+
+@media (max-width: 768px) {
+	.promo__item {
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -o-flex;
+		display: flex;
+		-webkit-flex-direction: column;
+		-moz-flex-direction: column;
+		-ms-flex-direction: column;
+		-o-flex-direction: column;
+		flex-direction: column;
+		align-items: center;
+	}
+	.promo__link-img {
+		order: 1;
+	}
+	.promo__photo {
+		width: 100%;
+	}
+	.promo__description {
+		order: 2;
+	}
+}
