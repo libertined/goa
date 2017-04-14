@@ -62,3 +62,67 @@
 		order: 2;
 	}
 }
+
+/*Detailed page*/
+.promo-detailed {
+	padding: 30px;
+	background-color: white;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+}
+.promo-detailed__text {
+	width: 65%;
+	margin-right: 5%;
+}
+.promo-detailed__title {
+	font-family: Scada;
+	font-size: 24px;
+	line-height: 20px;
+	margin-bottom: 15px;
+	color: #333333;
+	margin-top: 0;
+}
+.promo-detailed__back {
+	position: relative;
+	text-decoration: none;
+	color: inherit;
+	margin-bottom: 20px;
+	display: inline-block;
+}
+.promo-detailed__back:hover {
+	color: #ff7866;
+}
+.promo-detailed__back::after {
+	background-color: #ff7866;
+	bottom: -1px;
+	content: "";
+	display: block;
+	height: 1px;
+	left: 0;
+	position: absolute;
+	width: 100%;
+
+}
+.promo-detailed__dates {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+.promo-detailed__date {
+	font-family: 'OpenSansSemibold';
+}
+
+@media (max-width: 768px) {
+	.promo-detailed {
+		-webkit-flex-direction: column;
+		-moz-flex-direction: column;
+		-ms-flex-direction: column;
+		-o-flex-direction: column;
+		flex-direction: column;
+	}
+	.promo-detailed__text {
+		width: 100%;
+	}
+}

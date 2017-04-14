@@ -1,24 +1,19 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetPageProperty("MAIN_TITLE", "Экскурсии");
+$APPLICATION->SetPageProperty("MAIN_TITLE", "Р­РєСЃРєСѓСЂСЃРёРё");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
-$APPLICATION->SetTitle("Экскурсии");
+$APPLICATION->SetTitle("Р­РєСЃРєСѓСЂСЃРёРё");
 $APPLICATION->SetAdditionalCSS("/promo/style.css");?>
 
-	<section class="promo-detailed">
-		<article class="promo__item clearfix">
-			<a href="#" class="promo__link">
-				<img class="promo__photo" src="promo-1.jpg" alt="">
-				<h4 class="promo__title" href="#">Заголовок спецпредложения</h4>
-				<p class="promo__description">Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Завершающий текст здесь</p>
-			</a>
-		</article>
+	<article class="promo-detailed">		
+		<div class="promo-detailed__text">
+			<h4 class="promo-detailed__title" href="#">Р—Р°РіРѕР»РѕРІРѕРє СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ</h4>
+			<p class="promo__description">РўРµРєСЃС‚ СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ Р·РґРµСЃСЊ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? РўРµРєСЃС‚ СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ Р·РґРµСЃСЊ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? РўРµРєСЃС‚ СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ Р·РґРµСЃСЊ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? РўРµРєСЃС‚ СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ Р·РґРµСЃСЊ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? РўРµРєСЃС‚ СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ Р·РґРµСЃСЊ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? РўРµРєСЃС‚ СЃРїРµС†РїСЂРµРґР»РѕР¶РµРЅРёСЏ Р·РґРµСЃСЊ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Р—Р°РІРµСЂС€Р°СЋС‰РёР№ С‚РµРєСЃС‚ Р·РґРµСЃСЊ</p>
+		</div>
+		<div class="promo-detailed__info">
+			<a href="" class="promo-detailed__back">РќР°Р·Р°Рґ Рє СЃРїРёСЃРєСѓ</a>
+			<p class="promo-detailed__dates">РћРїСѓР±Р»РёРєРѕРІР°РЅРѕ: <time class="promo-detailed__date" pubdate datetime="2017-05-01">1 РјР°СЏ 2017</time></p>
+			<p class="promo-detailed__dates">РђРєС†РёСЏ РїСЂРѕРґР»РёС‚СЃСЏ РґРѕ: <time datetime="2017-08-01">1 Р°РІРіСѓСЃС‚Р° 2017</time></p>
+		</div>
 
-		<article class="promo__item clearfix">
-			<a href="#" class="promo__link">
-				<img class="promo__photo" src="promo-1.jpg" alt="">
-				<h4 class="promo__title" href="#">Заголовок спецпредложения</h4>
-				<p class="promo__description">Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore?</p>
-			</a>
-		</article>
-	</section>
+	</article>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
