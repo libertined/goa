@@ -6,13 +6,17 @@
 .promo__item:last-child {
 	margin-bottom: 0;
 }
+.promo__link {
+	text-decoration: none;
+	color: inherit;
+}
 .promo__title {
 	font-family: Scada;
 	font-size: 24px;
-	line-height: 29px;
+	line-height: 20px;
 	margin-bottom: 15px;
 	color: #333333;
-	text-decoration: none;
+	margin-top: 0;
 }
 .promo__item:hover .promo__title {
 	color: #fd7866;
@@ -20,7 +24,7 @@
 
 .promo__photo {
 	width: 33%;
-	margin-right: 2%;
+	margin-right: 3%;
 	float: left;
 
 }
@@ -49,11 +53,10 @@
 		flex-direction: column;
 		align-items: center;
 	}
-	.promo__link-img {
-		order: 1;
-	}
 	.promo__photo {
 		width: 100%;
+		margin-right: 0;
+		order: 1;
 	}
 	.promo__description {
 		order: 2;

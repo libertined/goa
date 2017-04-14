@@ -16,7 +16,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Специальные предложения",
-		"specials/",
+		"promo/",
 		Array(), 
 		Array(), 
 		"" 
