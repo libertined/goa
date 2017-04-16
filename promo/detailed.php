@@ -13,7 +13,7 @@ $APPLICATION->SetAdditionalCSS("/promo/style.css");?>
 			<a href="/promo" class="promo-detailed__back">Назад к списку</a>
 			<p class="promo-detailed__dates">Опубликовано: <time class="promo-detailed__date" pubdate datetime="2017-05-01">1 мая 2017</time></p>
 			<p class="promo-detailed__dates">Акция продлится до: <time class="promo-detailed__date" datetime="2017-08-01">1 августа 2017</time></p>
-            <div class="right-side__share visible-adaptive-768">
+            <div class="right-side__share">
                 <div class="right-side__share-title">Поделиться:</div>
                 <div class="right-side__share-body">
                     <script async="async" src="//yastatic.net/share2/share.js"></script>
