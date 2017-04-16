@@ -3,7 +3,7 @@ $APPLICATION->SetTitle("Новости");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Новости");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_news.jpg");?>
 
-<a href="" class="news-block marg-b-10">
+<a href="detailed.php" class="news-block marg-b-10">
     <div class="row row--padd30">
         <div class="row__inner">
             <div class="col-12-9 col-adaptive-768">
