@@ -183,9 +183,6 @@
 .news-detailed__date {
 	font-family: 'OpenSansSemibold';
 }
-.ya-share2__list_direction_horizontal > .ya-share2__item {
-	margin-bottom: 5px;
-}
 
 @media (max-width: 768px) {
 	.news-detailed {
