@@ -1,7 +1,8 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Новости");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Новости");
-$APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_news.jpg");?>
+$APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_news.jpg");
+$APPLICATION->SetAdditionalCSS("/promo/style.css");?>
 	<article class="news-detailed">		
 		<div class="news-detailed__text">
 			<h4 class="news-detailed__title" href="#">Заголовок новости</h4>
