@@ -3064,3 +3064,65 @@ form.advanced .dragover {
 p.summary__description {
   margin: 0 0 10px;
 }
+
+/* Photo album page */
+
+.photos {
+font-size: 0;
+}
+.photo {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 3%;
+  margin-bottom: 20px;
+  width: 22.72727%;
+}
+.photo__item {
+  position: relative;
+  cursor: pointer;
+}
+.photo:nth-child(4n) {
+  margin-right: 0;
+}
+.photo__title {
+  font-size: 15px;
+}
+
+.photo__img {
+  width: 100%;
+  display: block;
+}
+
+.photo__shadow {
+  display: none;
+  background-color: rgba(41, 38, 51, 0.6);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.photo__shadow::before {
+  background: rgba(0, 0, 0, 0) url("/local/templates/goa/svg/expand.svg") no-repeat scroll center center / 24px auto;
+  content: "";
+  display: block;
+  height: 24px;
+  left: calc(50% - 12px);
+  position: absolute;
+  top: calc(50% - 12px);
+  width: 24px;
+}
+.photo__item:hover .photo__shadow {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .photo {
+    width: 47.5%;
+    margin-right: 5%;
+  }
+  .photo:nth-child(2n) {
+    margin-right: 0;
+  }
+}

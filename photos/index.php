@@ -6,42 +6,42 @@ $APPLICATION->SetTitle("Фотогалерея");?>
 <div class="row row--padd30">
     <div class="row__inner">
         <div class="col-12-4 col-adaptive-768">
-            <a href="" class="gallery-block marg-b-30">
+            <a href="album.php" class="gallery-block marg-b-30">
                 <div class="gallery-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_7.jpg" alt="" /></div>
                 <div class="gallery-block__title">Старый ГОА и индуистские храмы</div>
             </a>
         </div>
 
         <div class="col-12-4 col-adaptive-768">
-            <a href="" class="gallery-block marg-b-30">
+            <a href="album.php" class="gallery-block marg-b-30">
                 <div class="gallery-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_7.jpg" alt="" /></div>
                 <div class="gallery-block__title">Фото пляжей Северный Гоа и Южный Гоа, фото Гоа</div>
             </a>
         </div>
 
         <div class="col-12-4 col-adaptive-768">
-            <a href="" class="gallery-block marg-b-30">
+            <a href="album.php" class="gallery-block marg-b-30">
                 <div class="gallery-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_7.jpg" alt="" /></div>
                 <div class="gallery-block__title">Колхапур и Махабалешвар</div>
             </a>
         </div>
 
         <div class="col-12-4 col-adaptive-768">
-            <a href="" class="gallery-block marg-b-30">
+            <a href="album.php" class="gallery-block marg-b-30">
                 <div class="gallery-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_7.jpg" alt="" /></div>
                 <div class="gallery-block__title">Пляжи ГОА</div>
             </a>
         </div>
 
         <div class="col-12-4 col-adaptive-768">
-            <a href="" class="gallery-block marg-b-30">
+            <a href="album.php" class="gallery-block marg-b-30">
                 <div class="gallery-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_7.jpg" alt="" /></div>
                 <div class="gallery-block__title">Старый ГОА и индуистские храмы</div>
             </a>
         </div>
 
         <div class="col-12-4 col-adaptive-768">
-            <a href="" class="gallery-block marg-b-30">
+            <a href="album.php" class="gallery-block marg-b-30">
                 <div class="gallery-block__img"><img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_7.jpg" alt="" /></div>
                 <div class="gallery-block__title">Старый ГОА и индуистские храмы</div>
             </a>
