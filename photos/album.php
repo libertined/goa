@@ -1,50 +1,50 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetPageProperty("MAIN_TITLE", "Фотогалерея");
+$APPLICATION->SetPageProperty("MAIN_TITLE", "Р¤РѕС‚РѕРіР°Р»РµСЂРµСЏ");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_gallery.jpg");
-$APPLICATION->SetTitle("Детальная страница фотоальбома");
+$APPLICATION->SetTitle("Р”РµС‚Р°Р»СЊРЅР°СЏ СЃС‚СЂР°РЅРёС†Р° С„РѕС‚РѕР°Р»СЊР±РѕРјР°");
 $APPLICATION->SetAdditionalCSS("/promo/style.css");?>
 <section class="photos">
 	<div class="photo">
 		<div class="photo__item">
-			<img src="album/1.jpg" alt="" class="photo__img">
+			<img src="/upload/photoalbums/1/1.jpg" alt="" class="photo__img">
 			<div class="photo__shadow"></div>
 		</div>
-		<p class="photo__title">Название фотографии</p>
+		<p class="photo__title">РќР°Р·РІР°РЅРёРµ С„РѕС‚РѕРіСЂР°С„РёРё</p>
 	</div>
 	<div class="photo">
 		<div class="photo__item">
-			<img src="album/2.jpg" alt="" class="photo__img">
+			<img src="/upload/photoalbums/1/2.jpg" alt="" class="photo__img">
 			<div class="photo__shadow"></div>
 		</div>
-		<p class="photo__title">Длинное Название фотографии</p>
+		<p class="photo__title">Р”Р»РёРЅРЅРѕРµ РќР°Р·РІР°РЅРёРµ С„РѕС‚РѕРіСЂР°С„РёРё</p>
 	</div>
 	<div class="photo">
 		<div class="photo__item">
-			<img src="album/3.jpg" alt="" class="photo__img">
+			<img src="/upload/photoalbums/1/3.jpg" alt="" class="photo__img">
 			<div class="photo__shadow"></div>
 		</div>
-		<p class="photo__title">Очень супер длинное Название фотографии на несколько строк желательно три</p>
+		<p class="photo__title">РћС‡РµРЅСЊ СЃСѓРїРµСЂ РґР»РёРЅРЅРѕРµ РќР°Р·РІР°РЅРёРµ С„РѕС‚РѕРіСЂР°С„РёРё РЅР° РЅРµСЃРєРѕР»СЊРєРѕ СЃС‚СЂРѕРє Р¶РµР»Р°С‚РµР»СЊРЅРѕ С‚СЂРё</p>
 	</div>
 	<div class="photo">
 		<div class="photo__item">
-			<img src="album/4.jpg" alt="" class="photo__img">
+			<img src="/upload/photoalbums/1/4.jpg" alt="" class="photo__img">
 			<div class="photo__shadow"></div>
 		</div>
 		<p class="photo__title"></p>
 	</div>
 	<div class="photo">
 		<div class="photo__item">
-			<img src="album/5.jpg" alt="" class="photo__img">
+			<img src="/upload/photoalbums/1/5.jpg" alt="" class="photo__img">
 			<div class="photo__shadow"></div>
 		</div>
-		<p class="photo__title">Очень длинное Название фотографии</p>
+		<p class="photo__title">РћС‡РµРЅСЊ РґР»РёРЅРЅРѕРµ РќР°Р·РІР°РЅРёРµ С„РѕС‚РѕРіСЂР°С„РёРё</p>
 	</div>
 	<div class="photo">
 		<div class="photo__item">
-			<img src="album/6.jpg" alt="" class="photo__img">
+			<img src="/upload/photoalbums/1/6.jpg" alt="" class="photo__img">
 			<div class="photo__shadow"></div>
 		</div>
-		<p class="photo__title">Очень длинное Название фотографии</p>
+		<p class="photo__title">РћС‡РµРЅСЊ РґР»РёРЅРЅРѕРµ РќР°Р·РІР°РЅРёРµ С„РѕС‚РѕРіСЂР°С„РёРё</p>
 	</div>
 
 </section>
