@@ -130,6 +130,6 @@ $(function () {
 			break;
 
 	}
-
+	formHandler();
 
 })
