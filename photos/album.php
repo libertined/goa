@@ -1,5 +1,5 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetPageProperty("MAIN_TITLE", "Фотогалерея");
+$APPLICATION->SetPageProperty("MAIN_TITLE", "Здесь выводится название альбома");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_gallery.jpg");
 $APPLICATION->SetTitle("Детальная страница фотоальбома");
 $APPLICATION->SetAdditionalCSS("/promo/style.css");?>
