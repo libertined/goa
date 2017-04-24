@@ -108,31 +108,28 @@ $(function () {
         e.preventDefault();
         modalWindow.classList.add("hidden");
     }
-    document.addEventListener("DOMContentLoaded", formInitialization);
+	var hash = window.location.hash.replace('#', '');
+	switch(hash) {
+		case 'taxi': 
+			servicesSelect.value = 3;
+			break;
+		case 'rent':
+			servicesSelect.value = 4;
+			break;
+		case 'celebration':
+			servicesSelect.value = 5;
+			break;
+		case 'tickets':
+			servicesSelect.value = 6;
+			break;
+		case 'ayurveda':
+			servicesSelect.value = 7;
+			break;
+		case 'wedding':
+			servicesSelect.value = 15;
+			break;
 
-    function formInitialization() {
-        var hash = window.location.hash.replace('#', '');
+	}
 
-        switch(hash) {
-            case 'taxi': 
-                servicesSelect.value = 3;
-                break;
-            case 'rent':
-                servicesSelect.value = 4;
-                break;
-            case 'celebration':
-                servicesSelect.value = 5;
-                break;
-            case 'tickets':
-                servicesSelect.value = 6;
-                break;
-            case 'ayurveda':
-                servicesSelect.value = 7;
-                break;
-            case 'wedding':
-                servicesSelect.value = 15;
-                break;
 
-        }
-    }
 })
