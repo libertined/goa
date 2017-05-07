@@ -12,7 +12,7 @@ function toggle(element, array, classNameCheck) {
 }
 
 function serviceSwitch(event) {
-	var blockId = event.target.parentNode.getAttribute('id'),
+	var blockId = event.target.closest('div.service-block').getAttribute('id'),
 		contentTabId = 'content-' + blockId,
 		contentTabs = document.querySelectorAll('.service-item'),
 		currentTab = document.getElementById(contentTabId);
