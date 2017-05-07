@@ -29,7 +29,11 @@ if (closeLinks) {
 }
 
 function closeServiceBlock(e) {
-	//var serviceBlock = document.querySelector('.service-item');
 	var serviceBlock = e.target.closest('section.service-item');
 	serviceBlock.classList.remove('service-item--show');
 }
+
+
+var contentHash = 'content-' + window.location.hash.replace('#', ''),
+	contentSection = document.getElementById(contentHash);
+contentSection.classList.add('service-item--show');
