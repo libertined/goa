@@ -158,7 +158,7 @@ IncludeTemplateLangFile(__FILE__);
 								<div class="left-side__block left-side--block-yellow">
 									<div class="left-side__header">Погода в Гоа <div class="left-side__header-icon"><object type="image/svg+xml" data="<?=SITE_TEMPLATE_PATH?>/svg/weather.svg">Your browser does not support SVGs</object></div></div>
 									<div class="left-side__body">
-										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/prognoz.jpg" style="margin: 0 auto; max-width: 100%;" />
+										<a href="https://clck.yandex.ru/redir/dtype=stred/pid=7/cid=1228/*https://yandex.ru/pogoda/21423" target="_blank"><img class="weather-widget" src="//info.weather.yandex.net/21423/2_white.ru.png?domain=ru" border="0" alt="Яндекс.Погода"/><img width="1" height="1" src="https://clck.yandex.ru/click/dtype=stred/pid=7/cid=1227/*https://img.yandex.ru/i/pix.gif" alt="" border="0"/></a>
 									</div>
 								</div>
 
@@ -171,6 +171,7 @@ IncludeTemplateLangFile(__FILE__);
 
 								<div class="left-side__block left-side--block-yellow js-tab" data-tab="tab-vk">
 									<div class="left-side__body">
+									VK
 										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_instg.jpg" style="margin: 0 auto; max-width: 100%;" />
 									</div>
 								</div>

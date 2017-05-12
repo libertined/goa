@@ -3236,3 +3236,7 @@ font-size: 0;
     margin-right: 0;
   }
 }
+
+.weather-widget {
+	margin: 0 auto;
+}
