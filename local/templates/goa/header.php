@@ -10,6 +10,7 @@ IncludeTemplateLangFile(__FILE__);
 	<title>Surya Travels Tvoy Goa | <?php $APPLICATION->ShowTitle()?></title>
 	<meta name="format-detection" content="telephone=no" />
 	<link href="/favicon.ico" rel="shortcut icon">
+	
 	<?
 	$oAsset = \Bitrix\Main\Page\Asset::getInstance();
 
@@ -34,6 +35,7 @@ IncludeTemplateLangFile(__FILE__);
 	$page = $APPLICATION->GetCurPage(true);
 	$dir =  $APPLICATION->GetCurDir();
 	?>
+	<script src="https://vk.com/js/api/openapi.js?146" type="text/javascript"></script>
 </head>
 <body>
 <div id="panel"><?php $APPLICATION->ShowPanel();?></div>
@@ -171,8 +173,9 @@ IncludeTemplateLangFile(__FILE__);
 
 								<div class="left-side__block left-side--block-yellow js-tab" data-tab="tab-vk">
 									<div class="left-side__body">
-									VK
-										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_instg.jpg" style="margin: 0 auto; max-width: 100%;" />
+										<div class="vk-groups" id="vk_groups"></div>
+										<script type="text/javascript">VK.Widgets.Group("vk_groups", {mode: 0, width: "auto", height: "300"}, 5779993);
+										</script>
 									</div>
 								</div>
 
