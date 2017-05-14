@@ -38,6 +38,14 @@ IncludeTemplateLangFile(__FILE__);
 	<script src="https://vk.com/js/api/openapi.js?146" type="text/javascript"></script>
 </head>
 <body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.9&appId=371562393245232";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 <div id="panel"><?php $APPLICATION->ShowPanel();?></div>
 <div class="content-top">
 	<div class="content-top-inner">
@@ -180,9 +188,8 @@ IncludeTemplateLangFile(__FILE__);
 								</div>
 
 								<div class="left-side__block left-side--block-yellow js-tab none" data-tab="tab-fb">
-									<div class="left-side__body">
-										fb
-										<img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_instg.jpg" style="margin: 0 auto; max-width: 100%;" />
+									<div class="left-side__body left-side__body--fb">
+										<div class="fb-page" data-href="https://www.facebook.com/tvoygoa/" data-tabs="messages, timeline" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/tvoygoa/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/tvoygoa/">Твой Гоа Surya Travels Excursions in Goa</a></blockquote></div>
 									</div>
 								</div>
 							</section>
