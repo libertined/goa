@@ -1,0 +1,69 @@
+<div class="program-table">
+	<div class="program-table__header">
+		 День 1
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 08.00
+		</div>
+		<div class="program-table__text">
+			 Отправление из отеля
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 10.00
+		</div>
+		<div class="program-table__text">
+			 Прибытие на пляж Палолем
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 10.30 - 12.00
+		</div>
+		<div class="program-table__text">
+			 Прогулка на лодке на остров Бабочек
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 12.00 - 15.00
+		</div>
+		<div class="program-table__text">
+			 Обед и свободное время на пляже
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 15.00
+		</div>
+		<div class="program-table__text">
+			 Отправление на пляж Кола (20 минут в пути)
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 15.20 - 17.00
+		</div>
+		<div class="program-table__text">
+			 Свободное время на пляже Кола
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 17.00
+		</div>
+		<div class="program-table__text">
+			 Отправление в форт Кабо де Рама
+		</div>
+	</div>
+	<div class="program-table__line">
+		<div class="program-table__time">
+			 17.15 - 18.30
+		</div>
+		<div class="program-table__text">
+			 Осмотр форта Кабо де Рама и встреча заката
+		</div>
+	</div>
+</div>

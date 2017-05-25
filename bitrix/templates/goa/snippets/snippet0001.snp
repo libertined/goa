@@ -1,45 +1,22 @@
-  <div class="price-table">
-    <div class="price-table__line price-table--line-header">
-      <div class="price-table__cell">
-        <div class="price-table--big">6 - 12 человек</div>
-        <div>за 1 человека</div>
-      </div>
-      <div class="price-table__cell">
-        <div class="price-table--big">5 человек</div>
-        <div>за 1 человека</div>
-      </div>
-    </div>
-
-    <div class="price-table__body">
-      <div class="price-table__line">
-        <div class="price-table__cell">
-          <div class="price-table--middle">45$</div>
-        </div>
-        <div class="price-table__cell">
-          <div class="price-table--middle">50$</div>
-        </div>
-      </div>
-
-      <div class="price-table__line">
-        <div class="price-table__cell">
-          <div class="price-table--big">40$</div>
-          <div class="price-table--white">При заказе с сайта</div>
-        </div>
-        <div class="price-table__cell">
-          <div class="price-table--big">45$</div>
-          <div class="price-table--white">При заказе с сайта</div>
-        </div>
-      </div>
-
-      <div class="price-table__line">
-        <div class="price-table__cell">
-          <div class="price-table--middle">20$</div>
-          <div>Для детей от 12 лет</div>
-        </div>
-        <div class="price-table__cell">
-          <div class="price-table--middle">20$</div>
-          <div>Для детей от 12 лет</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<table class="price-table">
+	<thead class="price-table__header">
+		<tr class="price-table__row price-table__row--header">
+			<th class="price-table__cell price-table__cell--header">6 - 12 человек<br><span class="smaller">за 1 человека</span></th>
+			<th class="price-table__cell price-table__cell--header">5 человек<br><span class="smaller">за 1 человека</span></th>
+		</tr>
+	</thead>
+	<tbody class="price-table__body">
+		<tr class="price-table__row">
+			<td class="price-table__cell">45$</td>
+			<td class="price-table__cell">50$</td>
+		</tr>
+		<tr class="price-table__row price-table__row--promo">
+			<td class="price-table__cell">40$<br><span class="smaller">При заказе с сайта</span></td>
+			<td class="price-table__cell">45$<br><span class="smaller">При заказе с сайта</span></td>
+		</tr>		
+		<tr class="price-table__row">
+			<td class="price-table__cell">20$<br>Для детей от 12 лет</td>
+			<td class="price-table__cell">20$<br>Для детей от 12 лет</td>
+		</tr>
+	</tbody>
+</table>

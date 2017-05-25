@@ -3,22 +3,116 @@ $APPLICATION->SetPageProperty("MAIN_TITLE", "Спецпредложения");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
 $APPLICATION->SetTitle("Экскурсии");
 $APPLICATION->SetAdditionalCSS("/promo/style.css");?>
+<?$APPLICATION->IncludeComponent(
+	"bitrix:news",
+	"promo",
+	array(
+		"COMPONENT_TEMPLATE" => "promo",
+		"IBLOCK_TYPE" => "info",
+		"IBLOCK_ID" => "10",
+		"NEWS_COUNT" => "20",
+		"SORT_BY1" => "ACTIVE_FROM",
+		"SORT_ORDER1" => "DESC",
+		"SORT_BY2" => "SORT",
+		"SORT_ORDER2" => "ASC",
+		"FILTER_NAME" => "",
+		"FIELD_CODE" => array(
+			0 => "ACTIVE_TO",
+		),
+		"PROPERTY_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"CHECK_DATES" => "Y",
+		"TEMPLATE_THEME" => "blue",
+		"DETAIL_URL" => "",
+		"AJAX_MODE" => "N",
+		"AJAX_OPTION_JUMP" => "N",
+		"AJAX_OPTION_STYLE" => "Y",
+		"AJAX_OPTION_HISTORY" => "N",
+		"AJAX_OPTION_ADDITIONAL" => "",
+		"CACHE_TYPE" => "A",
+		"CACHE_TIME" => "36000000",
+		"CACHE_FILTER" => "N",
+		"CACHE_GROUPS" => "Y",
+		"PREVIEW_TRUNCATE_LEN" => "",
+		"ACTIVE_DATE_FORMAT" => "d.m.Y",
+		"SET_TITLE" => "Y",
+		"SET_BROWSER_TITLE" => "Y",
+		"SET_META_KEYWORDS" => "Y",
+		"SET_META_DESCRIPTION" => "Y",
+		"SET_LAST_MODIFIED" => "N",
+		"INCLUDE_IBLOCK_INTO_CHAIN" => "Y",
+		"ADD_SECTIONS_CHAIN" => "Y",
+		"HIDE_LINK_WHEN_NO_DETAIL" => "N",
+		"PARENT_SECTION" => "",
+		"PARENT_SECTION_CODE" => "",
+		"INCLUDE_SUBSECTIONS" => "Y",
+		"STRICT_SECTION_CHECK" => "N",
+		"DISPLAY_DATE" => "Y",
+		"DISPLAY_NAME" => "Y",
+		"DISPLAY_PICTURE" => "Y",
+		"DISPLAY_PREVIEW_TEXT" => "Y",
+		"MEDIA_PROPERTY" => "",
+		"SLIDER_PROPERTY" => "",
+		"SEARCH_PAGE" => "/search/",
+		"USE_RATING" => "N",
+		"USE_SHARE" => "N",
+		"COMPOSITE_FRAME_MODE" => "A",
+		"COMPOSITE_FRAME_TYPE" => "AUTO",
+		"PAGER_TEMPLATE" => ".default",
+		"DISPLAY_TOP_PAGER" => "N",
+		"DISPLAY_BOTTOM_PAGER" => "Y",
+		"PAGER_TITLE" => "Новости",
+		"PAGER_SHOW_ALWAYS" => "N",
+		"PAGER_DESC_NUMBERING" => "N",
+		"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+		"PAGER_SHOW_ALL" => "N",
+		"PAGER_BASE_LINK_ENABLE" => "N",
+		"SET_STATUS_404" => "N",
+		"SHOW_404" => "N",
+		"MESSAGE_404" => "",
+		"USE_SEARCH" => "N",
+		"USE_RSS" => "N",
+		"USE_CATEGORIES" => "N",
+		"USE_FILTER" => "N",
+		"SEF_MODE" => "Y",
+		"SEF_FOLDER" => "/promo/",
+		"ADD_ELEMENT_CHAIN" => "Y",
+		"USE_PERMISSIONS" => "N",
+		"LIST_ACTIVE_DATE_FORMAT" => "d.m.Y",
+		"LIST_FIELD_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"LIST_PROPERTY_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"META_KEYWORDS" => "-",
+		"META_DESCRIPTION" => "-",
+		"BROWSER_TITLE" => "-",
+		"DETAIL_SET_CANONICAL_URL" => "N",
+		"DETAIL_ACTIVE_DATE_FORMAT" => "d.m.Y",
+		"DETAIL_FIELD_CODE" => array(
+			0=> "DATE_ACTIVE_TO",
+		),
+		"DETAIL_PROPERTY_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"DETAIL_DISPLAY_TOP_PAGER" => "N",
+		"DETAIL_DISPLAY_BOTTOM_PAGER" => "Y",
+		"DETAIL_PAGER_TITLE" => "Страница",
+		"DETAIL_PAGER_TEMPLATE" => "",
+		"DETAIL_PAGER_SHOW_ALL" => "Y",
+		"SEF_URL_TEMPLATES" => array(
+			"news" => "",
+			"section" => "",
+			"detail" => "#ELEMENT_CODE#/",
+		)
+	),
+	false
+);?>
 
-	<section class="promo">
-		<article class="promo__item clearfix">
-			<a href="detailed.php" class="promo__link">
-				<img class="promo__photo" src="promo-1.jpg" alt="">
-				<h4 class="promo__title" href="#">Заголовок спецпредложения</h4>
-				<p class="promo__description">Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Завершающий текст здесь</p>
-			</a>
-		</article>
-
-		<article class="promo__item clearfix">
-			<a href="#" class="promo__link">
-				<img class="promo__photo" src="promo-1.jpg" alt="">
-				<h4 class="promo__title" href="#">Заголовок спецпредложения</h4>
-				<p class="promo__description">Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore? Текст спецпредложения здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere dolorum aut amet quos inventore, quas ex, quae fuga et reprehenderit quia iure eum tempore eius perferendis deserunt maxime quo. Dolore?</p>
-			</a>
-		</article>
-	</section>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

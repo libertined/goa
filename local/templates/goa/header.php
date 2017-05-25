@@ -10,7 +10,7 @@ IncludeTemplateLangFile(__FILE__);
 	<title>Surya Travels Tvoy Goa | <?php $APPLICATION->ShowTitle()?></title>
 	<meta name="format-detection" content="telephone=no" />
 	<link href="/favicon.ico" rel="shortcut icon">
-	
+    <META NAME="ROBOTS" content="ALL">
 	<?
 	$oAsset = \Bitrix\Main\Page\Asset::getInstance();
 
@@ -99,11 +99,17 @@ IncludeTemplateLangFile(__FILE__);
 				<div class="page-content-inner visible-adaptive-768">
 					<div class="main-img">
 						<img src="<?$APPLICATION->ShowProperty("PAGE_IMAGE")?>" alt="" class="main-img__img" />
+                        <?/*
 						<h1 class="main-img__header">
 							<div class="vert-middle">
 								<div class="vert-middle__inner main-img__header-text"><?$APPLICATION->ShowProperty("MAIN_TITLE")?></div>
 							</div>
-						</h1>
+						</h1>*/?>
+                        <h1 class="main-img__header">
+                            <div class="vert-middle">
+                                <div class="vert-middle__inner main-img__header-text"><?=$APPLICATION->ShowTitle(false); ?></div>
+                            </div>
+                        </h1>
 					</div>
 				</div>
 

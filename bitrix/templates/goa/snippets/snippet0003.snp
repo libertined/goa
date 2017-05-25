@@ -1,0 +1,44 @@
+<table class="service-item__price">
+<thead>
+<tr class="price-table__row price-table__row--header">
+	<th class="price-table__cell price-table__cell--header">
+		 6 - 12 человек<br>
+ <span class="smaller">за 1 человека</span>
+	</th>
+	<th class="price-table__cell price-table__cell--header">
+		 5 человек<br>
+ <span class="smaller">за 1 человека</span>
+	</th>
+</tr>
+</thead>
+<tbody>
+<tr class="price-table__row">
+	<td class="price-table__cell">
+		 45$
+	</td>
+	<td class="price-table__cell">
+		 50$
+	</td>
+</tr>
+<tr class="price-table__row price-table__row--promo">
+	<td class="price-table__cell">
+		 40$<br>
+ <span class="smaller">При заказе с сайта</span>
+	</td>
+	<td class="price-table__cell">
+		 45$<br>
+ <span class="smaller">При заказе с сайта</span>
+	</td>
+</tr>
+<tr class="price-table__row">
+	<td class="price-table__cell">
+		 20$<br>
+ <span class="smaller">Для детей от 12 лет</span>
+	</td>
+	<td class="price-table__cell">
+		 20$<br>
+ <span class="smaller">Для детей от 12 лет</span>
+	</td>
+</tr>
+</tbody>
+</table>

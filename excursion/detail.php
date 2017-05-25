@@ -1,5 +1,7 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $code = $APPLICATION->GetCurPage(false);
+$tmp = explode('/', $_REQUEST['CODE']);
+$code = $tmp[0];
 $APPLICATION->IncludeComponent(
 	"goa:excursion.detail",
 	"excursion", 

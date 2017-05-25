@@ -99,7 +99,11 @@ function getNumEnding($number, $endingArray) {
     return $ending;
 }
 
-
+function makeDate($date){
+    if(!empty($date)){
+        return FormatDate('j F Y', MakeTimeStamp($date), time());
+    }
+}
 
 /**
  * Получает значения спискового св-ва по его коду и ИД иблока.
@@ -131,4 +135,24 @@ function getEnumValues( $IBLOCK_ID, $ENUM_CODE )
         ];
     
     return $result;
+}
+
+function vdump($a)
+{
+    global $USER;
+    $bt = debug_backtrace();
+    $bt = $bt[0];
+    $context = \Bitrix\Main\Application::getInstance()->getContext();
+    $server = $context->getServer();
+    $dRoot = $server->getDocumentRoot() ;
+    $dRoot = str_replace("/", "\\", $dRoot);
+    $bt["file"] = str_replace($dRoot, "", $bt["file"]);
+    $dRoot = str_replace("\\", "/", $dRoot);
+    $bt["file"] = str_replace($dRoot, "", $bt["file"]);
+    if ($USER->isAdmin()) {
+        echo '<div style="padding:3px 5px; background:#99CCFF; font-weight:bold;">File: '.$bt["file"].' ['.$bt["line"].']</div>';
+        echo '<pre style="text-align: left;">';
+        print_r($a);
+        echo '</pre>';
+    }
 }
