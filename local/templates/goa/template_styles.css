@@ -1944,7 +1944,7 @@ a.breadcrumbs--item-main:hover {
   line-height: 23px;
   overflow: hidden;
   height: 23px;
-  margin: 20px 0px;
+  margin: 10px 0px;
 }
 .gallery__pager {
   text-align: center;
@@ -2642,12 +2642,12 @@ label.select::after {
 }
 .closemodal {
   position: absolute;
-  top: 40px;
-  right: 40px;
+  top: 5px;
+  right: 20px;
   text-decoration: none;
-  background: url("img/btn_close.png") 0px 0px no-repeat;
-  width: 70px;
-  height: 70px;
+  background: url(/local/templates/goa/img/btn_close.png) 0px 0px no-repeat;
+  width: 68px;
+  height: 68px;
   display: block;
 }
 .closemodal:hover {
@@ -2678,6 +2678,7 @@ label.select::after {
 }
 .modal-window.js-active {
   display: block;
+  padding-top: 5px;
 }
 .modal-window__body {
   max-width: 900px;

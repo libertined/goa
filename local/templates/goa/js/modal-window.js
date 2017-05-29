@@ -58,10 +58,18 @@ function openmodal(artic, slide_id) {
 	$("#" + artic).animate({
 		opacity: 1
 	}, 500, function() {
-		if(artic=="modal-gallery") {
+        console.log(artic);
+        console.log(slide_id);
+        pos = -1;
+        var target = "modal-gallery"; //подстрока сравнения
+        while ((pos = artic.indexOf(target, pos + 1)) != -1) {
+            console.log( pos );
+        }
+
+		if(pos) {
 			$("#" + artic).css("opacity","0");
 			$(".gallery").css("display", "block");
-
+			console.log($('.bxslider_gallery').length);
 			if($('.bxslider_gallery').length>0) {
 				if(typeof slidergal !== "undefined") {
 					$("#" + artic).css("opacity","1");

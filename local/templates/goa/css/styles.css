@@ -1434,7 +1434,7 @@ a.breadcrumbs--item-main:hover {
   line-height: 23px;
   overflow: hidden;
   height: 23px;
-  margin: 20px 0px;
+  margin: 10px 0px;
 }
 .gallery__pager {
   text-align: center;
@@ -2005,6 +2005,9 @@ a.breadcrumbs--item-main:hover {
 .slider-main .bx-wrapper,
 .slider-main .bxslider_main {
   height: 100%;
+}
+.slider-main .bx-wrapper .bx-viewport{
+  height: 80%;
 }
 .instagram {
   background: #fab95f;

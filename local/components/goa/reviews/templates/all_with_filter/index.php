@@ -50,55 +50,49 @@ require_once __DIR__ . "/inc_filter.php";
                 /*
                  * TODO read more btn
                  * */
-
                 // <a href="" class="review__link">Читать полностью</a>
                 ?>
 
-              <?if ( $item["UF_IMG"] ){?>
-                    <div class="row row--padd30 marg-t-50">
-                        <div class="row__inner">
+                <? if ($item["UF_IMG"]): ?>
+                    <section class="photos">
+                        <? foreach ($item["UF_IMG"] as $index => $img): ?>
+                            <div class="photo">
+                                <div class="photo__item openmodal" data-id="modal-gallery-<?= $item["ID"] ?>" data-slide="<?= $index ?>">
+                                    <img class="photo__img" src="<?= getResizedImgOrPlaceholder($img, 250, 250) ?>" alt="">
+                                    <div class="photo__shadow"></div>
+                                </div>
+                            </div>
+                        <? endforeach; ?>
+                    </section>
 
-                            <?foreach ( $item["UF_IMG"] as $index => $img ){?>
-                                <div class="col-12-3">
-                                    <div class="review__gallery-img marg-b-30 gallery-open-block" >
-                                        <img src="<?=getResizedImgOrPlaceholder($img, 250, 250)?>" alt="">
-                                        <div class="review__gallery-open openmodal" data-id="modal-gallery-<?=$item["ID"]?>" data-slide="<?=$index?>"></div>
+                    <div class="modal-window js-window" id="modal-gallery-<?= $item["ID"] ?>">
+                        <a class="closemodal" href=""></a>
+                        <div class="modal-window__body">
+                            <div class="gallery">
+                                <div class="gallery__wrap">
+                                    <div class="bxslider_gallery">
+                                        <? foreach ($item["UF_IMG"] as $index => $img) { ?>
+                                            <div class="gallery__slide">
+                                                <div class="gallery__slide-img">
+                                                    <img src="<?= getResizedImgOrPlaceholder($img, 1024, 1024, true) ?>" alt="<?= $item["UF_IMG_DESC"][$index]?>"/>
+                                                </div>
+                                                <div class="gallery__slide-text"><?= $item["UF_IMG_DESC"][$index] ? $item["UF_IMG_DESC"][$index] : "Описание отсутствует" ?></div>
+                                            </div>
+                                        <? } ?>
                                     </div>
                                 </div>
-                            <?}?>
 
-                        </div>
-                    </div>
-
-                   <div class="modal-window js-window" id="modal-gallery-<?=$item["ID"]?>">
-                       <a class="closemodal" href=""></a>
-
-                    <div class="modal-window__body">
-                        <div class="gallery">
-
-                            <div class="gallery__wrap">
-                                <div class="bxslider_gallery">
-                                    <?foreach ( $item["UF_IMG"] as $index => $img ){?>
-                                        <div class="gallery__slide">
-                                            <div class="gallery__slide-img">
-                                                <img src="<?=getResizedImgOrPlaceholder($img, 1024, 1024, true)?>" alt="<?=$item["NAME"]?>" />
-                                            </div>
-
-                                             <div class="gallery__slide-text"><?=$item["UF_IMG_DESC"][ $index ] ? $item["UF_IMG_DESC"][ $index ] : "Описание отсутствует"?></div>
-                                        </div>
-                                    <?}?>
+                                <div class="gallery__pager" id="js-gallery-pager">
+                                    <? foreach ($item["UF_IMG"] as $index => $img) { ?>
+                                        <a data-slide-index="<?= $index ?>" href="" class="gallery__pager-item">
+                                            <img src=<?= getResizedImgOrPlaceholder($img, 70, 70) ?> dfrf="<?=getResizedImgOrPlaceholder($img, 70, 70)?>"/>
+                                        </a>
+                                    <? } ?>
                                 </div>
                             </div>
-
-                            <div class="gallery__pager" id="js-gallery-pager">
-                                <?foreach ( $item["UF_IMG"] as $index => $img ){?>
-                                   <a data-slide-index="<?=$index?>" href="" class="gallery__pager-item"><img src=<?=getResizedImgOrPlaceholder($img, 70, 70)?> /></a>
-                                <?}?>
-                            </div>
                         </div>
                     </div>
-                </div>
-              <?}?>
+                <? endif; ?>
             </div>
 
             <?if($item["UF_ADMIN_REPLY"]):?>

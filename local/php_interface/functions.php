@@ -46,12 +46,12 @@ function getResizedImgOrPlaceholder( $imgId, $width, $height = 0, $proportional 
     }
 
 
-    $resizedImg = CFile::ResizeImageGet($imgId, array("width"=>$width, "height"=>$height), $resizeParam, false, false, false, 100);
+    $resizedImg = CFile::ResizeImageGet($imgId, array("width"=>$width, "height"=>$height), $resizeParam, true, false, false, 100);
 
     /* если файл по каким-то причинам не создался */
-    if (!file_exists($_SERVER["DOCUMENT_ROOT"] . $resizedImg['src'])) {
-        return getResizedImgOrPlaceholder(false, $width, $height, $proportional);
-    }
+//    if (!file_exists($_SERVER["DOCUMENT_ROOT"] . $resizedImg['src'])) {
+//        return getResizedImgOrPlaceholder(false, $width, $height, $proportional);
+//    }
 
     return $resizedImg['src'];
 }
