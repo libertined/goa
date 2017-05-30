@@ -73,7 +73,7 @@
         <div class="form__wrap marg-b-15 hidden">
             <label for="place-rent" class="form__title">Тип жилья</label>
             <label class="form__field select">
-                <select name="<?=OrderHelper::FORM_ADD_FIELD_HOUSE_TYPE_NAME?>" id="place-rent" class="form__input" disabled>
+             <select name="<?=OrderHelper::FORM_ADD_FIELD_HOUSE_TYPE_NAME?>" id="place-rent" class="form__input" disabled>
                     <?foreach ( getEnumValues(ORDER_IBOCK_ID, "HOUSE_TYPE") as $id => $data ){?>
                         <option value="<?=$id?>" data-js_value="<?=$data["XML_ID"]?>"><?=$data["NAME"]?></option>
                     <?}?>

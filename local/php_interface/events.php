@@ -97,7 +97,6 @@ class CMainHandlers
                         'width'  => $imgMaxWidth,
                         'height' => $imgMaxHeight
                     ), BX_RESIZE_IMAGE_EXACT, true);
-                    AddMessage2log($file);
 
                     // добавляем в массив VALUES новую уменьшенную картинку
                     return $VALUE = CFile::MakeFileArray($_SERVER["DOCUMENT_ROOT"] . $file["src"]);

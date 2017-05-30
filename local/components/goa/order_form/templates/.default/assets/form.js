@@ -24,38 +24,40 @@ $(function () {
             placeRent = document.getElementById("place-rent"),
             placeRentBlock = placeRent.closest("div.form__wrap"),
             hotelBlock = document.getElementById("label-hotel").closest("div.form__wrap");
+        if (servicesSelect != null){
+            switch(servicesSelect.options[ servicesSelect.selectedIndex ].dataset.js_value) {
+                case "excursion":
+                    toggleInputVisibility(true, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+                    toggleInputAvailability(true, excursionsSelect, false, celebrationType, false, placeRent);
+                    break;
 
-        switch(servicesSelect.options[ servicesSelect.selectedIndex ].dataset.js_value) {
-            case "excursion":
-                toggleInputVisibility(true, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
-                toggleInputAvailability(true, excursionsSelect, false, celebrationType, false, placeRent);
-                break;
+                case "taxi":
+                    toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, true, directionBlock, true, hotelBlock);
+                    toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
+                    break;
 
-            case "taxi":
-                toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, true, directionBlock, true, hotelBlock);
-                toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
-                break;
+                case "rent":
+                    toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, true, beachBlock, true, placeRentBlock, false, directionBlock, false, hotelBlock);
+                    toggleInputAvailability(false, excursionsSelect, false, celebrationType, true, placeRent);
+                    break;
 
-            case "rent":
-                toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, true, beachBlock, true, placeRentBlock, false, directionBlock, false, hotelBlock);
-                toggleInputAvailability(false, excursionsSelect, false, celebrationType, true, placeRent);
-                break;
+                case "celebration":
+                    toggleInputVisibility(false, excursionsSelectBlock, true, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+                    toggleInputAvailability(false, excursionsSelect, true, celebrationType, false, placeRent);
+                    break;
 
-            case "celebration":
-                toggleInputVisibility(false, excursionsSelectBlock, true, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
-                toggleInputAvailability(false, excursionsSelect, true, celebrationType, false, placeRent);
-                break;
+                case "tickets":
+                    toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, true, directionBlock, true, hotelBlock);
+                    toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
+                    break;
 
-            case "tickets":
-                toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, true, directionBlock, true, hotelBlock);
-                toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
-                break;
-
-            case "ayurveda":
-                toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
-                toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
-                break;
+                case "ayurveda":
+                    toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+                    toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
+                    break;
+            }
         }
+
     };
 
 

@@ -84,19 +84,12 @@ class ExcursionDetail extends CBitrixComponent
             $APPLICATION->SetPageProperty("PAGE_TITLE", $this->arResult["ITEM"]["TITLE"]);
 
            //вытаскиваем значения полей СЕО
-//            use \Bitrix\Iblock\InheritedProperty\ElementTemplates;
             $IBLOCK_ID = $this->arParams['IBLOCK_ID'];
-            $ELEMENT_ID = $this->arResult['ID'];
-
-//            $ipropTemplates = new \Bitrix\Iblock\InheritedProperty\ElementTemplates($IBLOCK_ID, $ELEMENT_ID);
-//            //Получить шаблоны для "редактирования"
-//            $templates = $ipropTemplates->findTemplates();
-//            vdump($templates);
+            $ELEMENT_ID = $this->arResult['ITEM']['ID'];
 
             //ООП  ElementValues
             $ipropValues = new \Bitrix\Iblock\InheritedProperty\ElementValues($IBLOCK_ID, $ELEMENT_ID);
             $values = $ipropValues->getValues();
-
 
             $APPLICATION->SetPageProperty("keywords", $values['ELEMENT_META_KEYWORDS']);
             $APPLICATION->SetPageProperty("description", $values['ELEMENT_META_DESCRIPTION']);
