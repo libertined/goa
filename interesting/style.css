@@ -27,9 +27,12 @@ body {
 .interesting-labels {
 	width: 20%;
 	padding: 0 10px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 	background-color: #dce1e6;
 }
-.interesting-labels__header {
+.interesting .interesting-labels__header {
 	margin-top: 0;
 	font-family: 'Scada';
 	font-size: 24px;
