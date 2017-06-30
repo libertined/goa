@@ -13,14 +13,21 @@ body {
 	width: 75%;
 	margin-right: 5%;
 }
+.interesting-item {
+	margin-bottom: 30px;
+}
 .interesting-item__header {
 	font-family: 'Scada';
 	font-size: 24px;
 	line-height: 30px;
 }
-
+.interesting .interesting-item__labels {
+	margin: 0;
+}
 .interesting-labels {
 	width: 20%;
+	padding: 0 10px;
+	background-color: #dce1e6;
 }
 .interesting-labels__header {
 	margin-top: 0;
