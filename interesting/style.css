@@ -1,0 +1,38 @@
+body {
+	margin: 0;
+}
+.interesting {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+}
+
+.interesting-list {
+	width: 75%;
+	margin-right: 5%;
+}
+
+.interesting-labels {
+	width: 20%;
+}
+
+@media only screen and (max-width: 767px) { 
+	.interesting {
+		-webkit-flex-direction: column;
+		-moz-flex-direction: column;
+		-ms-flex-direction: column;
+		-o-flex-direction: column;
+		flex-direction: column;
+	}
+	.interesting-list {
+		margin-right: 0;
+		order: 1;
+		width: 100%;
+	}
+	.interesting-labels {
+		margin-bottom: 20px;
+		width: 100%;
+	}
+}

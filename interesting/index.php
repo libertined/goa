@@ -1,30 +1,45 @@
-<section class="interesting-list">
-	<article class="interesting-item">
-		<div class="interesting-item__header">Заголовок статьи</div>
-		<p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
-		<p class="interesting-item__labels">
-			<a class="interesting-item__label" href="">метка 1</a>,
-			<a class="interesting-item__label" href="">метка 2</a>,
-			<a class="interesting-item__label" href="">метка 3</a>
-		</p>
-	</article>	
-	<article class="interesting-item">
-		<div class="interesting-item__header">Заголовок статьи</div>
-		<p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
-		<p class="interesting-item__labels">
-			<a class="interesting-item__label" href="">метка 1</a>,
-			<a class="interesting-item__label" href="">метка 2</a>,
-			<a class="interesting-item__label" href="">метка 3</a>
-		</p>
-	</article>
-	<article class="interesting-item">
-		<div class="interesting-item__header">Заголовок статьи</div>
-		<p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
-		<p class="interesting-item__labels">
-			<a class="interesting-item__label" href="">метка 1</a>,
-			<a class="interesting-item__label" href="">метка 2</a>,
-			<a class="interesting-item__label" href="">метка 3</a>
-		</p>
-	</article>
-	
-</section>
+<?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
+
+<link rel="stylesheet" href="style.css">
+
+<main class="interesting">
+    <section class="interesting-list">
+    	<article class="interesting-item">
+    		<div class="interesting-item__header">Заголовок статьи</div>
+    		<p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
+    		<p class="interesting-item__labels">
+    			<a class="interesting-item__label" href="">метка 1</a>,
+    			<a class="interesting-item__label" href="">метка 2</a>,
+    			<a class="interesting-item__label" href="">метка 3</a>
+    		</p>
+    	</article>	
+    	<article class="interesting-item">
+    		<div class="interesting-item__header">Заголовок статьи</div>
+    		<p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
+    		<p class="interesting-item__labels">
+    			<a class="interesting-item__label" href="">метка 1</a>,
+    			<a class="interesting-item__label" href="">метка 2</a>,
+    			<a class="interesting-item__label" href="">метка 3</a>
+    		</p>
+    	</article>
+    	<article class="interesting-item">
+    		<div class="interesting-item__header">Заголовок статьи</div>
+    		<p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
+    		<p class="interesting-item__labels">
+    			<a class="interesting-item__label" href="">метка 1</a>,
+    			<a class="interesting-item__label" href="">метка 2</a>,
+    			<a class="interesting-item__label" href="">метка 3</a>
+    		</p>
+    	</article>
+    	
+    </section>
+    <aside class="interesting-labels">
+        <p class="interesting-labels__header">Список разделов:</p>
+        <div class="interesting-labels__links">
+            <a href="#" class="interesting-labels__link">метка 1</a>, <a href="#" class="interesting-labels__link">метка 2</a>, <a href="#" class="interesting-labels__link">метка 3</a>, <a href="#" class="interesting-labels__link">метка 4</a>, 
+        </div>
+    </aside>
+</main>
+
+<?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
