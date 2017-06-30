@@ -13,9 +13,20 @@ body {
 	width: 75%;
 	margin-right: 5%;
 }
+.interesting-item__header {
+	font-family: 'Scada';
+	font-size: 24px;
+	line-height: 30px;
+}
 
 .interesting-labels {
 	width: 20%;
+}
+.interesting-labels__header {
+	margin-top: 0;
+	font-family: 'Scada';
+	font-size: 24px;
+	line-height: 30px;
 }
 
 @media only screen and (max-width: 767px) { 

@@ -3,7 +3,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
 
 <link rel="stylesheet" href="style.css">
 
-<main class="interesting">
+<div class="interesting">
     <section class="interesting-list">
     	<article class="interesting-item">
     		<div class="interesting-item__header">Заголовок статьи</div>
@@ -36,10 +36,10 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
     </section>
     <aside class="interesting-labels">
         <p class="interesting-labels__header">Список разделов:</p>
-        <div class="interesting-labels__links">
+        <p class="interesting-labels__links">
             <a href="#" class="interesting-labels__link">метка 1</a>, <a href="#" class="interesting-labels__link">метка 2</a>, <a href="#" class="interesting-labels__link">метка 3</a>, <a href="#" class="interesting-labels__link">метка 4</a>, 
-        </div>
+        </p>
     </aside>
-</main>
+</div>
 
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
