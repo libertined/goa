@@ -91,6 +91,9 @@ body {
 	position: relative;
 	display: inline-block;
 }
+.interesting-detailed__back:hover {
+	color: #ff7866;
+}
 .interesting-detailed__back::after {
 	background-color: #ff7866;
 	bottom: -1px;
