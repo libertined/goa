@@ -61,3 +61,18 @@ body {
 		width: 100%;
 	}
 }
+
+.interesting-detailed {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+}
+.interesting-detailed__content {
+	width: 60%;
+	margin-right: auto;
+}
+.interesting-detailed__links {
+	width: 35%;
+}
