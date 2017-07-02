@@ -21,6 +21,9 @@ body {
 	font-size: 24px;
 	line-height: 30px;
 }
+.interesting-item__header:hover {
+	color: #fd7866;
+}
 .interesting .interesting-item__labels {
 	margin: 0;
 }

@@ -6,7 +6,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
 <div class="interesting">
     <section class="interesting-list">
     	<article class="interesting-item">
-    		<a href="#" class="interesting-item__detailed-link">
+    		<a href="detailed.php" class="interesting-item__detailed-link">
                 <div class="interesting-item__header">Заголовок статьи</div>
     		    <p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
             </a>
@@ -17,7 +17,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
     		</p>
     	</article>	
     	<article class="interesting-item">
-    		<a href="" class="interesting-item__detailed-link">
+    		<a href="detailed.php" class="interesting-item__detailed-link">
                 <div class="interesting-item__header">Заголовок статьи</div>
     		    <p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
             </a>
@@ -28,7 +28,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
     		</p>
     	</article>
     	<article class="interesting-item">
-    		<a href="" class="interesting-item__detailed-link">
+    		<a href="detailed.php" class="interesting-item__detailed-link">
                 <div class="interesting-item__header">Заголовок статьи</div>
     		    <p class="interesting-item__short-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste eveniet provident dolor, aut eos quisquam numquam optio voluptatibus dignissimos unde, nihil dolorem, reprehenderit, fugiat quibusdam debitis! Quas voluptatum fugit error?</p>
             </a>

@@ -107,7 +107,7 @@ $APPLICATION->IncludeComponent(
 <div class="row row--padd30 marg-b-70 marg-t-40 marg-b-adaptive-none">
 	<div class="row__inner col-adaptive-row">
 		<div class="col-12-4 col-adaptive-768">
-			<a href="" class="goa-more">
+			<a href="/services/#wedding" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						width="166.8px" height="141.1px" viewBox="22 -10.1 166.8 141.1" enable-background="new 22 -10.1 166.8 141.1"
@@ -135,7 +135,7 @@ $APPLICATION->IncludeComponent(
 		</div>
 
 		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
-			<a href="" class="goa-more">
+			<a href="/services/#rent" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						 width="185px" height="175.8px" viewBox="-67.6 -29.2 185 175.8" enable-background="new -67.6 -29.2 185 175.8"
@@ -165,7 +165,7 @@ $APPLICATION->IncludeComponent(
 		</div>
 
 		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
-			<a href="" class="goa-more">
+			<a href="/services/#celebration" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						 width="140px" height="147.5px" viewBox="14.5 -56 140 147.5" enable-background="new 14.5 -56 140 147.5" xml:space="preserve" class="goa-more__svg">
@@ -195,7 +195,7 @@ $APPLICATION->IncludeComponent(
 <div class="row row--padd30 marg-b-70 marg-b-adaptive-none">
 	<div class="row__inner col-adaptive-row">
 		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
-			<a href="" class="goa-more">
+			<a href="/services/#taxi" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						 width="215px" height="87.9px" viewBox="-36.7 56.6 215 87.9" enable-background="new -36.7 56.6 215 87.9" xml:space="preserve" class="goa-more__svg">
@@ -220,7 +220,7 @@ $APPLICATION->IncludeComponent(
 		</div>
 
 		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
-			<a href="" class="goa-more">
+			<a href="/services/#tickets" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						 width="195px" height="120px" viewBox="41.5 0.5 195 120" enable-background="new 41.5 0.5 195 120" xml:space="preserve" class="goa-more__svg">
@@ -248,7 +248,7 @@ $APPLICATION->IncludeComponent(
 		</div>
 
 		<div class="col-12-4 col-adaptive-768 top-adaptive-768">
-			<a href="" class="goa-more">
+			<a href="/services/#ayurveda" class="goa-more">
 				<div class="goa-more__img">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						 width="120.479px" height="155.34px" viewBox="0 0 120.479 155.34" enable-background="new 0 0 120.479 155.34"

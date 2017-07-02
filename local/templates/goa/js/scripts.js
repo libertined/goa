@@ -23,10 +23,10 @@ $(document).ready( function() {
 			maxSlides: 1,
 			moveSlides: 1,
 			//slideWidth: 1000,
-			auto: false,
+			auto: true,
 			autoHover: true,
 			speed: 500,
-			pause: 1000,
+			pause: 10000,
 			pager: ($(".bxslider_main>.slider-main__item").length > 1) ? true: false,
 			controls: ($(".bxslider_main>.slider-main__item").length > 1) ? true: false,
 			touchEnabled: true
