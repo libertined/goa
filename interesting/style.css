@@ -76,3 +76,8 @@ body {
 .interesting-detailed__links {
 	width: 35%;
 }
+.interesting-detailed__header {
+	font-family: 'Scada';
+	font-size: 24px;
+	line-height: 30px;
+}

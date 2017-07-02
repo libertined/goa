@@ -8,10 +8,11 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
         <p class="interesting-detailed__text">Детальный текст здесь Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magnam, provident facilis tempora ut doloribus adipisci molestias et commodi veritatis cupiditate reprehenderit quibusdam dolorum esse saepe illum? Molestiae, natus necessitatibus aliquid.</p>
     </article>
     <aside class="interesting-detailed__links">
-        <div class="interesting-detailed__links-header">Разделы</div>
+        <p class="interesting-detailed__links-header">Разделы</p>
         <p class="interesting-detailed__labels">
             <a href="" class="interesting-detailed__label">метка 1</a>, <a href="" class="interesting-detailed__label">метка 2</a>, <a href="" class="interesting-detailed__label">метка 3</a>
         </p>
+        <a href="/interesting/" class="interesting-detailed__back">Назад к списку</a>
         <div class="right-side__share">
             <div class="right-side__share-title">Поделиться:</div>
             <div class="right-side__share-body">
