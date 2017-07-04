@@ -44,5 +44,4 @@ $APPLICATION->SetPageProperty("MAIN_TITLE", "Интересно об Индии"
         </p>
     </aside>
 </div>
-<script src="script.js"></script>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

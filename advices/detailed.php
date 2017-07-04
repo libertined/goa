@@ -22,5 +22,4 @@ $APPLICATION->SetPageProperty("MAIN_TITLE", "Заголовок статьи");?
     </aside>
     
 </div>
-<script src="script.js"></script>
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
