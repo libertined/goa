@@ -37,7 +37,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Советы туристам в Гоа", 
-		"advances/", 
+		"advices/", 
 		Array(), 
 		Array(), 
 		"" 
