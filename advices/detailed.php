@@ -1,9 +1,6 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Заголовок статьи");?>
-
-<link rel="stylesheet" href="style.css">
-
 <div class="advices-detailed">
     <article class="advices-detailed__content">
         <div class="advices-detailed__header">Заголовок статьи</div>

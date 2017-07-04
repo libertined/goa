@@ -1,9 +1,6 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Интересно об Индии");?>
-
-<link rel="stylesheet" href="style.css">
-
 <div class="interesting">
     <section class="interesting-list">
     	<article class="interesting-item">
