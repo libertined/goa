@@ -1,7 +1,7 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Интересно об Индии");?>
-<div class="interesting">
+<div class="interesting stick-border">
     <section class="interesting-list">
     	<article class="interesting-item">
     		<a href="detailed.php" class="interesting-item__detailed-link">
@@ -37,7 +37,7 @@ $APPLICATION->SetPageProperty("MAIN_TITLE", "Интересно об Индии"
     		</p>
     	</article>    	
     </section>
-    <aside class="interesting-labels">
+    <aside class="interesting-labels" id="sticker">
         <p class="interesting-labels__header">Список разделов:</p>
         <p class="interesting-labels__links">
             <a href="#" class="interesting-labels__link">метка 1</a>, <a href="#" class="interesting-labels__link">метка 2</a>, <a href="#" class="interesting-labels__link">метка 3</a>, <a href="#" class="interesting-labels__link">метка 4</a>, 

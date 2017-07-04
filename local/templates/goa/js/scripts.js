@@ -294,8 +294,9 @@ $(document).ready( function() {
 	} else {
 		$('input[type=date]').closest(".form__field").removeClass("form--icon").removeClass("form--icon-date");
 	}
-
-	window.addEventListener('scroll', stickAside.bind(null, document.querySelector('.interesting'), document.querySelector('.interesting-labels')));
+	if (document.querySelector('.stick-border')) {
+	window.addEventListener('scroll', stickAside.bind(null, document.querySelector('.stick-border'), document.getElementById('sticker')));
+	}
 
 	function stickAside(element, fixedBlock) {
 		if (window.pageYOffset > element.offsetTop) {

@@ -1,7 +1,7 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Советы туристам");?>
-<div class="advices">
+<div class="advices stick-border">
     <section class="advices-list">
     	<article class="advices-item">
     		<a href="detailed.php" class="advices-item__detailed-link">
@@ -37,7 +37,7 @@ $APPLICATION->SetPageProperty("MAIN_TITLE", "Советы туристам");?>
     		</p>
     	</article>    	
     </section>
-    <aside class="advices-labels">
+    <aside class="advices-labels" id="sticker">
         <p class="advices-labels__header">Список разделов:</p>
         <p class="advices-labels__links">
             <a href="#" class="advices-labels__link">метка 1</a>, <a href="#" class="advices-labels__link">метка 2</a>, <a href="#" class="advices-labels__link">метка 3</a>, <a href="#" class="advices-labels__link">метка 4</a>, 
