@@ -7,6 +7,18 @@ $arUrlRewrite = array(
 		"PATH" => "/excursion/detail.php",
 	),
 	array(
+		"CONDITION" => "#^/advices/(.+)#",
+		"RULE" => "CODE=\$1",
+		"ID" => "bitrix:news.detail",
+		"PATH" => "/advices/detail.php",
+	),
+    array(
+        "CONDITION" => "#^/interesting/(.+)#",
+        "RULE" => "CODE=\$1",
+        "ID" => "bitrix:news.detail",
+        "PATH" => "/interesting/detail.php",
+    ),
+	array(
 		"CONDITION" => "#^/photos/#",
 		"RULE" => "",
 		"ID" => "bitrix:catalog",
