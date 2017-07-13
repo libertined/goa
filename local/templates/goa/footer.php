@@ -10,7 +10,7 @@
         <div class="page-content-inner page-content-inner--w1300">
           <div class="instagram__header">@tvoygoa</div>
           <div class="instagram__body">
-            <img src="<?=SITE_TEMPLATE_PATH?>/img/files/img_tvgoa.jpg" style="margin: 0 auto; max-width: 100%;">
+            <iframe src='/inwidget/index.php?width=800&inline=4&view=9&toolbar=false&preview=large' scrolling='no' frameborder='no' style='border:none;width:100%;height:850px;overflow:hidden;'></iframe>
           </div>
         </div>
       </div>
