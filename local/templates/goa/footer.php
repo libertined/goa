@@ -8,9 +8,9 @@
       <?if ($page == '/index.php'):?>
       <div class="instagram visible-adaptive-768">
         <div class="page-content-inner page-content-inner--w1300">
-          <div class="instagram__header">@tvoygoa</div>
+          <a class="instagram__header" href="https://instagram.com/tvoygoa" target="_blank">@tvoygoa</a>
           <div class="instagram__body">
-            <iframe src='/inwidget/index.php?width=800&inline=4&view=9&toolbar=false&preview=large' scrolling='no' frameborder='no' style='border:none;width:100%;height:850px;overflow:hidden;'></iframe>
+            <iframe src='/inwidget/index.php?width=800&inline=4&view=8&toolbar=false&preview=large' scrolling='no' frameborder='no' style='border:none;width:100%;height:800px;overflow:hidden;'></iframe>
           </div>
         </div>
       </div>

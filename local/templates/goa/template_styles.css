@@ -2784,7 +2784,7 @@ label.select::after {
 }
 .instagram__header {
   display: inline-block;
-  padding-bottom: 70px;
+  margin-bottom: 70px;
   line-height: 32px;
   font-size: 22px;
   font-family: Scada;
@@ -2796,6 +2796,9 @@ label.select::after {
   -moz-background-size: 32px;
   -o-background-size: 32px;
   background-size: 32px;
+}
+.instagram__header:hover {
+	color: white;
 }
 .instagram__body {
   text-align: initial;

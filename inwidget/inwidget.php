@@ -215,7 +215,7 @@ class inWidget {
 		if(isset($_GET['preview']))
 			$this->preview = $_GET['preview'];
 		if($this->width>0)
-			$this->imgWidth = round(($this->width-(17+(9*$this->inline)))/$this->inline);
+			$this->imgWidth = round(($this->width)/$this->inline);
 		if(isset($_GET['lang']))
 			$this->setLang($_GET['lang']);
 	}

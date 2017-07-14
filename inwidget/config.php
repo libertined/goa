@@ -20,7 +20,7 @@ $CONFIG = array(
 	'bannedLogins' => '',
 		
 	// Random order of pictures [ true / false ]
-	'imgRandom' => true,
+	'imgRandom' => false,
 
 	// How many pictures widget will get from Instagram?
 	'imgCount' => 8,

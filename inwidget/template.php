@@ -27,26 +27,6 @@ if(!is_object($inWidget->data)) die('<b style="color:red;">Cache file contains p
 		<meta http-equiv="content-language" content="<?php echo $inWidget->langName; ?>" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<link rel="stylesheet" type="text/css" href="css/default.css?r1" media="all" />
-		<style type='text/css'>
-			.widget {
-				width:<?php echo $inWidget->width; ?>px;
-			}
-			.widget .title .text {
-				width: <?php echo ($inWidget->width-44); ?>px;
-				<?php if($inWidget->width<160) echo 'display:none'; ?>
-			}
-			.widget .data a.image:link, .widget .data a.image:visited{
-				width:<?php echo $inWidget->imgWidth; ?>px;
-				height:<?php echo $inWidget->imgWidth; ?>px;
-			}
-			.widget .data .image span {
-				width:<?php echo $inWidget->imgWidth; ?>px;
-				height:<?php echo $inWidget->imgWidth; ?>px;
-			}
-			.copyright {
-				width:<?php echo $inWidget->width; ?>px;
-			}
-		</style>
 	</head>
 <body>
 <div id="widget" class="widget">
@@ -103,7 +83,7 @@ if(!is_object($inWidget->data)) die('<b style="color:red;">Cache file contains p
 						default:
 							$thumbnail = $item->small;
 					}
-					echo '<a href="'.$item->link.'" class="image" target="_blank"><span style="background-image:url('.$thumbnail.');">&nbsp;</span></a>';
+					echo '<a href="'.$item->link.'" class="image" target="_blank"><img src='.$thumbnail.'></a>';
 					$i++;
 					if($i >= $inWidget->view) break;
 				}
@@ -125,8 +105,3 @@ if(!is_object($inWidget->data)) die('<b style="color:red;">Cache file contains p
 </div>
 </body>
 </html>
-<!-- 
-	inWidget - free Instagram widget for your site!
-	http://inwidget.ru
-	© Alexandr Kazarmshchikov
--->
