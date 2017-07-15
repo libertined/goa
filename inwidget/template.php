@@ -83,7 +83,7 @@ if(!is_object($inWidget->data)) die('<b style="color:red;">Cache file contains p
 						default:
 							$thumbnail = $item->small;
 					}
-					echo '<a href="'.$item->link.'" class="image" target="_blank"><img src='.$thumbnail.'></a>';
+					echo '<a href="'.$item->link.'" class="image" target="_blank"><img src='.$thumbnail.'><span class="widget__button">Посмотреть</span></a>';
 					$i++;
 					if($i >= $inWidget->view) break;
 				}
