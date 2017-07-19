@@ -3467,7 +3467,96 @@ font-size: 0;
   position: absolute;
   width: 100%;
 }
-
-.contact-us__map {
-  height: 600px;
+.contacts {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
 }
+.contacts__phones {
+  width: 65%;
+}
+.contacts__links {
+  width: 30%;
+}
+.contacts .contacts__link::after {
+  display: none;
+}
+.contacts .contacts__title {
+  font-family: 'OpenSansSemibold';
+  font-size: 18px;
+}
+.contacts .contacts__link {
+  font-family: "OpenSans";
+}
+.contacts .contacts__text {
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.contacts a[href^="tel"]::after {
+  display: none;
+}
+.contacts a[href^="tel"] {
+  font-size: 18px;
+}
+.bank-details {
+  margin-bottom: 30px;
+}
+.bank-details .bank-details__header {
+  font-family: 'OpenSansSemibold';
+  font-size: 18px;
+}
+.map .map__header {
+  font-family: 'OpenSansSemibold';
+  font-size: 18px;
+}
+.map__google {
+  height: 500px;
+}
+.contacts .contacts__messenger::after, .contacts .contacts__social::after {
+  display: none;
+}
+.contacts__messenger {
+  display: inline-block;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  background-size: 40px auto;
+  margin-left: 10px;
+  background-image: url('/local/templates/goa/svg/social-icons-sprite.svg');
+}
+.contacts__messenger--whatsapp {
+  
+  background-position: 0 -280px;
+}
+.contacts__messenger--viber {
+  background-position: 0 -200px;
+}
+.contacts__messenger--tg {
+  background-position: 0 -160px;
+}
+
+.contacts__social {
+  display: inline-block;
+  vertical-align: top;
+  width: 40px;
+  height: 40px;
+  background-size: 40px auto;
+  margin-right: 10px;
+  background-image: url('/local/templates/goa/svg/social-icons-sprite.svg');
+}
+
+.contacts__social--vk {
+  background-position: 0 -240px;
+}
+.contacts__social--fb {
+  background-position: 0 -80px;
+}
+.contacts__social--ig {
+  background-position: 0 0;
+}
+
