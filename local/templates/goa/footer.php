@@ -85,7 +85,7 @@
 
     <div class="page-footer__copyright">
       <div class="page-content-inner page-content-inner--w1300">
-        <div class="page-footer__copyright-inner">© 2011-2016 «Твой Гоа»</div>
+        <div class="page-footer__copyright-inner">© 2011-2017 «Твой Гоа»</div>
       </div>
     </div>
   </div>
@@ -145,7 +145,7 @@
         <div class="page-footer__copyright-inner">
           <div class="row">
             <div class="row__inner">
-              <div class="col-12-6">© 2016 Твой Гоа</div>
+              <div class="col-12-6">© 2017 Твой Гоа</div>
               <div class="col-12-6 pos-right">Разработка <a href="http://www.ae-studio.ru" target="_blank">AE! studio</a></div>
             </div>
           </div>

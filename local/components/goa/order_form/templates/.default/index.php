@@ -111,9 +111,9 @@
             <label for="label-counter" class="form__title">Количество людей*</label>
             <div class="form__field">
                 <div class="form__counter">
-                    <div class="form__counter-btn form--counter-minus"></div>
+                    <div class="form__counter-btn form--counter-minus">&ndash;</div>
                     <input id="label-counter" placeholder="" name="<?=OrderHelper::FORM_ADD_FIELD_PEOPLE_COUNT_NAME?>" value="1" type="text" class="form__input form--input-counter" readonly />
-                    <div class="form__counter-btn form--counter-plus"></div>
+                    <div class="form__counter-btn form--counter-plus">+</div>
                 </div>
             </div>
         </div>

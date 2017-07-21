@@ -1603,9 +1603,15 @@ a.breadcrumbs--item-main:hover {
   top: 4px;
   right: 4px;
 }
-.filter__category-close object {
-  width: 13px;
+.filter__category-close::after {
+  content: "";
+  display: block;
   height: 13px;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 13px;
+  background: url('/local/templates/goa/svg/cross-13x13.svg');
 }
 .filter__clear {
   display: block;
@@ -2555,18 +2561,18 @@ label.select::after {
   cursor: pointer;
 }
 .form--counter-minus {
-  background: #ffffff url("svg/faceless.svg") no-repeat center;
-  -webkit-background-size: 16px;
-  -moz-background-size: 16px;
-  -o-background-size: 16px;
-  background-size: 16px;
+  background: #ffffff none repeat scroll 0 0;
+  font-size: 30px;
+  line-height: 14px;
+  -moz-user-select: none;
+  user-select: none;
 }
 .form--counter-plus {
-  background: #ffffff url("svg/faceless.svg") no-repeat center;
-  -webkit-background-size: 16px;
-  -moz-background-size: 16px;
-  -o-background-size: 16px;
-  background-size: 16px;
+  background: #ffffff none repeat scroll 0 0;
+  font-size: 30px;
+  line-height: 14px;
+  -moz-user-select: none;
+  user-select: none;
 }
 .form--input-counter {
   float: left;
