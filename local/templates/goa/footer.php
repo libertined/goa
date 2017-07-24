@@ -68,6 +68,11 @@
                     <svg class="icon icon-vk">
                         <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#vk"></use>
                     </svg>
+                </a>                
+				<a href="mailto:info@tvoygoa.ru" class="page-footer__social-item page-footer--social-email" target="_blank">
+                    <svg class="icon icon-email">
+                        <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#email"></use>
+                    </svg>
                 </a>
               </div>
             </div>
@@ -128,9 +133,9 @@
                     <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#vk"></use>
                   </svg>
                 </a>
-                <a href="mailto:info@tvoygoa.ru" class="page-footer__social-item page-footer--social-mail" target="_blank">
-                  <svg class="icon icon-vk">
-                    <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#vk"></use>
+                <a href="mailto:info@tvoygoa.ru" class="page-footer__social-item page-footer--social-email" target="_blank">
+                  <svg class="icon icon-email">
+                    <use xlink:href="<?=SITE_TEMPLATE_PATH?>/svg/sprite.svg#email"></use>
                   </svg>
                 </a>
               </div>
