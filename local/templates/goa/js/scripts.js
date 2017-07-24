@@ -135,7 +135,7 @@ $(document).ready( function() {
 	}
 
 	//Мобильное меню
-	$(document).on("click", ".js-menu-adaptive-btn, .js-menu-adaptive-close", function () {
+	$(document).on("click", ".page-header__menu-adaptive, .js-menu-adaptive-close", function () {
 		$(".js-menu-adaptive-list").slideToggle("200", function () {});
 		return false;
 	});

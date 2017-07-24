@@ -637,19 +637,34 @@ a:hover {
 .page-header__menu-adaptive {
   float: right;
   padding: 35px 0px;
-}
-.page-header__menu-adaptive-btn {
-  width: 23px;
-  height: 20px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-image: url("svg/faceless.svg");
-  -webkit-background-size: 19px;
-  -moz-background-size: 19px;
-  -o-background-size: 19px;
-  background-size: 19px;
+  height: 24px;
   cursor: pointer;
 }
+.page-header__menu-adaptive-btn {
+  background-color: #171c1f;
+  display: block;
+  height: 2px;
+  position: relative;
+  top: 10px;
+  transition-delay: 0.1s;
+  width: 36px;
+}
+.page-header__menu-adaptive-btn::before, .page-header__menu-adaptive-btn::after {
+  background-color: #171c1f;
+  content: "";
+  display: block;
+  height: 2px;
+  position: absolute;
+  transition: all 0.2s ease-in-out 0s;
+  width: 36px;
+}
+.page-header__menu-adaptive-btn::after {
+  margin-top: 10px;
+}
+.page-header__menu-adaptive-btn::before {
+  margin-top: -10px;
+}
+
 @media only screen and (min-width: 768px) and (max-width: 1439px) {
   .page-header__inner {
     text-align: center;
