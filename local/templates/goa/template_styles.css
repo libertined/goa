@@ -2195,13 +2195,25 @@ a.breadcrumbs--item-main:hover {
   padding: 10px 30px;
 }
 
-.price-table__cell:first-child {
+.price-table__cell {
   border-right: solid 1px #f2f2f2;
+}
+.price-table__cell:last-child {
+  border-right: none;
 }
 @media only screen and (max-width: 767px) {
   .price-table__row--promo, .price-table__row--header {
     font-size: 20px;
     line-height: 24px;
+  }
+  .price-table__header-text, .price-table__cell {
+    padding: 1% 2%;
+  }
+}
+@media only screen and (max-width: 500px) {
+  .price-table__row--promo, .price-table__row--header {
+    font-size: 16px;
+    line-height: 18px;
   }
 }
 
