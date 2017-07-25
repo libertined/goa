@@ -2165,6 +2165,7 @@ a.breadcrumbs--item-main:hover {
   box-sizing: border-box;
   height: 70px;
   font-size: 15px;
+  border-bottom: 1px solid #f2f2f2;
 }
 .price-table__row--header {
   font-size: 24px;
