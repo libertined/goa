@@ -2156,6 +2156,7 @@ a.breadcrumbs--item-main:hover {
   border-collapse: collapse;
   vertical-align: middle;
   text-align: center;
+  margin-bottom: 20px;
 }
 .price-table__col1 {
   width: 50%;
