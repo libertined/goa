@@ -62,7 +62,7 @@ $this->setFrameMode(true);
                 <div class="service-item__close"></div>
                 <h2 class="service-item__header"><?=$arItem['NAME']?></h2>
                 <p class="service-item__description"><?=$arItem["DETAIL_TEXT"]?></p>
-                <?=$arItem['DISPLAY_PROPERTIES']['TABLE_PRICES']['~VALUE']['TEXT']?>
+                <div class="service-item__price"><?=$arItem['DISPLAY_PROPERTIES']['TABLE_PRICES']['~VALUE']['TEXT']?></div>
                 <a class="service-item__order btn" href="/order/#<?=$arItem['CODE']?>">Заказать</a>
             </section>
             <section class="service-item" id="content-<?=$arItem2['CODE']?>">

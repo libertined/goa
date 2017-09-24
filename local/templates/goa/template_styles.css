@@ -2179,6 +2179,10 @@ a.breadcrumbs--item-main:hover {
 .price-table__row--header {
   background: #ffcc66;
 }
+.price-table__caption {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
 .price-table__row--promo {
   background-color: #fd7866;
   font-size: 24px;
@@ -2193,7 +2197,7 @@ a.breadcrumbs--item-main:hover {
 }
 
 .price-table__header-text, .price-table__cell {
-  padding: 10px 30px;
+  padding: 10px 14px;
 }
 
 .price-table__cell {
