@@ -4,4 +4,6 @@ $SNIPPETS = Array();
 $SNIPPETS['snippet0001.snp'] = Array('title' => 'Цены на экскурсии');
 $SNIPPETS['snippet0002.snp'] = Array('title' => 'Программа (однодневная)');
 $SNIPPETS['snippet0003.snp'] = Array('title' => 'Service item prices');
+$SNIPPETS['snippet0004.snp'] = Array('title' => 'Программа (двухдневная)');
+$SNIPPETS['snippet0005.snp'] = Array('title' => 'Программа (трехдневная)');
 ?>
