@@ -1844,10 +1844,15 @@ a.breadcrumbs--item-main:hover {
   }
   .service-item .service-item__description {
     width: 80%;
+    order: 1;
+  }
+  .service-item__order {
+    order: 2;
   }
   .service-item__price {
     width: 80%;
   }
+
 }
 .service-block__title {
   font-family: Scada;
@@ -2182,6 +2187,8 @@ a.breadcrumbs--item-main:hover {
 }
 .price-table__caption {
   font-size: 16px;
+  font-family: OpenSansSemibold;
+
   margin-bottom: 5px;
 }
 .price-table__row--promo {
