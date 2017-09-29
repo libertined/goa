@@ -61,6 +61,7 @@ $(document).ready( function() {
 			autoHover: true,
 			speed: 500,
 			pause: 1000,
+			adaptiveHeight: true,
 			pager: ($(".bxslider_exs_1>.slider-exs__item").length > 1) ? true: false,
 			controls: ($(".bxslider_exs_1>.slider-exs__item").length > 1) ? true: false,
 			touchEnabled: true
@@ -78,6 +79,7 @@ $(document).ready( function() {
 			autoHover: true,
 			speed: 500,
 			pause: 1000,
+			adaptiveHeight: true,
 			pager: ($(".bxslider_exs_2>.slider-exs__item").length > 1) ? true: false,
 			controls: ($(".bxslider_exs_2>.slider-exs__item").length > 1) ? true: false,
 			touchEnabled: true
