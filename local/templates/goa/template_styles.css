@@ -133,6 +133,14 @@ footer {
   display: block;
 }
 
+/* Fix bug in Chrome when no src in IMG tag but there is border */
+
+img[src=""] {
+	width: 0;
+	height: 0;
+	opacity: 0;
+}
+
 /********************* Стили под iPad BEGIN *********************/
 input[type="submit"] {
   -webkit-appearance: none;
@@ -931,6 +939,11 @@ a:hover {
 .left-side__body--fb {
   width: 100%;
   padding: 25px 0px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
 
 }
 .left-side--block-green .left-side__body {
