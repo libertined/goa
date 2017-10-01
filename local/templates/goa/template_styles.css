@@ -3339,6 +3339,9 @@ font-size: 0;
 .interesting-item__header:hover {
   color: #fd7866;
 }
+.interesting-item__label {
+  display: inline-block;
+}
 .interesting .interesting-item__labels {
   margin: 0;
 }
@@ -3351,6 +3354,9 @@ font-size: 0;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   background-color: #dce1e6;
+}
+.interesting-labels__link {
+  display: inline-block;
 }
 .interesting .interesting-labels__header {
   margin-top: 0;
