@@ -19,7 +19,7 @@
     <div class="bxslider_main">
         <? foreach ( $arResult["ITEMS"] as $item ){ ?>
             <div class="slider-main__item">
-                <a href="<?=$item["PROP_URL"]?>" class="slider-main__img"><img src="<?=getResizedImgOrPlaceholder($item["PREVIEW_PICTURE"], 870, 490)?>" alt="Слайд <?=$item["NAME"]?>" /></a>
+                <a href="<?=$item["PROP_URL"]?>" class="slider-main__img"><img src="<?=getResizedImgOrPlaceholder($item["PREVIEW_PICTURE"], 1030, 580)?>" alt="Слайд <?=$item["NAME"]?>" /></a>
 
                 <div class="slider-main__slider">
                     <div class="slider-main__body">
