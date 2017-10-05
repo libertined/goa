@@ -55,6 +55,9 @@ $(function () {
                     toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, false, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
                     toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
                     break;
+                case "wedding":
+                    toggleInputVisibility(false, excursionsSelectBlock, false, celebrationTypeBlock, true, beachBlock, false, placeRentBlock, false, directionBlock, true, hotelBlock);
+                    toggleInputAvailability(false, excursionsSelect, false, celebrationType, false, placeRent);
             }
         }
 
