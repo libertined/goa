@@ -2064,16 +2064,18 @@ a.breadcrumbs--item-main:hover {
     background-size: 32px 21px;
     cursor: pointer;
     font-size: 0;
-    background-image: url("svg/mobile-icons.svg");
     position: relative;
   }
   .tabs--item-link-description span::after {
     position: absolute;
+    display: block;
+    content: '';
+    background-image: url("svg/mobile-icons.svg");
     background-position: 59.64912280701754% 0;
     width: 23px;
     height: 23px;
-    top: calc(50%-12px);
-    left: calc(50%-12px);
+    top: calc(50% - 12px);
+    left: calc(50% - 12px);
   }
   .tabs--item-link-programm span {
     background-image: url("svg/faceless.svg");
