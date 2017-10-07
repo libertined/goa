@@ -10,7 +10,8 @@ if (is_array($arResult["SEARCH"]))
 	{
 		$excursionLink[$res["ITEM_ID"]] = $key;
 	}
-	$itemsData = Iblock\ElementTable::getList([
+	if(!empty($excursionLink)) {
+		$itemsData = Iblock\ElementTable::getList([
 			'select' => ['PREVIEW_TEXT', 'NAME', 'PICT', 'ID', 'CODE'],
 			'filter' => [
 				'@ID' => array_keys($excursionLink)
@@ -19,12 +20,12 @@ if (is_array($arResult["SEARCH"]))
 				Util\BitrixOrmHelper::getFileReferenceField('FILE', 'PREVIEW_PICTURE'),
 				Util\BitrixOrmHelper::getFilePathExpressionField('PICT', 'FILE')
 			]
-
-	]);
-	while ($row = $itemsData->fetch()) {
-		$curElement =& $arResult["SEARCH"][ $excursionLink[$row["ID"]] ];
-		$curElement["DESCRIPTION"] = $row["PREVIEW_TEXT"];
-		$curElement["PICT"] = $row["PICT"];
-		$curElement["URL"] = $row["CODE"];
+		]);
+		while ($row = $itemsData->fetch()) {
+			$curElement =& $arResult["SEARCH"][ $excursionLink[$row["ID"]] ];
+			$curElement["DESCRIPTION"] = $row["PREVIEW_TEXT"];
+			$curElement["PICT"] = $row["PICT"];
+			$curElement["URL"] = $row["CODE"];
+		}
 	}
 }
