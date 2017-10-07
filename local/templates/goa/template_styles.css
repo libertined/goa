@@ -2088,11 +2088,19 @@ a.breadcrumbs--item-main:hover {
     left: calc(50% - 17px);
 
   }
-  .tabs--item-link-reviews span {
-    background-image: url("svg/faceless.svg");
+  .tabs--item-link-reviews span::after {
+    background-position: 98.85535900104058% 0;
+    width: 23px;
+    height: 23px;
+    top: calc(50% - 12px);
+    left: calc(50% - 12px);
   }
-  .tabs--item-link-order span {
-    background-image: url("svg/faceless.svg");
+  .tabs--item-link-order span::after {
+    background-position: 0 99.8%;
+    width: 30px;
+    height: 23px;
+    top: calc(50% - 12px);
+    left: calc(50% - 15px);
   }
 }
 .slider-exs {
