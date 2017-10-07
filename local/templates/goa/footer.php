@@ -101,20 +101,23 @@
         <div class="row">
           <div class="row__inner">
             <div class="col-12-9">
-              <nav class="page-footer__nav">
-                <ul class="page-footer__nav-list">
-                  <li class="page-footer__nav-item page-footer--nav-current"><a href="/rent/">Аренда жилья</a></li>
-                  <li class="page-footer__nav-item"><a href="/advantage/">Наши преимущества</a></li>
-                  <li class="page-footer__nav-item"><a href="/specials/">Специальные предложения</a></li>
-                  <li class="page-footer__nav-item"><a href="/excursion/132/">Сводная таблица цен</a></li>
-                  <li class="page-footer__nav-item"><a href="/interesting/">Интересно об Индии</a></li>
-                  <li class="page-footer__nav-item"><a href="/advances/">Советы туристам в Гоа</a></li>
-                  <li class="page-footer__nav-item"><a href="/news/">Новости</a></li>
-                  <li class="page-footer__nav-item"><a href="/beach/">Пляжи Гоа</a></li>
-                  <li class="page-footer__nav-item"><a href="/ind_info/">Информация об Индии</a></li>
-                  <li class="page-footer__nav-item"><a href="/goa_info/">Информация о Гоа</a></li>
-                </ul>
-              </nav>
+              <? $APPLICATION->IncludeComponent("bitrix:menu", "bottom", Array(
+                "ROOT_MENU_TYPE" => "left",	// Тип меню для первого уровня
+                "MENU_CACHE_TYPE" => "A",	// Тип кеширования
+                "MENU_CACHE_TIME" => "36000000",	// Время кеширования (сек.)
+                "MENU_CACHE_USE_GROUPS" => "Y",	// Учитывать права доступа
+                "MENU_CACHE_GET_VARS" => "",	// Значимые переменные запроса
+                "MAX_LEVEL" => "1",	// Уровень вложенности меню
+                "CHILD_MENU_TYPE" => "left",	// Тип меню для остальных уровней
+                "USE_EXT" => "N",	// Подключать файлы с именами вида .тип_меню.menu_ext.php
+                "DELAY" => "N",	// Откладывать выполнение шаблона меню
+                "ALLOW_MULTI_SELECT" => "N",	// Разрешить несколько активных пунктов одновременно
+                "COMPONENT_TEMPLATE" => "",
+                "MENU_THEME" => "blue"
+              ),
+                false
+              );
+              ?>
             </div>
             <div class="col-12-3 pos-right">
               <div class="page-footer__socials">

@@ -129,7 +129,7 @@ class ExcursionDetail extends CBitrixComponent
         ],
       ]);
       while ($row = $itemsData->fetch()) {
-        $result["URL"] = "/photos/".$row["CODE"]."/";
+        $result["URL"] = "/photos/".$row["ID"];
       }
     }
     return $result;
