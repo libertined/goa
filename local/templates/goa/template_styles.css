@@ -2066,11 +2066,14 @@ a.breadcrumbs--item-main:hover {
     font-size: 0;
     position: relative;
   }
-  .tabs--item-link-description span::after {
+  .tabs__item-link span::after {
     position: absolute;
     display: block;
     content: '';
     background-image: url("svg/mobile-icons.svg");
+  }
+
+  .tabs--item-link-description span::after {
     background-position: 59.64912280701754% 0;
     width: 23px;
     height: 23px;
@@ -2078,7 +2081,12 @@ a.breadcrumbs--item-main:hover {
     left: calc(50% - 12px);
   }
   .tabs--item-link-programm span {
-    background-image: url("svg/faceless.svg");
+    background-position: 0 0;
+    width: 34px;
+    height: 20px;
+    top: calc(50% - 10px);
+    left: calc(50% - 17px);
+
   }
   .tabs--item-link-reviews span {
     background-image: url("svg/faceless.svg");
