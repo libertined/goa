@@ -2080,7 +2080,7 @@ a.breadcrumbs--item-main:hover {
     top: calc(50% - 12px);
     left: calc(50% - 12px);
   }
-  .tabs--item-link-programm span {
+  .tabs--item-link-programm span::after {
     background-position: 0 0;
     width: 34px;
     height: 20px;
