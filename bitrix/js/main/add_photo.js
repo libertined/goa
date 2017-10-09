@@ -21,11 +21,20 @@ function initPhotoJQ() {
                     '<input id="fileName" style="margin:3px" type="button" value="Массовая загрузка" class="adm-btn-add adm-btn-save"/>' +
                     '<input id="file_button" style = "display:none" type = "file" min = "1" max = "9999" name = "file[]" onchange = "setValue(this)" multiple = "true" />' +
                     '<input type = "hidden" name = "sect" value = "' + section_id +'" >'+
-                    '<input type = "submit" onclick = "this.blur();" value = "Загрузить"> </form>';
+                    '<input type = "submit" style = "display:none" onclick = "this.blur();" value = "Загрузить" id="fileLoad"> ' +
+                    '<span style ="display:none" id="loadingMessage"><img width="35" src="/ajax/loading.gif" style="vertical-align:middle">Подождите, производится загрузка ...</span>' +
+                    '</form> ';
                 $('.adm-list-table-layout').before(html);
-                // $('.adm-list-table-layout')
-                //     .before('<form style="padding:4px" id="photo_form" name="photo_form" action="/ajax/add_photo.php" enctype="multipart/form-data" method="post"><input id="fileName" style="margin:3px" type="button" value="Массовая загрузка" class="adm-btn-add adm-btn-save"/><input id="file_button" style = "display:none" type = "file" min = "1" max = "9999" name = "file[]" onchange = "setValue(this)" multiple = "true" /> <input type = "hidden" name = "sect" value = "' +
-                //         $section_id +'" > <input type = "submit" onclick = "this.blur();" value = "Загрузить"> </form> ');
+              
+                $('#fileLoad').click(function(evt){
+                    this.blur();
+                    evt.preventDefault();
+                    $('#fileLoad').prop( "disabled", true );
+                    $('#fileName').prop( "disabled", true );
+                    $('#loadingMessage').show();
+                    $('#photo_form').submit();
+
+                });
                 $('#fileName').click(function () {
                     $(this).blur();
                     $('#file_button').click();
@@ -40,8 +49,7 @@ function initPhotoJQ() {
 }
 function setValue(el) {
     $('#fileName').val("Фото готовы для загрузки");
-    /*     $('#file_button').css('width','223px');
-     $('#file_button').css('margin-left','-225px'); */
+    $('#fileLoad').show();
 }
 function resetForm(el) {
     $(el).each(function () {
