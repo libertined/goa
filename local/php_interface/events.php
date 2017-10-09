@@ -58,13 +58,15 @@ AddEventHandler("main", "OnProlog", array("CMainHandlers", "OnEndBufferContentHa
 /**
  * события для ресайза превью при создании альбомов и массовой загрузке фото
  */
-AddEventHandler("iblock", "OnAfterIBlockElementAdd", Array("CMainHandlers", "ResizePreviewOnAddElement"));
+AddEventHandler("iblock", "OnAfterIBlockElementAdd", Array("CMainHandlers", "ResizeImagesHandler"));
+AddEventHandler("iblock", "OnAfterIBlockElementUpdate", Array("CMainHandlers", "ResizeImagesHandler"));
 AddEventHandler("iblock", "OnBeforeIBlockSectionAdd", Array("CMainHandlers", "ResizePreviewForSection"));
 AddEventHandler("iblock", "OnBeforeIBlockSectionUpdate", Array("CMainHandlers", "ResizePreviewForSection"));
 
 
 class CMainHandlers
 {
+    protected static $handlerDisallow = false;
     /***
      * массовая загрузка фото
      * работает только для Инфоблока фотографий (подключается в админке)
@@ -83,20 +85,22 @@ class CMainHandlers
      * ресайз фото общий метод
      * @param $arFields
      */
-    function ResizeImage($arImage, $imgMaxWidth, $imgMaxHeight)
+    static function ResizeImage($arImage, $imgMaxWidth, $imgMaxHeight, $cropType)
     {
+        if(empty($cropType)){
+            $cropType = BX_RESIZE_IMAGE_EXACT;
+        }
         if (!empty($arImage) && !empty($imgMaxWidth) && !empty($imgMaxHeight)) {
             $filePath = CFile::GetPath($arImage); // Получаем путь к файлу
-            if ($filePath) {
+                if ($filePath) {
                 $imgSize = getimagesize($_SERVER["DOCUMENT_ROOT"] . $filePath); //Узнаём размер файла
-
                 // Если размер больше установленного максимума
                 if ($imgSize[0] > $imgMaxWidth || $imgSize[1] > $imgMaxHeight) {
                     // Уменьшаем размер картинки
                     $file = CFile::ResizeImageGet($arImage, array(
                         'width'  => $imgMaxWidth,
                         'height' => $imgMaxHeight
-                    ), BX_RESIZE_IMAGE_EXACT, true);
+                    ), $cropType, true);
 
                     // добавляем в массив VALUES новую уменьшенную картинку
                     return $VALUE = CFile::MakeFileArray($_SERVER["DOCUMENT_ROOT"] . $file["src"]);
@@ -116,35 +120,48 @@ class CMainHandlers
      * пропорции 350 на 350
      * @param $arFields
      */
-    function ResizePreviewOnAddElement(&$arFields)
+    function ResizeImagesHandler(&$arFields)
     {
+        /* проверяем, что обработчик уже запущен */
+        if (self::$handlerDisallow)
+            return;
+        /* взводим флаг запуска */
+        self::$handlerDisallow = true;
+
         CModule::IncludeModule('iblock');
         $IBLOCK_ID = 6; // ID инфоблока
         $PRODUCT_ID = $arFields["ID"];
-        $imgMaxWidth = 350; // Максимальная ширина картинки
-        $imgMaxHeight = 350; // Максимальная высота картинки
+        $arPreview = array('width' => 350, 'height' => 350);
+        $arDetail = array('width' => 1500, 'height' => 1000);
 
         if ($arFields["IBLOCK_ID"] == $IBLOCK_ID) {
             $VALUE = $VALUE_OLD = null;
             $dbRes = CIBlockElement::GetByID($PRODUCT_ID);
 
             while ($ar = $dbRes->GetNext()) {
-                // Собираем старые ID для удаления файлов (чтобы не занимали место)
-                $VALUE = self::ResizeImage($ar['PREVIEW_PICTURE'], $imgMaxWidth, $imgMaxHeight);
-                $VALUE_OLD = $ar['PREVIEW_PICTURE'];
+                //кропом уменьшаем превью до 350 на 350 (обрезается лишнее)
+                $arValue['PREVIEW_PICTURE'] = self::ResizeImage($ar['PREVIEW_PICTURE'], $arPreview['width'], $arPreview['height'],BX_RESIZE_IMAGE_EXACT);
+                $arValueOld['PREVIEW_PICTURE'] = $ar['PREVIEW_PICTURE'];// Собираем старые ID для удаления файлов (чтобы не занимали место)
+                //пропорционально уменьшается детальная картинка
+                $arValue['DETAIL_PICTURE'] = self::ResizeImage($ar['DETAIL_PICTURE'], $arDetail['width'], $arDetail['height'], BX_RESIZE_IMAGE_PROPORTIONAL);
+                $arValueOld['DETAIL_PICTURE'] = $ar['DETAIL_PICTURE'];
             }
         }
         // Если в массиве есть информация о новых файлах
-        if (!empty($VALUE) && is_array($VALUE)) {
+        if (!empty($arValue['PREVIEW_PICTURE']) || !empty($arValue['DETAIL_PICTURE'])) {
             $el = new CIBlockElement;
-            $res = $el->Update($PRODUCT_ID, array('PREVIEW_PICTURE' => $VALUE));
-            if ($res) {
-                // Удаляем большое изображение
-                CFile::Delete($VALUE_OLD);
+            foreach($arValue as $code=>$VALUE){
+                $res = $el->Update($PRODUCT_ID, array($code => $VALUE));
+                if ($res) {
+                    // Удаляем большое изображение
+                    CFile::Delete($arValueOld[$code]);
+                }
             }
         }
-        unset($VALUE);
-        unset($VALUE_OLD);
+        /* вновь разрешаем запускать обработчик */
+        self::$handlerDisallow = false;
+//        unset($VALUE);
+//        unset($VALUE_OLD);
 
     }
 
@@ -181,6 +198,7 @@ class CMainHandlers
             unset($VALUE_OLD);
         }
     }
+
 }
 
 
