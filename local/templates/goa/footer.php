@@ -32,7 +32,6 @@
                 <div class="page-footer__contact-text">
                   <a href="tel:+918888717922">+91 8888 71 79 22</a>
                   <a href="tel:+918888704005">+91 8888 70 40 05</a>
-                  <a href="tel:+917875009944">+91 7875 00 99 44</a>
                 </div>
               </div>
 
