@@ -40,7 +40,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>		
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/panaji-ponda-old-goa-reis-magos">Сокровища Гоа</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/panaji-ponda-old-goa-reis-magos">Сокровища Гоа</a></td>
             <td class="summary__text" rowspan="3">c 10.00 до 19.30<br >
             1 день</td>
             <td class="summary__text">45$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -53,7 +53,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/palolem-and-agonda-beach-fort-kabo-de-rama">Отдых на пляжах Палолем, Агонда и старинный форт Кабо де Рама</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/palolem-and-agonda-beach-fort-kabo-de-rama">Отдых на пляжах Палолем, Агонда и старинный форт Кабо де Рама</a></td>
             <td class="summary__text" rowspan="3">с 08.00 до 20.30<br >
             1 день</td>
             <td class="summary__text">40$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -66,7 +66,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/rybalka-barbekyu-delfiny">Рыбалка. Барбекю. Дельфины</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/rybalka-barbekyu-delfiny">Рыбалка. Барбекю. Дельфины</a></td>
             <td class="summary__text" rowspan="3">с 08.00 до 15.30<br >
             1 день</td>
             <td class="summary__text">35$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -79,7 +79,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/crocodile">Путешествие на лодке и крокодилы</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/crocodile">Путешествие на лодке и крокодилы</a></td>
             <td class="summary__text" rowspan="3">c 08.30 до 13.30<br >
             1 день</td>
             <td class="summary__text">30$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -107,7 +107,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/gokarna-murudeshvar-om-beach">Гокарна. Мурудешвар. Пляж Ом или Палолем</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/gokarna-murudeshvar-om-beach">Гокарна. Мурудешвар. Пляж Ом или Палолем</a></td>
             <td class="summary__text" rowspan="3">с 04.45 до 20.00<br >
             1 день</td>
             <td class="summary__text">45$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -120,7 +120,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="2"><a href="http://new.tvoygoa.ru/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
+            <td class="summary__text" rowspan="2"><a href="/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
             <td class="summary__text">дневная прогулка с 10.00 до 15.00</td>
             <td class="summary__text">75$</td>
         </tr>
@@ -130,13 +130,13 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>
         
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/mumbai-elephant-island">Мумбай (Бомбей) переезд на автобусе</a></td>
+            <td class="summary__text"><a href="/excursion/mumbai-elephant-island">Мумбай (Бомбей) переезд на автобусе</a></td>
             <td class="summary__text">1 день / 2 ночи</td>
             <td class="summary__text">165$</td>
         </tr>
    
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/badami-pattadakal-aihole">Бадами, Паттадакал, Айхол</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/badami-pattadakal-aihole">Бадами, Паттадакал, Айхол</a></td>
             <td class="summary__text" rowspan="3">с 04.00 до 22.00<br >
             1 день</td>
             <td class="summary__text">90$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -180,7 +180,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>
         
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/otdyh-v-gorah">Отдых в горах (эко-коттеджи)</a></td>
+            <td class="summary__text"><a href="/excursion/otdyh-v-gorah">Отдых в горах (эко-коттеджи)</a></td>
             <td class="summary__text">с 10.30 до 14.00<br/>
             2 дня / 1 ночь</td>
             <td class="summary__text">от 195$<br><span class="summary__text--smaller">за коттедж на двоих</span>
@@ -188,7 +188,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>        
         
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/kolhapur-i-mahabaleshwar">Колхапур и Махабалешвар</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/kolhapur-i-mahabaleshwar">Колхапур и Махабалешвар</a></td>
             <td class="summary__text" rowspan="3">с 05.00 до 20.00<br>
             2 дня / 1 ночь</td>
             <td class="summary__text">170$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -217,13 +217,13 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
 -->
                 
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/mumbai">Мумбай (Бомбей) c авиаперелетом</a></td>
+            <td class="summary__text"><a href="/excursion/mumbai">Мумбай (Бомбей) c авиаперелетом</a></td>
             <td class="summary__text">кроме понедельника<br>2 дня /1 ночь с авиаперелетом</td>
             <td class="summary__text">от 320$<br><span class="summary__text--smaller">с авиаперелетом</span></td>
         </tr>
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/hampi">Хампи</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/hampi">Хампи</a></td>
             <td class="summary__text" rowspan="3">с 04.45 до 19.30<br >
             2 дня</td>
             <td class="summary__text">100$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -236,7 +236,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>		
         
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/hampi-i-ozero">Хампи и озеро</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/hampi-i-ozero">Хампи и озеро</a></td>
             <td class="summary__text" rowspan="3">с 04.45 до 20.30<br >
             2 дня</td>
             <td class="summary__text">110$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -249,7 +249,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>		
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/khampi-badami">Хампи и Бадами</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/khampi-badami">Хампи и Бадами</a></td>
             <td class="summary__text" rowspan="3">с 4.30 до 21.00<br >
             2 дня / 1 ночь</td>
             <td class="summary__text">135$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -262,7 +262,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>		
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="http://new.tvoygoa.ru/excursion/bijapur-badami-aihole-pattadakal">Биджапур, Бадами, Паттадакал, Айхол</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/bijapur-badami-aihole-pattadakal">Биджапур, Бадами, Паттадакал, Айхол</a></td>
             <td class="summary__text" rowspan="3">c 04.45 до 19.00<br >
             2 дня</td>
             <td class="summary__text">160$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -275,13 +275,13 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>
 
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
+            <td class="summary__text"><a href="/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
             <td class="summary__text">поездка на сутки с 17.00 до 13.00 второго дня</td>
             <td class="summary__text">130$<br><span class="summary__text--smaller">номер на двоих</span></td>
         </tr>
 
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/ahmedabad">Ахмадабад</a></td>
+            <td class="summary__text"><a href="/excursion/ahmedabad">Ахмадабад</a></td>
             <td class="summary__text">c 14.30 до 00.45<br>2 дня / 1 ночь</td>
             <td class="summary__text">от 400$</td>
         </tr>
@@ -307,49 +307,49 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
     <tbody class="summary__body">
 
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/5-capitals">5 столиц великих империй</a></td>
+            <td class="summary__text"><a href="/excursion/5-capitals">5 столиц великих империй</a></td>
             <td class="summary__text">с 04.30 до 21.00<br>
             3 дня / 2 ночи</td>
             <td class="summary__text">300$</td>
         </tr> 
                  
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/mysore-somnathpur-shravanabelagola-belur-halebid">Майсур. Сомнатхпур. Шраванабелагола. Белур. Халебид</a></td>
+            <td class="summary__text"><a href="/excursion/mysore-somnathpur-shravanabelagola-belur-halebid">Майсур. Сомнатхпур. Шраванабелагола. Белур. Халебид</a></td>
             <td class="summary__text">с 05.00 до 20.00<br>
             3 дня / 2 ночи</td>
             <td class="summary__text">380$</td>
         </tr>        
         
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/delhi-agra-jaipur-golden-triangle-india">Золотой треугольник Индии - Дели. Агра. Джайпур</a></td>
+            <td class="summary__text"><a href="/excursion/delhi-agra-jaipur-golden-triangle-india">Золотой треугольник Индии - Дели. Агра. Джайпур</a></td>
             <td class="summary__text">4 дня / 3 ночи</td>
             <td class="summary__text">от 320$<br><span class="summary__text--smaller">+ а/б (от 160$)</span></td>
         </tr>        
         
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/delhi-agra-taj-mahal">Дели и Агра (Тадж-Махал)</a></td>
+            <td class="summary__text"><a href="/excursion/delhi-agra-taj-mahal">Дели и Агра (Тадж-Махал)</a></td>
             <td class="summary__text">3 дня / 2 ночи</td>
             <td class="summary__text">от 220$<br><span class="summary__text--smaller">+ а/б (от 160$)</span></td>
         </tr>             
         
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/ellora-adjanta">Обитель богов Эллора и фрески жизни в Аджанте</a></td>
+            <td class="summary__text"><a href="/excursion/ellora-adjanta">Обитель богов Эллора и фрески жизни в Аджанте</a></td>
             <td class="summary__text">3 дня / 2 ночи</td>
             <td class="summary__text">от 550$</td>
         </tr>        
 
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/varanasi-sarnath">Варанаси и Сарнатх</a></td>
+            <td class="summary__text"><a href="/excursion/varanasi-sarnath">Варанаси и Сарнатх</a></td>
             <td class="summary__text">3 дня / 2 ночи</td>
             <td class="summary__text">от 400$</td>
         </tr>        
         <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/golden-triangle-india-mumbai">Золотой треугольник + Мумбай</a></td>
+            <td class="summary__text"><a href="/excursion/golden-triangle-india-mumbai">Золотой треугольник + Мумбай</a></td>
             <td class="summary__text">4 дня / 3 ночи</td>
             <td class="summary__text">от 690$</td>
         </tr>        
          <tr class="summary__row">
-            <td class="summary__text"><a href="http://new.tvoygoa.ru/excursion/golden-triangle-india-mumbai">Дели. Агра (Тадж-Махал). Мумбай</a></td>
+            <td class="summary__text"><a href="/excursion/golden-triangle-india-mumbai">Дели. Агра (Тадж-Махал). Мумбай</a></td>
             <td class="summary__text">3 дня / 2 ночи</td>
             <td class="summary__text">от 590$</td>
         </tr>        
