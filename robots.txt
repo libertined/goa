@@ -17,4 +17,4 @@ Disallow: /*BACKURL=*
 Disallow: /*back_url=*
 Disallow: /*BACK_URL=*
 Disallow: /*back_url_admin=*
-Disallow: /*index.php$
+

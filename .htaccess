@@ -1,6 +1,8 @@
 Options -Indexes 
 ErrorDocument 404 /404.php
 
+Redirect 301 /excursion/132/ /excursion/summary/
+
 <IfModule mod_php5.c>
 	php_flag allow_call_time_pass_reference 1
 	php_flag session.use_trans_sid off
