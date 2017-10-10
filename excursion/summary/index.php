@@ -92,9 +92,12 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
 
         <tr class="summary__row">
-            <td class="summary__text">Отдых на пляже Палолем</td>
-            <td class="summary__text">1 день (12 часов)</td>
-            <td class="summary__text summary__text--col">от 65$<br><span class="summary__text--smaller">за машину</span></td>
+            <td class="summary__text" rowspan="2">Отдых на пляже Палолем</td>
+            <td class="summary__text" rowspan="2">1 день (12 часов)</td>
+            <td class="summary__text summary__text--col">65$<br><span class="summary__text--smaller">за минивэн на 7 человек</span></td>
+        </tr>
+        <tr class="summary__row">
+            <td class="summary__text summary__text--col">115$<br><span class="summary__text--smaller">за миниавтобус до 13 человек</span></td>
         </tr>
 
         <tr class="summary__row">
