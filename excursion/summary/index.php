@@ -113,7 +113,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         <tr class="summary__row">
             <td class="summary__text"><a href="/excursion/mumbai-elephant-island">Мумбай (Бомбей) переезд на автобусе</a></td>
             <td class="summary__text">1 день / 2 ночи</td>
-            <td class="summary__text">165$</td>
+            <td class="summary__text">170$</td>
         </tr>
    
         <tr class="summary__row">
