@@ -92,7 +92,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
 
         <tr class="summary__row">
-            <td class="summary__text">Панаджи - столица Гоа (шоппинг)</td>
+            <td class="summary__text"><a href="/excursion/panadzhi-shopping">Панаджи - столица Гоа (шоппинг)</a></td>
             <td class="summary__text">Любое время<br>(5 часов)</td>
             <td class="summary__text">35$<br><span class="summary__text--smaller">за машину до 7 человек</span></td>
         </tr>
@@ -130,7 +130,13 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
         
         <tr class="summary__row">
-            <td class="summary__text" rowspan="2">Отдых на пляже Палолем</td>
+            <td class="summary__text" rowspan="2"><a href="/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
+            <td class="summary__text">дневная прогулка с 10.00 до 15.00<br>вечерняя прогулка с 16.00 до 21.00</td>
+            <td class="summary__text">75$</td>
+        </tr>
+        
+        <tr class="summary__row">
+            <td class="summary__text" rowspan="2"><a href="/excursion/palolem">Отдых на пляже Палолем</a></td>
             <td class="summary__text" rowspan="2">1 день (12 часов)</td>
             <td class="summary__text">65$<br><span class="summary__text--smaller">за минивэн на 7 человек</span></td>
         </tr>
@@ -138,15 +144,6 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
             <td class="summary__text summary__text--col">115$<br><span class="summary__text--smaller">за миниавтобус до 13 человек</span></td>
         </tr>      
 
-        <tr class="summary__row">
-            <td class="summary__text" rowspan="2"><a href="/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
-            <td class="summary__text">дневная прогулка с 10.00 до 15.00</td>
-            <td class="summary__text">75$</td>
-        </tr>
-        <tr class="summary__row">
-            <td class="summary__text summary__text--col">вечерняя прогулка с 16.00 до 21.00</td>
-            <td class="summary__text">75$</td>
-        </tr>
                 
     </tbody>
 </table>
