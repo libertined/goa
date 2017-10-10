@@ -130,7 +130,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>	
         
         <tr class="summary__row">
-            <td class="summary__text" rowspan="2"><a href="/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
+            <td class="summary__text"><a href="/excursion/houseboat-dom-na-vode">Houseboat - дом на воде</a></td>
             <td class="summary__text">дневная прогулка с 10.00 до 15.00<br>вечерняя прогулка с 16.00 до 21.00</td>
             <td class="summary__text">75$</td>
         </tr>
