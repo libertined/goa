@@ -3247,6 +3247,10 @@ form.advanced .dragover {
 .summary__text {
   padding: 5px 20px;
 }
+.summary__text a:hover {
+	text-decoration: underline;
+	color: #ff7866;
+}
 .summary__text:first-child {
   text-align: left;
 }
