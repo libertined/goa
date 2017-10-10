@@ -27,7 +27,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
     </td>
     <tbody class="summary__body">
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="/excursion/all-goa" title="Весь Гоа за 1 день">Весь Гоа за один день</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/all-goa" title="Весь Гоа за 1 день">Весь Гоа за один день (группы до 28 чел.)</a></td>
             <td class="summary__text" rowspan="3">c 06.00 до 16.30<br >
             1 день</td>
             <td class="summary__text">30$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -56,10 +56,10 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
             <td class="summary__text" rowspan="3"><a href="/excursion/palolem-and-agonda-beach-fort-kabo-de-rama">Отдых на пляжах Палолем, Агонда и старинный форт Кабо де Рама</a></td>
             <td class="summary__text" rowspan="3">с 08.00 до 20.30<br >
             1 день</td>
-            <td class="summary__text">40$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
+            <td class="summary__text">30$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
         </tr>
         <tr class="summary__row">
-            <td class="summary__text summary__text--col">45$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
+            <td class="summary__text summary__text--col">35$<br><span class="summary__text--smaller">при заказе в Гоа</span></td>
         </tr>
         <tr class="summary__row">
             <td class="summary__text summary__text--col">20$<br><span class="summary__text--smaller">дети до 12 лет</span></td>
@@ -307,14 +307,14 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
             <td class="summary__text"><a href="/excursion/5-capitals">5 столиц великих империй</a></td>
             <td class="summary__text">с 04.30 до 21.00<br>
             3 дня / 2 ночи</td>
-            <td class="summary__text">300$</td>
+            <td class="summary__text">от 250$</td>
         </tr> 
                  
         <tr class="summary__row">
             <td class="summary__text"><a href="/excursion/mysore-somnathpur-shravanabelagola-belur-halebid">Майсур. Сомнатхпур. Шраванабелагола. Белур. Халебид</a></td>
             <td class="summary__text">с 05.00 до 20.00<br>
             3 дня / 2 ночи</td>
-            <td class="summary__text">380$</td>
+            <td class="summary__text">от 420$</td>
         </tr>        
         
         <tr class="summary__row">

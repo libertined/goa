@@ -3247,7 +3247,7 @@ form.advanced .dragover {
 .summary__text {
   padding: 5px 20px;
 }
-.summary__text a:hover {
+.summary__text:hover a {
 	text-decoration: underline;
 	color: #ff7866;
 }
