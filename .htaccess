@@ -5,8 +5,6 @@ Redirect 301 /excursion/132/ /excursion/summary/
 Redirect 301 /summary/ /excursion/summary/
 Redirect 301 /specials/ /promo/
 Redirect 301 /advances/ /advices/
-Redirect 301 /excursion/entertaining/ /excursion/
-Redirect 301 /excursion/historical/ /excursion/
 Redirect 301 /excursion/entertaining/2255/ /excursion/
 
 Redirect 301 /excursion/entertaining/all_goa/ /excursion/all-goa/
@@ -33,6 +31,8 @@ Redirect 301 /excursion/historical/116/ /excursion/delhi-agra-jaipur-golden-tria
 Redirect 301 /excursion/historical/delhi-agra-mumbai/ /excursion/delhi-agra-taj-mahal-mumbai/
 Redirect 301 /excursion/historical/golden-triangle-and-mumbai/ /excursion/golden-triangle-india-mumbai/
 Redirect 301 /excursion/historical/114/ /excursion/mysore-somnathpur-shravanabelagola-belur-halebid/
+Redirect 301 /excursion/entertaining/ /excursion/
+Redirect 301 /excursion/historical/ /excursion/
 
 
 
