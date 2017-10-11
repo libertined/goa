@@ -4,8 +4,6 @@ ErrorDocument 404 /404.php
 Redirect 301 /excursion/132/ /excursion/summary/
 Redirect 301 /summary/ /excursion/summary/
 Redirect 301 /specials/ /promo/
-
-
 Redirect 301 /excursion/entertaining/all_goa/ /excursion/all-goa/
 Redirect 301 /excursion/entertaining/vacation-in-the-mountains/ /excursion/otdyh-v-gorah/
 Redirect 301 /excursion/entertaining/houseboat/ /excursion/houseboat-dom-na-vode/
@@ -20,7 +18,8 @@ Redirect 301 /excursion/historical/2243/ /excursion/5-capitals/
 Redirect 301 /excursion/historical/107/ /excursion/gokarna-murudeshvar-om-beach/
 Redirect 301 /excursion/historical/2258/ /excursion/badami-pattadakal-aihole/
 Redirect 301 /excursion/historical/113/ /excursion/bijapur-badami-aihole-pattadakal/
-Redirect 301 /excursion/historical/hampi/ /excursion/hampi /excursion/hampi-i-ozero/
+Redirect 301 /excursion/historical/hampi/ /excursion/hampi/
+REdirect 301 /excursion/historical/109/ /excursion/hampi-i-ozero/
 Redirect 301 /excursion/historical/hampi-and-badami/ /excursion/hampi-badami/
 Redirect 301 /excursion/historical/mumbai_by_bus/ /excursion/mumbai-elephant-island/
 Redirect 301 /excursion/historical/112/ /excursion/mumbai/
