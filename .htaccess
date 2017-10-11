@@ -4,6 +4,11 @@ ErrorDocument 404 /404.php
 Redirect 301 /excursion/132/ /excursion/summary/
 Redirect 301 /summary/ /excursion/summary/
 Redirect 301 /specials/ /promo/
+Redirect 301 /advances/ /advices/
+Redirect 301 /excursion/entertaining/ /excursion/
+Redirect 301 /excursion/historical/ /excursion/
+Redirect 301 /excursion/entertaining/2255/ /excursion/
+
 Redirect 301 /excursion/entertaining/all_goa/ /excursion/all-goa/
 Redirect 301 /excursion/entertaining/vacation-in-the-mountains/ /excursion/otdyh-v-gorah/
 Redirect 301 /excursion/entertaining/houseboat/ /excursion/houseboat-dom-na-vode/
