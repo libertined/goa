@@ -36,7 +36,7 @@ $aMenuLinks = Array(
 		""
 	),
 	Array(
-		"Заказ услуг",
+		"Заказ экскурсий",
 		"order/",
 		Array(),
 		Array(),
