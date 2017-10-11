@@ -3,6 +3,34 @@ ErrorDocument 404 /404.php
 
 Redirect 301 /excursion/132/ /excursion/summary/
 Redirect 301 /summary/ /excursion/summary/
+Redirect 301 /specials/ /promo/
+
+
+Redirect 301 /excursion/entertaining/all_goa/ /excursion/all-goa/
+Redirect 301 /excursion/entertaining/vacation-in-the-mountains/ /excursion/otdyh-v-gorah/
+Redirect 301 /excursion/entertaining/houseboat/ /excursion/houseboat-dom-na-vode/
+Redirect 301 /excursion/entertaining/palolem-and-cola-beach/ /excursion/palolem-and-agonda-beach-fort-kabo-de-rama/
+Redirect 301 /excursion/entertaining/78/ /excursion/tiger-national-park-jog-falls-waterfall-elephants-aghoreshwara-temple-murudeshvar/
+Redirect 301 /excursion/entertaining/102/ /excursion/panaji-ponda-old-goa-reis-magos/
+Redirect 301 /excursion/entertaining/103/ /excursion/rybalka-barbekyu-delfiny/
+Redirect 301 /excursion/entertaining/104/ /excursion/crocodile/
+Redirect 301 /excursion/entertaining/kolhapur-and-mahabaleshwar/ /excursion/kolhapur-i-mahabaleshwar/
+Redirect 301 /excursion/entertaining/106/ /excursion/palolem/
+Redirect 301 /excursion/historical/2243/ /excursion/5-capitals/
+Redirect 301 /excursion/historical/107/ /excursion/gokarna-murudeshvar-om-beach/
+Redirect 301 /excursion/historical/2258/ /excursion/badami-pattadakal-aihole/
+Redirect 301 /excursion/historical/113/ /excursion/bijapur-badami-aihole-pattadakal/
+Redirect 301 /excursion/historical/hampi/ /excursion/hampi /excursion/hampi-i-ozero/
+Redirect 301 /excursion/historical/hampi-and-badami/ /excursion/hampi-badami/
+Redirect 301 /excursion/historical/mumbai_by_bus/ /excursion/mumbai-elephant-island/
+Redirect 301 /excursion/historical/112/ /excursion/mumbai/
+Redirect 301 /excursion/historical/956/ /excursion/delhi-agra-taj-mahal/
+Redirect 301 /excursion/historical/116/ /excursion/delhi-agra-jaipur-golden-triangle-india/
+Redirect 301 /excursion/historical/delhi-agra-mumbai/ /excursion/delhi-agra-taj-mahal-mumbai/
+Redirect 301 /excursion/historical/golden-triangle-and-mumbai/ /excursion/golden-triangle-india-mumbai/
+Redirect 301 /excursion/historical/114/ /excursion/mysore-somnathpur-shravanabelagola-belur-halebid/
+
+
 
 <IfModule mod_php5.c>
 	php_flag allow_call_time_pass_reference 1
