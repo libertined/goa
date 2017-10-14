@@ -1,4 +1,4 @@
-User-agent: *
+User-Agent: *
 Disallow: /bitrix/
 Disallow: /search/
 Allow: /search/map.php
@@ -17,4 +17,4 @@ Disallow: /*BACKURL=*
 Disallow: /*back_url=*
 Disallow: /*BACK_URL=*
 Disallow: /*back_url_admin=*
-
+Sitemap: http://tvoygoa.ru/sitemap.xml
