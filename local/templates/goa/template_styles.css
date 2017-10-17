@@ -2812,7 +2812,7 @@ label.select::after {
 @media only screen and (max-width: 1299px) {
   .slider-main__body {
     padding: 0px 4%;
-    padding-bottom: 70px;
+    padding-bottom: 50px;
   }
   .slider-main__header {
     font-size: 24px;
