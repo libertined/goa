@@ -2815,11 +2815,13 @@ label.select::after {
     padding-bottom: 50px;
   }
   .slider-main__header {
-    font-size: 24px;
-    line-height: 32px;
+    font-size: 22px;
+    line-height: 26px;
     margin-bottom: 10px;
   }
   .slider-main__text {
+    font-size: 14px;
+    line-height: 18px;
     margin-bottom: 20px;
   }
 }
