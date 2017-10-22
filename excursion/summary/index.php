@@ -164,7 +164,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
     </td>
     <tbody class="summary__body">
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="/excursion/tigrovyy-zapovednik-vodopad-dzhog-fols-tsentr-trenirovki-slonov-khram-agoreshvara-murudeshvar">Тигровый заповедник. Слоны. Джог Фолс. Мурудешвар</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/tiger-national-park-jog-falls-waterfall-elephants-aghoreshwara-temple-murudeshvar">Тигровый заповедник. Слоны. Джог Фолс. Мурудешвар</a></td>
             <td class="summary__text" rowspan="3">c 04.30 до 19.30<br>
             2 дня / 1 ночь</td>
             <td class="summary__text">115$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
