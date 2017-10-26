@@ -246,7 +246,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
         </tr>		
 
         <tr class="summary__row">
-            <td class="summary__text" rowspan="3"><a href="/excursion/khampi-badami">Хампи и Бадами</a></td>
+            <td class="summary__text" rowspan="3"><a href="/excursion/hampi-badami">Хампи и Бадами</a></td>
             <td class="summary__text" rowspan="3">с 4.30 до 21.00<br >
             2 дня / 1 ночь</td>
             <td class="summary__text">135$<br><span class="summary__text--smaller">при заказе через сайт</span></td>
@@ -346,7 +346,7 @@ $APPLICATION->SetTitle("Сводная таблица цен");?>
             <td class="summary__text">от 690$</td>
         </tr>        
          <tr class="summary__row">
-            <td class="summary__text"><a href="/excursion/golden-triangle-india-mumbai">Дели. Агра (Тадж-Махал). Мумбай</a></td>
+            <td class="summary__text"><a href="/excursion/delhi-agra-taj-mahal-mumbai">Дели. Агра (Тадж-Махал). Мумбай</a></td>
             <td class="summary__text">3 дня / 2 ночи</td>
             <td class="summary__text">от 590$</td>
         </tr>        
