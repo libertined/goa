@@ -1,6 +1,8 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->SetPageProperty("description", "В данном разделе вы можете подобрать экскурсию по Гоа или Индии по своему вкусу и предпочтениям, используя соответствующие фильтры - развлекательная экскурсия или историческая, экскурсия на 1 день или же 3х дневный тур далеко за пределы Гоа.");
+$APPLICATION->SetPageProperty("keywords", "Гоа, Индия, экскурсии, туры по Индии, из Гоа в Дели, из Гоа в Хампи");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");
-$APPLICATION->SetTitle("Экскурсии");?>
+$APPLICATION->SetTitle("Экскурсии по Гоа и Индии");?>
 <?if(!isset($_REQUEST["tags"])):?>
 	<?$APPLICATION->IncludeComponent("bitrix:search.tags.cloud", "excursion", Array(
 	"CACHE_TIME" => "3600",	// Время кеширования (сек.)
