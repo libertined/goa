@@ -17,4 +17,5 @@ Disallow: /*BACKURL=*
 Disallow: /*back_url=*
 Disallow: /*BACK_URL=*
 Disallow: /*back_url_admin=*
+Disallow: /excursion/?tags=*
 Sitemap: http://tvoygoa.ru/sitemap.xml
