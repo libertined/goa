@@ -152,7 +152,7 @@
 
         <div class="form__wrap">
             <div class="form__title visible-adaptive-768">&nbsp;</div>
-            <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Заказать</button></div>
+            <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768" onclick="yaCounter15543727.reachGoal('ORDERBTN_CLCK'); return true;">Заказать</button></div>
         </div>
     </div>
 </form>

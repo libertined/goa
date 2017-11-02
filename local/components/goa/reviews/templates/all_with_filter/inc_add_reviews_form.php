@@ -62,7 +62,7 @@
 
                 <div class="form__wrap">
                     <div class="form__title visible-adaptive-768">&nbsp;</div>
-                    <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768" onclick="yaCounter15543727.reachGoal('FEEDBACK_SENT'); return true;">Отправить</button></div>
+                    <div class="form__field pos-right"><button type="submit" name="" class="btn col-adaptive-768">Отправить</button></div>
                 </div>
             </div>
         </form>
