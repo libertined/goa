@@ -134,7 +134,7 @@
         </div>
 
         <div class="form__wrap marg-b-15">
-            <label for="viber-phone" class="form__title">Viber, WhatsApp</label>
+            <label for="viberphone" class="form__title">Viber, WhatsApp</label>
             <div class="form__field">
                 <input id="viberphone" placeholder="+7(999)999-99-99" name="<?=OrderHelper::FORM_ADD_FIELD_VIBER_NAME?>" value="" type="tel" class="form__input" pattern="(\+?\d[- . \( \)]*){7,15}" />
                 <div class="form--title-viber">
