@@ -88,23 +88,25 @@ $(function () {
     function formSubmit(e) {
         e.preventDefault();
         var data = new FormData(form),
-            xhr = new XMLHttpRequest();
+            xhr = new XMLHttpRequest(),
+            submitBtn = document.querySelector("button[type='submit']");
 
         xhr.open(form.method, "/ajax/order.php");
         xhr.send(data);
-
+        submitBtn.setAttribute("disabled", "disabled");
         xhr.onload = function() {
             var response = xhr.response,
                 formHeader = document.querySelector("div.form__header");
             if (xhr.readyState !== XMLHttpRequest.DONE ) return;
             if (xhr.status == 200 ) {
                 modalWindow.classList.remove("hidden");
-
                 form.reset();
+                submitBtn.removeAttribute("disabled");
 
             } else {
                 formHeader.innerHTML = "При отправке произошла ошибка";
                 formHeader.style = "color: red";
+                submitBtn.removeAttribute("disabled");
             }
         }
     }
