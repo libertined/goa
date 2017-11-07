@@ -3169,6 +3169,17 @@ ul li.pseudo-select__option:hover {
   height: 70px;
   display: block;
 }
+.modal-close__link:hover {
+	color: #fd7866;
+}
+
+@media only screen and (max-width: 767px) {
+	.modal-order {
+		width: 100%;
+		left: 0;
+		top: 0;
+	}
+}
 /* Styles for drag&drop zone*/
 label.form__file {
   display: block;
