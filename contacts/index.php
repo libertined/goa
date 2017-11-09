@@ -9,7 +9,7 @@ Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/google-map.js");
 		<p class="contacts__title">Телефоны в Гоа:</p>
 		<p class="contacts__text"><a href="tel:+918888717922">+91 8888 71 79 22</a> <a class="contacts__messenger contacts__messenger--whatsapp" href="https://api.whatsapp.com/send?phone=918888717922"></a>
 		<a class="contacts__messenger contacts__messenger--viber" href="viber://chat?number=918888717922"></a>
-		<a class="contacts__messenger contacts__messenger--tg" href="#"></a></p>		
+		<a class="contacts__messenger contacts__messenger--tg" href="tg://resolve?domain=tvoygoasuryatravels"></a></p>		
 		<p class="contacts__text"><a href="tel:+918888704005">+91 8888 70 40 05</a> <a class="contacts__messenger contacts__messenger--whatsapp" href="https://api.whatsapp.com/send?phone=918888704005"></a>
 		<a class="contacts__messenger contacts__messenger--viber" href="viber://chat?number=918888704005"></a>
 		<a class="contacts__messenger contacts__messenger--tg" href="#"></a></p>
