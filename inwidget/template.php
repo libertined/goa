@@ -10,7 +10,7 @@
  * @link http://inwidget.ru
  * @copyright 2014-2017 Alexandr Kazarmshchikov
  * @author Alexandr Kazarmshchikov
- * @version 1.1.0
+ * @version 1.1.2
  * @package inWidget
  *
  */
@@ -27,6 +27,7 @@ if(!is_object($inWidget->data)) die('<b style="color:red;">Cache file contains p
 		<meta http-equiv="content-language" content="<?php echo $inWidget->langName; ?>" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<link rel="stylesheet" type="text/css" href="css/default.css?r1" media="all" />
+
 	</head>
 <body>
 <div id="widget" class="widget">
@@ -83,7 +84,7 @@ if(!is_object($inWidget->data)) die('<b style="color:red;">Cache file contains p
 						default:
 							$thumbnail = $item->small;
 					}
-					echo '<a href="'.$item->link.'" class="image" target="_blank"><img src='.$thumbnail.'><span class="widget__button">Посмотреть</span></a>';
+					echo '<a href="'.$item->link.'" class="image" target="_blank"><span style="background-image:url('.$thumbnail.');">&nbsp;</span></a>';
 					$i++;
 					if($i >= $inWidget->view) break;
 				}
