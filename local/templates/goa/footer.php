@@ -5,7 +5,7 @@
         </div>
       </div>
 
-      <?if ($page == '/index.php'):?>
+    <!--  <?if ($page == '/index.php'):?>
       <div class="instagram visible-adaptive-768">
         <div class="page-content-inner page-content-inner--w1300">
           <a class="instagram__header" href="https://instagram.com/tvoygoa" target="_blank">@tvoygoa</a>
@@ -14,7 +14,7 @@
           </div>
         </div>
       </div>
-      <?endif;?>
+      <?endif;?> -->
     </main>
   </div>
 </div>
