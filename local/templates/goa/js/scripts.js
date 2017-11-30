@@ -51,21 +51,26 @@ $(document).ready( function() {
 	}
 
 	if($('.bxslider_exs_1').length>0) {
-		var bxslider_exs_1 = $('.bxslider_exs_1').bxSlider({
-			mode: 'horizontal',
-			minSlides: 1,
-			maxSlides: 1,
-			moveSlides: 1,
-			//slideWidth: 1000,
-			auto: false,
-			autoHover: true,
-			speed: 500,
-			pause: 1000,
-			adaptiveHeight: true,
-			pager: ($(".bxslider_exs_1>.slider-exs__item").length > 1) ? true: false,
-			controls: ($(".bxslider_exs_1>.slider-exs__item").length > 1) ? true: false,
-			touchEnabled: true
-		});
+		var bxslider_exs_1 = [];
+		$('.bxslider_exs_1').each(function(i) {
+			let slider;
+			slider = $(this).bxSlider({
+				mode: 'horizontal',
+				minSlides: 1,
+				maxSlides: 1,
+				moveSlides: 1,
+				//slideWidth: 1000,
+				auto: false,
+				autoHover: true,
+				speed: 500,
+				pause: 1000,
+				adaptiveHeight: true,
+				pager: ($(".bxslider_exs_1>.slider-exs__item").length > 1) ? true: false,
+				controls: ($(".bxslider_exs_1>.slider-exs__item").length > 1) ? true: false,
+				touchEnabled: true
+			});
+			bxslider_exs_1[i] = slider;
+		})
 	}
 
 	if($('.bxslider_exs_2').length>0) {
@@ -111,8 +116,11 @@ $(document).ready( function() {
 		$(".js-extab").css("display","none");
 		$(".js-extab[data-tab="+data+"]").css("display","block");
 
-		if(bxslider_exs_1)
-			bxslider_exs_1.reloadSlider();
+		if(bxslider_exs_1) {
+			Array.prototype.forEach.call(bxslider_exs_1, function(item) {
+				item.reloadSlider();
+			})
+		}
 
 		if(bxslider_exs_2)
 			bxslider_exs_2.reloadSlider();
