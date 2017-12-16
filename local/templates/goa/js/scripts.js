@@ -53,7 +53,7 @@ $(document).ready( function() {
 	if($('.bxslider_exs_1').length>0) {
 		var bxslider_exs_1 = [];
 		$('.bxslider_exs_1').each(function(i) {
-			let slider;
+			var slider;
 			slider = $(this).bxSlider({
 				mode: 'horizontal',
 				minSlides: 1,
