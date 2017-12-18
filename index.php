@@ -1,6 +1,6 @@
 <? require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("keywords_inner", "Твой Гоа, экскурсии в Гоа, Surya Travels, экскурсии гоа");
-$APPLICATION->SetPageProperty("keywords", "Гоа, Индия, экскурсии");
+$APPLICATION->SetPageProperty("keywords", "Твой Гоа, экскурсии в Гоа, Surya Travels, экскурсии гоа");
 $APPLICATION->SetPageProperty("description", "Твой Гоа предлагает разнообразные экскурсии в Гоа и увлекательные туры по Индии. Мы проводим несколько уникальных экскурсий из Гоа, которые больше не проводит ни одна компания. Мы имеем лицензию на туристическую и транспортную деятельность, а все наши водители - лицензию для работы с туристами. Нам доверяют и нас рекомендуют уже более 10 лет.");
 $APPLICATION->SetTitle("Экскурсии от компании Твой Гоа");
 ?>
