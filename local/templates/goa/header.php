@@ -35,7 +35,8 @@ IncludeTemplateLangFile(__FILE__);
 	$page = $APPLICATION->GetCurPage(true);
 	$dir =  $APPLICATION->GetCurDir();
 	?>
-	<script src="https://vk.com/js/api/openapi.js?146" type="text/javascript"></script>
+<!-- 	<script src="https://vk.com/js/api/openapi.js?146" type="text/javascript"></script> -->
+	<script src="https://vk.com/js/api/openapi.js?151" type="text/javascript"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript" >
     (function (d, w, c) {
