@@ -164,9 +164,9 @@
 
 <a class="scrollTop-btn js-scrollTop" href="#"></a>
 <!-- VK Widget -->
-<div id="vk_community_messages"></div>
+<div id="vk_community_messages" class="visible-adaptive-768"></div>
 <script type="text/javascript">
-VK.Widgets.CommunityMessages("vk_community_messages", 5779993, {expanded: "1",tooltipButtonText: "Есть вопрос?"});
+VK.Widgets.CommunityMessages("vk_community_messages", 5779993, {tooltipButtonText: "Есть вопрос?"});
 </script>
 
 </body>
