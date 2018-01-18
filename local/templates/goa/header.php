@@ -66,6 +66,8 @@ IncludeTemplateLangFile(__FILE__);
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/15543727" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<!-- VK retargeting pixel code -->
+<script type="text/javascript">(window.Image ? (new Image()) : document.createElement('img')).src = 'https://vk.com/rtrg?p=VK-RTRG-205016-d32aR';</script>
 </head>
 <body>
 <div id="fb-root"></div>
