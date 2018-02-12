@@ -17,7 +17,7 @@
 
 <div class="modal-order hidden" id="modal-order">
     <div class="modal-close"></div>
-    <h1 class="modal-order__header">Спасибо за Ваш заказ!</h1>
+    <div class="modal-order__header">Спасибо за Ваш заказ!</div>
     <p class="modal-order__text">В ближайшее время на Вашу почту должно поступить автоматическое уведомление с деталями Вашего заказа.</p>
     <p class="modal-order__text">Если по какой-то причине Вы не получите емейл - просим связаться с нами любым удобным для Вас способом, т.к., вероятно, при вводе емейл адреса была допущена ошибка.</p>
     <p class="modal-order__text"></p>

@@ -3159,6 +3159,9 @@ ul li.pseudo-select__option:hover {
   z-index: 100;
 }
 
+.modal-order__header {
+  font-size: 18px;
+}
 .modal-close {
   cursor: pointer;
   position: absolute;
