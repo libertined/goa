@@ -1,7 +1,7 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("description", "В данном разделе представлена сводная таблица с ценами на все предлагаемые нашей компанией экскурсии. Детальное описание, программу, фотографии и стоимость по каждой экскурсии вы можете посмотреть, кликнув на соответствующее название.");
 $APPLICATION->SetPageProperty("keywords", "цены на экскурсии в Гоа, цены на экскурсии по Гоа, экскурсии гоа 2017, экскурсии гоа 2018, экскурсии в индии");
-$APPLICATION->SetPageProperty("title", " Сводная таблица цен на экскурсии по Гоа и Индии");
+$APPLICATION->SetPageProperty("title", "Сводная таблица цен на экскурсии в Гоа и Индии 2018");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Сводная таблица цен на экскурсии в Гоа и Индии");
 $APPLICATION->SetTitle("Сводная таблица цен на экскурсии в Гоа и Индии, сезон 2017-2018");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?>
