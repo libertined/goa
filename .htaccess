@@ -11,6 +11,7 @@ Redirect 301 /excursion/entertaining/all_goa/ /excursion/all-goa/
 Redirect 301 /excursion/entertaining/vacation-in-the-mountains/ /excursion/otdyh-v-gorah/
 Redirect 301 /excursion/entertaining/houseboat/ /excursion/houseboat-dom-na-vode/
 Redirect 301 /excursion/entertaining/palolem-and-cola-beach/ /excursion/palolem-and-agonda-beach-fort-kabo-de-rama/
+Redirect 301 /excursion/new/palolem-and-cola-beach/ /excursion/palolem-and-agonda-beach-fort-kabo-de-rama/
 Redirect 301 /excursion/entertaining/78/ /excursion/tiger-national-park-jog-falls-waterfall-elephants-aghoreshwara-temple-murudeshvar/
 Redirect 301 /excursion/entertaining/102/ /excursion/panaji-ponda-old-goa-reis-magos/
 Redirect 301 /excursion/entertaining/103/ /excursion/rybalka-barbekyu-delfiny/
