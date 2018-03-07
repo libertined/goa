@@ -1,5 +1,5 @@
 User-Agent: *
-Disallow: /bitrix/
+#Disallow: /bitrix/
 Disallow: /search/
 Allow: /search/map.php
 Disallow: /auth/
