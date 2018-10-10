@@ -1,5 +1,5 @@
 <?
-$sSectionName = "Сводная таблица цен";
+$sSectionName = "Сводная таблица цен на экскурсии Гоа";
 $arDirProperties = array(
    "robots" => "index, follow",
    "MAIN_TITLE" => "Сводная таблица цен на экскурсии Гоа",
