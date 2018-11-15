@@ -3681,3 +3681,13 @@ font-size: 0;
     width: 100%;
   }
 }
+
+h3.item__text {
+  color: #fd7866;
+  cursor: pointer;
+}
+
+.item__table {
+  overflow: hidden;
+  display: none;
+}

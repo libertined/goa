@@ -317,5 +317,23 @@ $(document).ready( function() {
 			fixedBlock.style.top = 0;
 		}
 	}
+	
+	// сложная программа на вкладке "Программа и стоимость"" экскурсии
+	$(document).on('click', '.faq .item__text', function(){
+		var $dataAttr = $(this).next().data('table');
+		var $pairedPriceTable = $('.price [data-table="'+$dataAttr+'"]');
+
+		$(this).parents('.faq').children('.item').not($(this).parent()).children('.item__table').slideUp(200);
+		$('.price').children('.item').not($pairedPriceTable.parent()).children('.item__table').slideUp(200);
+		$(this).next().stop(true).slideToggle(300); 		
+		$pairedPriceTable.stop(true).slideToggle(300);
+	});	
+
+	$(document).on('click', '.price .item__text', function(){
+		$(this).parents('.price').children('.item').not($(this).parent()).children('.item__table').slideUp(200);
+		$(this).next().stop(true).slideToggle(300);
+	});
+
+
 });
 
