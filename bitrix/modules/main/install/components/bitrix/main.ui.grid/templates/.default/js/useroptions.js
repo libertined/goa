@@ -64,6 +64,11 @@
 				result = views[name];
 			}
 
+			if (!BX.type.isPlainObject(result))
+			{
+				result = {};
+			}
+
 			return result;
 		},
 
@@ -137,9 +142,21 @@
 			this.save(this.getAction('GRID_SET_COLUMN_SIZES'), {sizes: sizes, expand: expand});
 		},
 
-		reset: function(callback)
+		reset: function(forAll, callback)
 		{
-			this.save(this.getAction('GRID_RESET'), {}, callback);
+			var data = {};
+
+			if (!!forAll)
+			{
+				data = {
+					view_id: 'default',
+					set_default_settings: 'Y',
+					delete_user_settings: 'Y',
+					view_settings: this.getCurrentOptions()
+				};
+			}
+
+			this.save(this.getAction('GRID_RESET'), data, callback);
 		},
 
 		setSort: function(by, order, callback)
@@ -158,6 +175,40 @@
 			{
 				this.save(this.getAction('GRID_SET_PAGE_SIZE'), {pageSize: pageSize}, callback);
 			}
+		},
+
+		setExpandedRows: function(ids, callback)
+		{
+			BX.type.isArray(ids) && this.save(this.getAction('GRID_SET_EXPANDED_ROWS'), {ids: ids}, callback);
+		},
+
+		setCollapsedGroups: function(ids, callback)
+		{
+			BX.type.isArray(ids) && this.save(this.getAction('GRID_SET_COLLAPSED_GROUPS'), {ids: ids}, callback);
+		},
+
+		resetExpandedRows: function()
+		{
+			this.save(this.getAction('GRID_RESET_EXPANDED_ROWS'), {});
+		},
+
+		saveForAll: function(callback)
+		{
+			this.save(
+				this.getAction('GRID_SAVE_SETTINGS'),
+				{
+					view_id: 'default',
+					set_default_settings: 'Y',
+					delete_user_settings: 'Y',
+					view_settings: this.getCurrentOptions()
+				},
+				callback
+			);
+		},
+
+		batch: function(data, callback)
+		{
+			this.save(this.getAction('GRID_SAVE_BATH'), {bath: data}, callback);
 		},
 
 		save: function(action, data, callback)

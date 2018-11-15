@@ -292,11 +292,6 @@ class CAccess
 			}
 		}
 
-		//possible unhandled values
-		foreach($arCodes as $code)
-			if(!array_key_exists($code, $arResult))
-				$arResult[$code] = array("provider"=>"", "name"=>$code);
-
 		if($bSort)
 			uasort($arResult, array('CAccess', 'CmpNames'));
 

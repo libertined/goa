@@ -4,8 +4,6 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 {
 	if(!CModule::IncludeModule("crm"))
 		return;
-
-
 		
 	$arParams['ENTITY_TYPE'] = Array();
 	if ($arParams['arUserField']['SETTINGS']['LEAD'] == 'Y')
@@ -16,6 +14,8 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 		$arParams['ENTITY_TYPE'][] = 'COMPANY';	
 	if ($arParams['arUserField']['SETTINGS']['DEAL'] == 'Y')
 		$arParams['ENTITY_TYPE'][] = 'DEAL';
+	if ($arParams['arUserField']['SETTINGS']['ORDER'] == 'Y')
+		$arParams['ENTITY_TYPE'][] = 'ORDER';
 
 	$arParams['PREFIX'] = false;
 	if (count($arParams['ENTITY_TYPE']) > 1)
@@ -65,6 +65,7 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 				? array('ID', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME')
 				: array('ID', 'FULL_NAME')
 		);
+
 		while ($arRes = $dbRes->Fetch())
 		{
 			if($hasNameFormatter)
@@ -110,6 +111,23 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 			$arResult['VALUE']['DEAL'][$arRes['ID']] = Array(
 				'ENTITY_TITLE' => $arRes['TITLE'],
 				'ENTITY_LINK' => CComponentEngine::MakePathFromTemplate(COption::GetOptionString('crm', 'path_to_deal_show'), array('deal_id' => $arRes['ID']))
+			);
+		}
+	}
+	if ($arParams['arUserField']['SETTINGS']['ORDER'] == 'Y'
+		&& isset($arValue['ORDER']) && !empty($arValue['ORDER']))
+	{
+		$resultDB = \Bitrix\Crm\Order\Order::getList(array(
+			'filter' => array('=ID' => $arValue['ORDER']),
+			'select' =>  array('ID', 'ACCOUNT_NUMBER'),
+			'order' => array('ID' => 'DESC')
+		));
+
+		while ($order = $resultDB->fetch())
+		{
+			$arResult['VALUE']['ORDER'][$order['ID']] = array(
+				'ENTITY_TITLE' => $order['ACCOUNT_NUMBER'],
+				'ENTITY_LINK' => CComponentEngine::MakePathFromTemplate(COption::GetOptionString('crm', 'path_to_order_details'), array('order_id' => $order['ID']))
 			);
 		}
 	}

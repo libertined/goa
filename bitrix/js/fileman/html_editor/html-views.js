@@ -111,13 +111,10 @@ BXEditorTextareaView.prototype.SaveValue = function()
 
 BXEditorTextareaView.prototype.HasPlaceholderSet = function()
 {
-	return false;
 	var
-		supportsPlaceholder = supportsPlaceholderAttributeOn(this.element),
 		placeholderText = this.element.getAttribute("placeholder") || null,
-		value = this.element.value,
-		isEmpty = !value;
-	return (supportsPlaceholder && isEmpty) || (value === placeholderText);
+		value = this.element.value;
+	return !value || (value === placeholderText);
 };
 
 BXEditorTextareaView.prototype.IsEmpty = function()
@@ -365,12 +362,13 @@ BXEditorIframeView.prototype.Clear = function()
 
 BXEditorIframeView.prototype.GetValue = function(bParse, bFormat)
 {
-	var value = this.IsEmpty() ? "" : this.editor.GetInnerHtml(this.element);
+	this.iframeValue = this.IsEmpty() ? "" : this.editor.GetInnerHtml(this.element);
+	this.editor.On('OnIframeBeforeGetValue', [this.iframeValue]);
 	if (bParse)
 	{
-		value = this.editor.Parse(value, false, bFormat);
+		this.iframeValue = this.editor.Parse(this.iframeValue, false, bFormat);
 	}
-	return value;
+	return this.iframeValue;
 };
 
 BXEditorIframeView.prototype.SetValue = function(html, bParse)
@@ -424,9 +422,29 @@ BXEditorIframeView.prototype.Focus = function(setToEnd)
 		this.Clear();
 	}
 
-	if (!document.querySelector || this.element.ownerDocument.querySelector(":focus") !== this.element || !this.IsFocused())
+	if (!document.querySelector
+		|| this.element.ownerDocument.querySelector(":focus") !== this.element
+		|| !this.IsFocused())
 	{
-		BX.focus(this.element);
+		if (BX.browser.IsIOS())
+		{
+			var _this = this;
+			if (this.focusTimeout)
+				clearTimeout(this.focusTimeout);
+
+			this.focusTimeout = setTimeout(function()
+			{
+				var
+					orScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
+					orScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+					BX.focus(_this.element);
+					window.scrollTo(orScrollLeft, orScrollTop);
+			}, 200);
+		}
+		else
+		{
+			BX.focus(this.element);
+		}
 	}
 
 	if (setToEnd && this.element.lastChild)
@@ -452,9 +470,10 @@ BXEditorIframeView.prototype.IsFocused = function()
 	return this.isFocused;
 };
 
-BXEditorIframeView.prototype.GetTextContent = function()
+BXEditorIframeView.prototype.GetTextContent = function(clearInvisibleSpace)
 {
-	return this.editor.util.GetTextContent(this.element);
+	var txt = this.editor.util.GetTextContent(this.element);
+	return clearInvisibleSpace === true ? txt.replace(/\uFEFF/ig, '') : txt;
 };
 
 BXEditorIframeView.prototype.HasPlaceholderSet = function()
@@ -462,7 +481,7 @@ BXEditorIframeView.prototype.HasPlaceholderSet = function()
 	return this.textarea && this.GetTextContent() == this.textarea.getAttribute("placeholder");
 };
 
-BXEditorIframeView.prototype.IsEmpty = function()
+BXEditorIframeView.prototype.IsEmpty = function(clearInvisibleSpace)
 {
 	if (!document.querySelector)
 		return false;
@@ -474,7 +493,7 @@ BXEditorIframeView.prototype.IsEmpty = function()
 	return innerHTML === "" ||
 		innerHTML === this.caretNode ||
 		this.HasPlaceholderSet() ||
-		(this.GetTextContent() === "" && !this.element.querySelector(elementsWithVisualValue));
+		(this.GetTextContent(clearInvisibleSpace) === "" && !this.element.querySelector(elementsWithVisualValue));
 };
 
 BXEditorIframeView.prototype._initObjectResizing = function()
@@ -678,34 +697,35 @@ var focusWithoutScrolling = function(element)
 			editor.On("OnIframeMouseUp", [e, target]);
 		});
 
-		// resizestart
-		// resizeend
-		if (BX.browser.IsIOS())
-		{
-			// When on iPad/iPhone/IPod after clicking outside of editor, the editor loses focus
-			// but the UI still acts as if the editor has focus (blinking caret and onscreen keyboard visible)
-			// We prevent _this by focusing a temporary input element which immediately loses focus
-			BX.bind(iframeWindow, "blur", function()
-			{
-				var
-					input = BX.create('INPUT', {props: {type: 'text', value: ''}}, element.ownerDocument),
-					orScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
-					orScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
-
-				try
-				{
-					editor.selection.InsertNode(input);
-				}
-				catch(e)
-				{
-					element.appendChild(input);
-				}
-
-				BX.focus(input);
-				BX.remove(input);
-				window.scrollTo(orScrollLeft, orScrollTop);
-			});
-		}
+		// Mantis: 90137
+		//if (BX.browser.IsIOS())
+		//{
+		//	// When on iPad/iPhone/IPod after clicking outside of editor, the editor loses focus
+		//	// but the UI still acts as if the editor has focus (blinking caret and onscreen keyboard visible)
+		//	// We prevent _this by focusing a temporary input element which immediately loses focus
+		//	BX.bind(iframeWindow, "blur", function()
+		//	{
+		//		var
+		//			orScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
+		//			orScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft,
+		//			input = BX.create('INPUT', {
+		//				props:{type: 'text', value: ''}
+		//			}, iframeWindow.ownerDocument);
+		//
+		//		try
+		//		{
+		//			editor.selection.InsertNode(input);
+		//		}
+		//		catch(e)
+		//		{
+		//			iframeWindow.appendChild(input);
+		//		}
+		//
+		//		BX.focus(input);
+		//		BX.remove(input);
+		//		window.scrollTo(orScrollLeft, orScrollTop);
+		//	});
+		//}
 
 		// --------- Drag & Drop events  ---------
 		BX.bind(element, "dragover", function(){editor.On("OnIframeDragOver", arguments);});
@@ -770,6 +790,14 @@ var focusWithoutScrolling = function(element)
 			{
 				_this.editor.parser.FirstLetterCheckNodes('', '', true);
 			}
+
+			//mantis:91555, mantis:93629
+			if (BX.browser.IsChrome())
+			{
+				if (_this.stopBugusScrollTimeout)
+					clearTimeout(_this.stopBugusScrollTimeout);
+				_this.stopBugusScrollTimeout = setTimeout(function(){_this.stopBugusScroll = false;}, 200);
+			}
 		});
 
 		BX.bind(element, "mousedown", function(e)
@@ -792,6 +820,24 @@ var focusWithoutScrolling = function(element)
 		});
 
 		BX.bind(element, "keydown", BX.proxy(this.KeyDown, this));
+
+		// Workaround for chrome bug with bugus scrolling to the top of the page (mantis:91555, mantis:93629)
+		if (BX.browser.IsChrome())
+		{
+			BX.bind(window, "scroll", BX.proxy(function(e)
+			{
+				if (_this.stopBugusScroll)
+				{
+					if ((!_this.savedScroll || !_this.savedScroll.scrollTop) && _this.lastSavedScroll)
+						_this.savedScroll = _this.lastSavedScroll;
+
+					if (_this.savedScroll && !_this.lastSavedScroll)
+						_this.lastSavedScroll = _this.savedScroll;
+					_this._RestoreScrollTop();
+				}
+			}, this));
+		}
+
 		// Show urls and srcs in tooltip when hovering links or images
 		var nodeTitles = {
 			IMG: BX.message.SrcTitle + ": ",
@@ -821,13 +867,22 @@ var focusWithoutScrolling = function(element)
 
 	BXEditorIframeView.prototype.KeyDown = function(e)
 	{
-		this.SetFocusedFlag(true);
-		this.editor.iframeKeyDownPreventDefault = false;
-
 		var
 			_this = this,
 			keyCode = e.keyCode,
-			KEY_CODES = this.editor.KEY_CODES,
+			KEY_CODES = this.editor.KEY_CODES;
+
+		this.SetFocusedFlag(true);
+		this.editor.iframeKeyDownPreventDefault = false;
+
+		// Workaround for chrome bug with bugus scrollint to the top of the page (mantis:91555, mantis:93629)
+		if (BX.browser.IsChrome())
+		{
+			this.stopBugusScroll = true;
+			this.savedScroll = BX.GetWindowScrollPos(document);
+		}
+
+		var
 			command = this.editor.SHORTCUTS[keyCode],
 			selectedNode = this.editor.selection.GetSelectedNode(true),
 			range = this.editor.selection.GetRange(),
@@ -1604,6 +1659,7 @@ var focusWithoutScrolling = function(element)
 		if (!this.editor.skipPasteHandler)
 		{
 			this.editor.skipPasteHandler = true;
+			this.editor.pasteNodeIndex = {};
 			var
 				originalScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
 				originalScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft,
@@ -1615,7 +1671,9 @@ var focusWithoutScrolling = function(element)
 			{
 				if (n && n.setAttribute)
 				{
-					n.setAttribute('data-bx-paste-flag', 'Y');
+					var randValue = Math.round(Math.random() * 1000000);
+					_this.editor.pasteNodeIndex[randValue] = true;
+					n.setAttribute('data-bx-paste-flag', randValue);
 				}
 			}
 
@@ -1653,7 +1711,9 @@ var focusWithoutScrolling = function(element)
 			}
 
 			if (this.editor.iframeView.pasteHandlerTimeout)
+			{
 				clearTimeout(this.editor.iframeView.pasteHandlerTimeout);
+			}
 
 			this.pasteHandlerTimeout = setTimeout(function()
 			{
@@ -2053,7 +2113,6 @@ var focusWithoutScrolling = function(element)
 					{
 						// INVISIBLE_CURSOR
 						value = value.replace(/\u2060/ig, '<span id="bx-cursor-node"> </span>');
-
 						this.iframeView.SetValue(value, bParseHtml);
 					}
 				}
@@ -2137,9 +2196,6 @@ var focusWithoutScrolling = function(element)
 
 			BX.addCustomEvent(this.editor, "OnTextareaBlur", BX.delegate(this.StopSync, this));
 			BX.addCustomEvent(this.editor, "OnIframeBlur", BX.delegate(this.StopSync, this));
-
-			//BX.addCustomEvent(this.editor, "OnIframeMouseDown", BX.proxy(this.OnIframeMousedown, this));
-			//this.On('OnSetViewAfter');
 		},
 
 		StartSync: function(delay)
@@ -2177,19 +2233,11 @@ var focusWithoutScrolling = function(element)
 
 		OnIframeMousedown: function(e, target, bxTag)
 		{
-			//var caret = this.editor.iframeView.document.createTextNode(this.INVISIBLE_CURSOR);
-			//this.editor.selection.InsertNode(caret);
-//			target.setAttribute('data-svd', "svd");
-//			var _this = this;
-//			setTimeout(function(){
-//				_this.textareaView.SelectText('data-svd="svd"');
-//			}, 1000);
 		},
 
 		IsFocusedOnTextarea: function()
 		{
-			var view = this.editor.currentViewName;
-			return view === "code" || view === "split" && this.GetSplitMode() === "code";
+			return this.editor.currentViewName === "code" || this.editor.currentViewName === "split" && this.GetSplitMode() === "code";
 		}
 	}
 

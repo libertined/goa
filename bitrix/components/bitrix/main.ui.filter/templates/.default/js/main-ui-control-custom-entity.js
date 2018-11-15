@@ -11,7 +11,25 @@
 		this.popupContainer = null;
 		this.inputClass = 'main-ui-control-string';
 		this.squareClass = 'main-ui-square';
+		this.multiple = null;
 	};
+
+
+	/**
+	 * @static
+	 * @param {HTMLElement} field
+	 * @return {boolean}
+	 */
+	BX.Main.ui.CustomEntity.isMultiple = function(field)
+	{
+		if (!!field && !BX.hasClass(field, 'main-ui-control-entity'))
+		{
+			field = BX.Filter.Utils.getByClass(field, 'main-ui-control-entity');
+		}
+
+		return !!field && JSON.parse(BX.data(field, 'multiple'));
+	};
+
 
 	//noinspection JSUnusedGlobalSymbols
 	BX.Main.ui.CustomEntity.prototype = {
@@ -22,6 +40,11 @@
 				this.field = field;
 				this.reset();
 			}
+		},
+
+		isMultiple: function()
+		{
+			return BX.Main.ui.CustomEntity.isMultiple(this.getField());
 		},
 
 		reset: function()
@@ -68,19 +91,22 @@
 			return this.hiddenInput;
 		},
 
-		getSquare: function()
+		getSquareByValue: function(value)
 		{
-			return BX.Filter.Utils.getByClass(this.getField(), this.squareClass);
+			return BX.Filter.Utils.getBySelector(this.getField(), [
+				'[data-item*=":'+BX.util.jsencode(value)+'}"]',
+				'[data-item*=":\\"'+BX.util.jsencode(value)+'\\"}"]'
+			].join(', '));
 		},
 
-		removeSquare: function()
+		getSquares: function()
 		{
-			var square = this.getSquare();
+			return BX.Filter.Utils.getByClass(this.getField(), this.squareClass, true);
+		},
 
-			if (BX.type.isDomNode(square) && BX.hasClass(square, this.squareClass))
-			{
-				BX.remove(square);
-			}
+		removeSquares: function()
+		{
+			this.getSquares().forEach(BX.remove);
 		},
 
 		setSquare: function(label, value)
@@ -95,38 +121,118 @@
 				}
 			};
 			var square = BX.decl(squareData);
+			var squares = this.getSquares();
 
-			BX.prepend(square, field);
+			if (!squares.length)
+			{
+				BX.prepend(square, field);
+			}
+			else
+			{
+				BX.insertAfter(square, squares[squares.length-1]);
+			}
 		},
 
 		getCurrentValues: function()
 		{
-			var square = this.getSquare();
-			var data;
-
-			try {
-				data = JSON.parse(BX.data(square, 'item'));
-				data = {
-					label: data._label,
-					value: data._value
-				};
-			} catch (err) {
-				data = {label: '', value: ''};
+			var squares = this.getSquares();
+			var data, result;
+			if(this.isMultiple())
+			{
+				result = [];
+				for(var i = 0, length = squares.length; i < length; i++)
+				{
+					try
+					{
+						data = JSON.parse(BX.data(squares[i], 'item'));
+						result.push({ label: data._label, value: data._value });
+					}
+					catch (ex)
+					{
+					}
+				}
 			}
-
-			return data;
+			else
+			{
+				if(squares.length === 0)
+				{
+					result = { label: '', value: '' };
+				}
+				else
+				{
+					try
+					{
+						data = JSON.parse(BX.data(squares[0], 'item'));
+						result =  { label: data._label, value: data._value };
+					}
+					catch (ex)
+					{
+						result = { label: '', value: '' };
+					}
+				}
+			}
+			return result;
 		},
 
 		setData: function(label, value)
 		{
+			return this.isMultiple() ? this.setMultipleData(label, value) : this.setSingleData(label, value);
+		},
+
+		setSingleData: function(label, value)
+		{
 			var hiddenNode = this.getHiddenNode();
-			this.removeSquare();
+			this.removeSquares();
 			this.setSquare(label, value);
 
 			if (BX.type.isDomNode(hiddenNode))
 			{
 				hiddenNode.value = value;
 				BX.fireEvent(hiddenNode, 'input');
+			}
+		},
+
+		setMultipleData: function(items, value)
+		{
+			var values = [];
+			var hiddenNode = this.getHiddenNode();
+
+			if (BX.type.isArray(items))
+			{
+				this.removeSquares();
+
+				if (BX.type.isArray(items))
+				{
+					items.forEach(function(item) {
+						values.push(item.value);
+						this.setSquare(item.label, item.value);
+					}, this);
+
+					if (BX.type.isDomNode(hiddenNode))
+					{
+						hiddenNode.value = JSON.stringify(values);
+						BX.fireEvent(hiddenNode, 'input');
+					}
+				}
+			}
+
+			if (!BX.type.isArray(items) && value !== null)
+			{
+				if (!this.getSquareByValue(value))
+				{
+					this.setSquare(items, value);
+
+					this.getSquares().forEach(function(square) {
+						var squareData = JSON.parse(BX.data(square, 'item'));
+						if (BX.type.isPlainObject(squareData))
+						{
+							values.push(squareData._value);
+						}
+					});
+
+					hiddenNode.value = JSON.stringify(values);
+					BX.fireEvent(hiddenNode, 'input');
+				}
 			}
 		},
 

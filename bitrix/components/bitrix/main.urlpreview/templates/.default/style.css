@@ -5,6 +5,7 @@
 .urlpreview__frame{
 	border-left: 2px solid #a6ca61;
 	padding-left: 7px;
+	overflow: hidden;
 }
 
 .urlpreview__frame-inner{
@@ -40,9 +41,12 @@
 	overflow: hidden;
 }
 
+.urlpreview__embed .fb-post {
+	min-height: 150px;
+}
+
 .urlpreview__embed > iframe {
 	max-width: 600px;
-	max-height: 340px;
 }
 
 .urlpreview__play {

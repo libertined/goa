@@ -33,4 +33,6 @@ $MESS["CT_BCE_CATALOG_RANGE_FROM"] = "от #FROM#";
 $MESS["CT_BCE_CATALOG_RANGE_TO"] = "до #TO#";
 $MESS["CT_BCE_CATALOG_RANGE_MORE"] = "и более";
 $MESS["CT_BCE_CATALOG_RATIO_PRICE"] = "цена за #RATIO#";
+$MESS["CT_BCE_CATALOG_GIFT_BLOCK_TITLE_DEFAULT"] = "Выберите один из подарков к этому товару";
+$MESS["CT_BCE_CATALOG_GIFTS_MAIN_BLOCK_TITLE_DEFAULT"] = "Выберите один из товаров, чтобы получить подарок";
 ?>

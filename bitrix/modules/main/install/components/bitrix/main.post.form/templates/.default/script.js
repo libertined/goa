@@ -465,7 +465,8 @@ diskController.prototype = {
 					isImage : false,
 					place : BX(result.place, true),
 					xmlID : BX(result.place, true).getAttribute("bx-attach-xml-id"),
-					fileID : BX(result.place, true).getAttribute("bx-attach-file-id")
+					fileID : BX(result.place, true).getAttribute("bx-attach-file-id"),
+					fileType: BX(result.place, true).getAttribute("bx-attach-file-type")
 				},
 				preview;
 			if (/(\.png|\.jpg|\.jpeg|\.gif|\.bmp)$/i.test(result.element_name) &&
@@ -592,6 +593,8 @@ diskController.prototype = {
 				};
 				if (node.hasAttribute("bx-attach-xml-id"))
 					data['E' + id]["xmlId"] = node.getAttribute("bx-attach-xml-id");
+				if (node.hasAttribute("bx-attach-file-type"))
+					data['E' + id]["fileType"] = node.getAttribute("bx-attach-file-type");
 			}
 		}
 		this.handler.selectFile({}, {}, data);
@@ -876,6 +879,10 @@ fileController.prototype.checkFile = function(id, result, param)
 		{
 			return false;
 		}
+		if(BX(data.place, true).getAttribute("bx-attach-file-type"))
+		{
+			data.fileType = BX(data.place, true).getAttribute("bx-attach-file-type");
+		}
 
 		this.values[id] = data;
 	}
@@ -968,8 +975,6 @@ var LHEPostForm = function(formID, params)
 			{
 				if (BX('lhe_button_submit_' + formID, true))
 				{
-					BX.bind(BX('lhe_button_submit_' + formID, true), 'mousedown', function(){ BX.addClass(this, 'feed-add-button-press'); });
-					BX.bind(BX('lhe_button_submit_' + formID, true), 'mouseup', function(){ BX.removeClass(this, 'feed-add-button-press'); });
 					BX.bind(BX('lhe_button_submit_' + formID, true), 'click', BX.proxy(function(e){
 						BX.onCustomEvent(this.eventNode, 'OnButtonClick', ['submit']);
 						return BX.PreventDefault(e);
@@ -977,8 +982,6 @@ var LHEPostForm = function(formID, params)
 				}
 				if (BX('lhe_button_cancel_' + formID, true))
 				{
-					BX.bind(BX('lhe_button_cancel_' + formID, true), 'mousedown', function(){ BX.addClass(this, 'feed-add-button-press'); });
-					BX.bind(BX('lhe_button_cancel_' + formID, true), 'mouseup', function(){ BX.removeClass(this, 'feed-add-button-press'); });
 					BX.bind(BX('lhe_button_cancel_' + formID, true), 'click', BX.proxy(function(e){
 						BX.onCustomEvent(this.eventNode, 'OnButtonClick', ['cancel']);
 						return BX.PreventDefault(e);
@@ -1028,6 +1031,15 @@ LHEPostForm.prototype = {
 				regexp : /\[(IMG ID)=((?:\s|\S)*?)(?:\s*?WIDTH=(\d+)\s*?HEIGHT=(\d+))?\]/ig,
 				code : '[IMG ID=#ID##ADDITIONAL#]',
 				wysiwyg : '<img id="#ID#" src="' + '#SRC#" lowsrc="' + '#LOWSRC#" title=""#ADDITIONAL# />'
+			},
+			player : {
+				exist : false,
+				bxTag : 'player',
+				tag : "FILE ID",
+				tags : ["FILE ID"],
+				regexp : /\[(FILE ID)=((?:\s|\S)*?)?\]/ig,
+				code : '[FILE ID=#ID##ADDITIONAL#]',
+				wysiwyg : '<img class="bxhtmled-player-surrogate" id="#ID#" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" contenteditable="false" title=""#ADDITIONAL# />'
 			}
 		};
 		var parsers = (params["parsers"] ? params["parsers"] : {});
@@ -1065,6 +1077,13 @@ LHEPostForm.prototype = {
 				obj : null,
 				init : false
 			}
+		};
+		this.monitoring = {
+			interval : null,
+			text : '',
+			savedText : '',
+			files : [],
+			savedFiles : []
 		};
 		if (!params["CID"] || typeof params["CID"] !== "object")
 			return;
@@ -1217,13 +1236,7 @@ LHEPostForm.prototype = {
 		if (save !== false)
 			BX.userOptions.save('main.post.form', 'postEdit', 'showBBCode', show ? "Y" : "N");
 	},
-	monitoring : {
-		interval : null,
-		text : '',
-		savedText : '',
-		files : [],
-		savedFiles : []
-	},
+	monitoring : {},
 	monitoringStart : function()
 	{
 		if (this.monitoring.interval === null)
@@ -1253,7 +1266,7 @@ LHEPostForm.prototype = {
 			var cid;
 			for (var ii = 0; ii < this.arFiles[parser + file].length; ii++)
 			{
-				this.monitoring.files.push(parser + file);
+				//this.monitoring.files.push([parser, file].join('/'));
 				cid = this.arFiles[parser + file][ii];
 				BX.onCustomEvent(this.controllers[cid], "onFileIsInText", [file, inText]);
 			}
@@ -1341,16 +1354,34 @@ LHEPostForm.prototype = {
 			var editorMode = editor.GetViewMode(),
 				res = this.getFileToInsert(file, controller);
 
-			if(editorMode == 'wysiwyg') // WYSIWYG
+			if (editorMode == 'wysiwyg') // WYSIWYG
 			{
 				editor.InsertHtml(res.replacement);
 				setTimeout(BX.delegate(editor.AutoResizeSceleton, editor), 500);
 				setTimeout(BX.delegate(editor.AutoResizeSceleton, editor), 1000);
 			}
-			else if (editorMode == 'code' && editor.bbCode) // BB Codes
+			else if (editorMode == 'code')
 			{
 				editor.textareaView.Focus();
-				editor.textareaView.WrapWith(false, false, res.replacement);
+
+				if (!editor.bbCode)
+				{
+					var editorDoc = editor.GetIframeDoc();
+					var dummy = editorDoc.createElement('DIV');
+					dummy.style.display = 'none';
+					dummy.innerHTML = res.replacement;
+					editorDoc.body.appendChild(dummy);
+
+					res.replacement = editor.Parse(res.replacement, true, false);
+
+					dummy.parentNode.removeChild(dummy);
+				}
+
+				editor.textareaView.WrapWith('', '', res.replacement);
+			}
+			else
+			{
+				return;
 			}
 			res["callback"]();
 		}
@@ -1364,9 +1395,13 @@ LHEPostForm.prototype = {
 				fileID = file['id'],
 				params = '',
 				parser = controller.parser,
-				editorMode = editor.GetViewMode(),
+				editorMode = editor.bbCode ? editor.GetViewMode() : 'wysiwyg',
 				pattern = this.parser[parser.bxTag][editorMode];
 
+			if (file['fileType'] && this.parser[file['fileType']] && editorMode == "wysiwyg")
+			{
+				pattern = this.parser[file['fileType']][editorMode];
+			}
 			if (file['isImage'])
 			{
 				pattern = (editorMode == "wysiwyg" ? this.parser["postimage"][editorMode] : pattern);
@@ -1375,7 +1410,7 @@ LHEPostForm.prototype = {
 					params = ' style="width:' + file.width + 'px;height:' + file.height + 'px;" onload="this.style.width=\'auto\';this.style.height=\'auto\';"';
 				}
 			}
-			if(editorMode == 'wysiwyg') // WYSIWYG
+			if (editorMode == 'wysiwyg') // WYSIWYG
 			{
 				pattern = pattern.
 					replace("#ID#", editor.SetBxTag(false, {'tag': parser.bxTag, params: {'value' : fileID}})).
@@ -1501,6 +1536,11 @@ LHEPostForm.prototype = {
 							strAdditional = "",
 							template = (file.isImage ? obj.parser.postimage.wysiwyg : arParser.wysiwyg);
 						obj.monitoringStart();
+
+						if (file.fileType && obj.parser[file.fileType] && obj.parser[file.fileType].wysiwyg)
+						{
+							template = obj.parser[file.fileType].wysiwyg;
+						}
 
 						if (file.isImage)
 						{
@@ -1655,9 +1695,12 @@ LHEPostForm.prototype = {
 
 	OnButtonClick : function(type)
 	{
-		if(type != 'cancel')
+		if(type !== 'cancel')
 		{
-			BX.onCustomEvent(this.eventNode, 'OnClickSubmit', [this]);
+			var res = {result : true};
+			BX.onCustomEvent(this.eventNode, 'OnClickBeforeSubmit', [this, res]);
+			if (res["result"] !== false)
+				BX.onCustomEvent(this.eventNode, 'OnClickSubmit', [this]);
 		}
 		else
 		{
@@ -1930,6 +1973,20 @@ LHEPostForm.prototype = {
 		}, this));
 		BX.addCustomEvent(BX(this.formID), 'onAutoSaveRestore', BX.proxy(function(ob, form_data)
 		{
+			if (repo.handler[editor.id])
+			{
+				for (var ii in repo.handler[editor.id].controllers)
+				{
+					if (repo.handler[editor.id].controllers.hasOwnProperty(ii) &&
+						repo.handler[editor.id].controllers[ii].handler &&
+						repo.handler[editor.id].controllers[ii].handler.params &&
+						repo.handler[editor.id].controllers[ii].handler.params.controlName &&
+						repo.handler[editor.id].controllers[ii].handler.params.controlName)
+					{
+						delete form_data[repo.handler[editor.id].controllers[ii].handler.params.controlName];
+					}
+				}
+			}
 			if (form_data['text' + this.formID] && /[^\s]+/gi.test(form_data['text' + this.formID]))
 			{
 				editor.CheckAndReInit(form_data['text' + this.formID]);
@@ -2294,7 +2351,7 @@ window.MPFbuttonShowWait = function(el)
 	el = (el ? (el.tagName == "A" ? el : el.parentNode) : el);
 	if (el)
 	{
-		BX.addClass(el, "feed-add-button-load");
+		BX.addClass(el, "ui-btn-clock");
 		lastWaitElement = el;
 		BX.defer(function(){el.disabled = true})();
 	}
@@ -2308,7 +2365,7 @@ window.MPFbuttonCloseWait = function(el)
 	if (el)
 	{
 		el.disabled = false ;
-		BX.removeClass(el, 'feed-add-button-load');
+		BX.removeClass(el, 'ui-btn-clock');
 		lastWaitElement = null;
 	}
 };
@@ -2348,11 +2405,50 @@ window.BXfpdSelectCallback = function(item, type, search, bUndeleted, name, stat
 		bUndeleted: bUndeleted,
 		containerInput: BX('feed-add-post-destination-item'),
 		valueInput: BX('feed-add-post-destination-input'),
-		formName: window.BXSocNetLogDestinationFormName,
+		formName: name,
 		tagInputName: 'bx-destination-tag',
 		tagLink1: BX.message('BX_FPD_LINK_1'),
 		tagLink2: BX.message('BX_FPD_LINK_2'),
 		state: (typeof state != 'undefined' ? state : null)
+	});
+};
+
+window.BXfpdUnSelectCallback = function(item, type, search, name)
+{
+	BX.SocNetLogDestination.BXfpUnSelectCallback.call({
+		formName: name,
+		inputContainerName: 'feed-add-post-destination-item',
+		inputName: 'feed-add-post-destination-input',
+		tagInputName: 'bx-destination-tag',
+		tagLink1: BX.message('BX_FPD_LINK_1'),
+		tagLink2: BX.message('BX_FPD_LINK_2')
+	}, item);
+};
+
+window.BXfpdOpenDialogCallback = function(name)
+{
+	BX.SocNetLogDestination.BXfpOpenDialogCallback.call({
+		inputBoxName: 'feed-add-post-destination-input-box',
+		inputName: 'feed-add-post-destination-input',
+		tagInputName: 'bx-destination-tag'
+	});
+};
+
+window.BXfpdCloseDialogCallback = function(name)
+{
+	BX.SocNetLogDestination.BXfpCloseDialogCallback.call({
+		inputBoxName: 'feed-add-post-destination-input-box',
+		inputName: 'feed-add-post-destination-input',
+		tagInputName: 'bx-destination-tag'
+	});
+};
+
+window.BXfpdCloseSearchCallback = function(name)
+{
+	BX.SocNetLogDestination.BXfpCloseSearchCallback.call({
+		inputBoxName: 'feed-add-post-destination-input-box',
+		inputName: 'feed-add-post-destination-input',
+		tagInputName: 'bx-destination-tag'
 	});
 };
 
@@ -2363,9 +2459,17 @@ window.onKeyDownHandler = function(e, editor, formID)
 	if (!window['BXfpdStopMent' + formID])
 		return true;
 
-	if (keyCode == 107 ||
-		((e.shiftKey || e.modifiers > 3) && BX.util.in_array(keyCode, [187, 50, 107, 43, 61])) ||
-		(e.altKey && BX.util.in_array(keyCode, [76])) /* German @ == Alt + L*/)
+	if (
+		BX.util.in_array(keyCode, [107, 187])
+		|| (
+			(e.shiftKey || e.modifiers > 3)
+			&& BX.util.in_array(keyCode, [50, 43, 61])
+		)
+		|| (
+			e.altKey
+			&& BX.util.in_array(keyCode, [76])
+		) /* German @ == Alt + L*/
+	)
 	{
 		setTimeout(function()
 		{
@@ -2773,6 +2877,11 @@ window.BxInsertMention = function (params)
 			editor.textareaView.WrapWith(false, false, "[USER=" + item.entityId + "]" + item.name + "[/USER]" + (bNeedComa ? ', ' : ' '));
 		}
 
+		if (params.fireAddEvent === true)
+		{
+			BX.onCustomEvent(window, 'onMentionAdd', [ item ]);
+		}
+
 		delete BX.SocNetLogDestination.obItemsSelected[window['BXSocNetLogDestinationFormNameMent' + formID]][item.id];
 		window['BXfpdStopMent' + formID]();
 		MPFMention["text"] = '';
@@ -2794,7 +2903,7 @@ window.MPFMentionInit = function(formId, params)
 
 	window["departmentRelation"] = params["items"]["departmentRelation"]; // for calendar - do not remove
 
-	if (params["initDestination"] === true)
+	if (params.initDestination === true)
 	{
 		window.BXSocNetLogDestinationFormName = 'destination' + ('' + new Date().getTime()).substr(6);
 		window.BXSocNetLogDestinationDisableBackspace = null;
@@ -2813,7 +2922,7 @@ window.MPFMentionInit = function(formId, params)
 				offsetLeft: '15px'
 			},
 			callback : {
-				select : window["BXfpdSelectCallback"],
+				select : window.BXfpdSelectCallback,
 				unSelect : BX.delegate(BX.SocNetLogDestination.BXfpUnSelectCallback, {
 					formName: window.BXSocNetLogDestinationFormName,
 					inputContainerName: 'feed-add-post-destination-item',
@@ -2836,11 +2945,6 @@ window.MPFMentionInit = function(formId, params)
 					inputBoxName: 'feed-add-post-destination-input-box',
 					inputName: 'feed-add-post-destination-input',
 					tagInputName: 'bx-destination-tag'
-				}),
-				closeSearch : BX.delegate(BX.SocNetLogDestination.BXfpCloseSearchCallback, {
-					inputBoxName: 'feed-add-post-destination-input-box',
-					inputName: 'feed-add-post-destination-input',
-					tagInputName: 'bx-destination-tag'
 				})
 			},
 			items : params["items"],
@@ -2854,21 +2958,28 @@ window.MPFMentionInit = function(formId, params)
 			allowSearchCrmEmailUsers: (typeof params["allowSearchCrmEmailUsers"] != 'undefined' ? !!params["allowSearchCrmEmailUsers"] : false),
 			userNameTemplate: (typeof params["userNameTemplate"] != 'undefined' ? params["userNameTemplate"] : ''),
 			allowSonetGroupsAjaxSearch: (typeof params["allowSonetGroupsAjaxSearch"] != 'undefined' ? params["allowSonetGroupsAjaxSearch"] : false),
-			allowSonetGroupsAjaxSearchFeatures: (typeof params["allowSonetGroupsAjaxSearchFeatures"] != 'undefined' ? params["allowSonetGroupsAjaxSearchFeatures"] : {})
+			allowSonetGroupsAjaxSearchFeatures: (typeof params["allowSonetGroupsAjaxSearchFeatures"] != 'undefined' ? params["allowSonetGroupsAjaxSearchFeatures"] : {}),
+			showVacations: true,
+			usersVacation : (typeof params["usersVacation"] != 'undefined' ? params["usersVacation"] : {})
 		});
 		BX.bind(BX('feed-add-post-destination-input'), 'keyup', BX.delegate(BX.SocNetLogDestination.BXfpSearch, {
 			formName: window.BXSocNetLogDestinationFormName,
 			inputName: 'feed-add-post-destination-input',
 			tagInputName: 'bx-destination-tag'
 		}));
-		BX.bind(BX('feed-add-post-destination-input'), 'paste', BX.delegate(BX.SocNetLogDestination.BXfpSearch, {
+		BX.bind(BX('feed-add-post-destination-input'), 'paste', BX.defer(BX.SocNetLogDestination.BXfpSearch, {
 			formName: window.BXSocNetLogDestinationFormName,
 			inputName: 'feed-add-post-destination-input',
-			tagInputName: 'bx-destination-tag'
+			tagInputName: 'bx-destination-tag',
+			onPasteEvent: true
 		}));
 		BX.bind(BX('feed-add-post-destination-input'), 'keydown', BX.delegate(BX.SocNetLogDestination.BXfpSearchBefore, {
 			formName: window.BXSocNetLogDestinationFormName,
 			inputName: 'feed-add-post-destination-input'
+		}));
+		BX.bind(BX('feed-add-post-destination-input'), 'blur', BX.delegate(BX.SocNetLogDestination.BXfpBlurInput, {
+			inputBoxName: 'feed-add-post-destination-input-box',
+			tagInputName: 'bx-destination-tag'
 		}));
 		BX.bind(BX('bx-destination-tag'), 'focus', function(e) {
 			BX.SocNetLogDestination.openDialog(
@@ -2883,6 +2994,27 @@ window.MPFMentionInit = function(formId, params)
 			BX.SocNetLogDestination.openDialog(window.BXSocNetLogDestinationFormName);
 			return BX.PreventDefault(e);
 		});
+
+		BX.addCustomEvent(window, "onMentionAdd", function(item) {
+			if (!BX.type.isPlainObject(BX.SocNetLogDestination.obItems[window.BXSocNetLogDestinationFormName]['users'][item.id]))
+			{
+				BX.SocNetLogDestination.obItems[window.BXSocNetLogDestinationFormName]['users'][item.id] = item;
+			}
+			BX.addCustomEvent(window, 'BX.SocNetLogDestination:onBeforeSelectItemFocus', function(sender) {
+				if (sender.id == window.BXSocNetLogDestinationFormName)
+				{
+					sender.blockFocus = true;
+				}
+			});
+			if (
+				typeof (BX.SocNetLogDestination.obItemsSelected[window.BXSocNetLogDestinationFormName][item.id]) == 'undefined'
+				|| !BX.SocNetLogDestination.obItemsSelected[window.BXSocNetLogDestinationFormName][item.id]
+			)
+			{
+				BX.SocNetLogDestination.selectItem(window.BXSocNetLogDestinationFormName, null, null, item.id, 'users', false);
+			}
+		});
+
 		if (params["itemsHidden"])
 		{
 			for (var ii in params["itemsHidden"])
@@ -2913,7 +3045,13 @@ window.MPFMentionInit = function(formId, params)
 	}
 	window["BXfpdSelectCallbackMent" + formId] = function(item, type, search)
 	{
-		window.BxInsertMention({item: item, type: type, formID: formId, editorId: params["editorId"]});
+		window.BxInsertMention({
+			item: item,
+			type: type,
+			formID: formId,
+			editorId: params.editorId,
+			fireAddEvent: params.initDestination
+		});
 	};
 
 	window["BXfpdStopMent" + formId] = function ()
@@ -2967,7 +3105,10 @@ window.MPFMentionInit = function(formId, params)
 	window["BXSocNetLogDestinationDisableBackspace"] = null;
 	var bxBMent = BX('bx-b-mention-' + formId);
 
-	if (typeof params["items"]["extranetRoot"] != 'undefined')
+	if (
+		!params.extranetUser
+		&& typeof params.items.extranetRoot != 'undefined'
+	)
 	{
 		params["items"]["departmentExtranet"] = BX.clone(params["items"]["department"]);
 		for(var key in params["items"]["extranetRoot"])
@@ -2983,7 +3124,11 @@ window.MPFMentionInit = function(formId, params)
 	BX.SocNetLogDestination.init({
 		name : window["BXSocNetLogDestinationFormNameMent" + formId],
 		searchInput : bxBMent,
-		extranetUser : params["extranetUser"],
+		extranetUser : params.extranetUser,
+		bindOptions: {
+			position: 'bottom',
+			forceTop: true
+		},
 		bindMainPopup :  {
 			node : bxBMent,
 			offsetTop : '1px',
@@ -3014,13 +3159,15 @@ window.MPFMentionInit = function(formId, params)
 			department : {},
 			groups : {}
 		},
-		itemsSelected : params["itemsSelected"],
+		itemsSelected : {},
 		destSort: (typeof params["mentionDestSort"] != 'undefined' && params["mentionDestSort"] ? params["mentionDestSort"] : {}),
 		departmentSelectDisable : true,
 		obWindowClass : 'bx-lm-mention',
 		obWindowCloseIcon : false,
 		useClientDatabase: (!!params["useClientDatabase"]),
-		userNameTemplate: (typeof params["userNameTemplate"] != 'undefined' ? params["userNameTemplate"] : '')
+		userNameTemplate: (typeof params["userNameTemplate"] != 'undefined' ? params["userNameTemplate"] : ''),
+		showVacations: false,
+		showSearchInput: BX.browser.IsMobile()
 	});
 
 	BX.ready(function() {

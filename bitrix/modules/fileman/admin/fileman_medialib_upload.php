@@ -56,7 +56,7 @@ class filemanMedialibUpload
 			),
 			'arCollections' => array($package["collectionId"])
 		));
-		if (!array_key_exists("redirectUrl", $upload) && $res && $res['ID'] > 0)
+		if (!isset($upload["redirectUrl"]) && $res && $res['ID'] > 0)
 		{
 			$upload["redirectUrlPart"] = "action=redirect&".bitrix_sessid_get()."&first_id=".$res["ID"].
 				"&col_id=".$package["collectionId"]."&ml_type=".htmlspecialcharsEx($package["ml_type"]);

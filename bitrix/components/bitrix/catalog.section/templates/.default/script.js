@@ -22,7 +22,7 @@
 		}
 
 		this.bigData = params.bigData || {enabled: false};
-		this.container = document.querySelector('[data-entity="container-' + this.navParams.NavNum + '"]');
+		this.container = document.querySelector('[data-entity="' + params.container + '"]');
 		this.showMoreButton = null;
 		this.showMoreButtonMessage = null;
 
@@ -32,12 +32,17 @@
 			BX.cookie_domain = this.bigData.js.cookieDomain || '';
 			BX.current_server_time = this.bigData.js.serverTime;
 
-			BX.ready(BX.proxy(this.bigDataLoad, this));
+			BX.ready(BX.delegate(this.bigDataLoad, this));
+		}
+
+		if (params.initiallyShowHeader)
+		{
+			BX.ready(BX.delegate(this.showHeader, this));
 		}
 
 		if (params.deferredLoad)
 		{
-			BX.ready(BX.proxy(this.deferredLoad, this));
+			BX.ready(BX.delegate(this.deferredLoad, this));
 		}
 
 		if (params.lazyLoad)
@@ -231,9 +236,7 @@
 				return;
 
 			var processed = BX.processHTML(itemsHtml, false),
-				parentNode = BX.findParent(this.container, {attr: {'data-entity': 'parent-container'}}),
-				temporaryNode = BX.create('DIV'),
-				header;
+				temporaryNode = BX.create('DIV');
 
 			var items, k, origRows;
 
@@ -242,6 +245,8 @@
 
 			if (items.length)
 			{
+				this.showHeader(true);
+
 				for (k in items)
 				{
 					if (items.hasOwnProperty(k))
@@ -260,19 +265,12 @@
 					}
 				}
 
-				if (parentNode && BX.type.isDomNode(parentNode))
-				{
-					header = parentNode.querySelector('[data-entity="header"');
-				}
-
 				new BX.easing({
 					duration: 2000,
 					start: {opacity: 0},
 					finish: {opacity: 100},
 					transition: BX.easing.makeEaseOut(BX.easing.transitions.quad),
 					step: function(state){
-						header && (header.style.opacity = state.opacity / 100);
-
 						for (var k in items)
 						{
 							if (items.hasOwnProperty(k))
@@ -282,8 +280,6 @@
 						}
 					},
 					complete: function(){
-						header && header.removeAttribute('style');
-
 						for (var k in items)
 						{
 							if (items.hasOwnProperty(k))
@@ -309,6 +305,43 @@
 				if (pagination.hasOwnProperty(k))
 				{
 					pagination[k].innerHTML = paginationHtml;
+				}
+			}
+		},
+
+		showHeader: function(animate)
+		{
+			var parentNode = BX.findParent(this.container, {attr: {'data-entity': 'parent-container'}}),
+				header;
+
+			if (parentNode && BX.type.isDomNode(parentNode))
+			{
+				header = parentNode.querySelector('[data-entity="header"]');
+
+				if (header && header.getAttribute('data-showed') != 'true')
+				{
+					header.style.display = '';
+
+					if (animate)
+					{
+						new BX.easing({
+							duration: 2000,
+							start: {opacity: 0},
+							finish: {opacity: 100},
+							transition: BX.easing.makeEaseOut(BX.easing.transitions.quad),
+							step: function(state){
+								header.style.opacity = state.opacity / 100;
+							},
+							complete: function(){
+								header.removeAttribute('style');
+								header.setAttribute('data-showed', 'true');
+							}
+						}).animate();
+					}
+					else
+					{
+						header.style.opacity = 100;
+					}
 				}
 			}
 		}

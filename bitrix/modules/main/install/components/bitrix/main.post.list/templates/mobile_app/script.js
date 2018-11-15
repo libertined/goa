@@ -93,15 +93,7 @@
 		attachments : [],
 		node : null,
 		getText : function() {
-			var text = this.text;
-			for (var ii in this.mentions)
-			{
-				if (this.mentions.hasOwnProperty(ii))
-				{
-					text = text.replace(new RegExp(ii,"gi"), this.mentions[ii]);
-				}
-			}
-			return text;
+			return this.text;
 		}
 	};
 	/*
@@ -183,7 +175,7 @@
 							comment = this.initComment(comment, "", false);
 							comment.mentions[authorName] = '[USER=' + authorId + ']' + authorName + '[/USER]';
 							var text = (this.handler && this.handler.simpleForm ? this.handler.simpleForm.writingParams["~text"] : comment.text);
-							comment.text = text + (text == "" ? "" : " ") + authorName + ', ';
+							comment.text = text + (text == "" ? "" : " ") + '[USER=' + authorId + ']' + authorName + '[/USER]' + ', ';
 						}
 						this.show(comment, comment.text, false);
 					}
@@ -388,10 +380,33 @@
 			if (comment && comment.node)
 			{
 				BX.addClass(comment.node, "feed-com-block-cover-undelivered");
-				if (
+
+				var bindUndelivered = (
 					typeof comment.attachments == 'undefined'
 					|| comment.attachments.length <= 0
+				);
+
+				if (
+					!bindUndelivered
+					&& BX.type.isArray(comment.attachments)
 				)
+				{
+					bindUndelivered = true;
+
+					for (var ij = 0; ij < comment.attachments.length; ij++)
+					{
+						if (
+							BX.type.isNotEmptyString(comment.attachments[ij].fieldValue) // attached UF
+							|| BX.type.isNotEmptyString(comment.attachments[ij].url) // attached file
+						)
+						{
+							bindUndelivered = false;
+							break;
+						}
+					}
+				}
+
+				if (bindUndelivered)
 				{
 					BX.bind(comment.node, 'click', BX.proxy(function(e) {
 						BX.unbindAll(comment.node);
@@ -400,6 +415,7 @@
 						this.handler.simpleForm.handleAppData(comment.text, true);
 					}, this));
 				}
+
 /*
 				node = BX.findChild(comment.node, {'tagName' : "DIV", 'className' : "post-comment-text"}, true);
 				if (node)
@@ -619,7 +635,7 @@
 					this.clearThumb(comment);
 				}
 			}, this);
-			this.windowEvents['onPull'] = BX.delegate(function(data) {
+			this.windowEvents['onPull-unicomments'] = BX.delegate(function(data) {
 				var params = data.params;
 				if (
 					data.command == "comment_mobile"
@@ -655,7 +671,7 @@
 			BX.addCustomEvent(window, 'OnUCFormResponse', this.windowEvents['OnUCFormResponse']);
 			BX.addCustomEvent(window, 'OnUCAfterRecordAdd', this.windowEvents['OnUCAfterRecordAdd']);
 			BX.addCustomEvent(window, 'OnUCFormBeforeSubmit', this.windowEvents['OnUCFormBeforeSubmit']);
-			BXMobileApp.addCustomEvent(window, 'onPull-unicomments', this.windowEvents['onPull']);
+			BXMobileApp.addCustomEvent(window, 'onPull-unicomments', this.windowEvents['onPull-unicomments']);
 
 			if (staticParams['SHOW_POST_FORM'] == "Y")
 				MPFForm.link(this.ENTITY_XML_ID, formParams);

@@ -317,7 +317,7 @@ create table if not exists b_iblock_cache
 (
 	CACHE_KEY varchar(35) not null,
 	CACHE longtext not null,
-	CACHE_DATE datetime not null default '0000-00-00 00:00:00',
+	CACHE_DATE datetime not null,
 	primary key (CACHE_KEY)
 );
 

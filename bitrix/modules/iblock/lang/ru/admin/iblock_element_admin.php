@@ -1,4 +1,5 @@
 <?
+$MESS["IBEL_A_SECTIONS"] = "Разделы";
 $MESS["IBLOCK_EL_ADMIN_DESC"] = "Описание:";
 $MESS["IBLOCK_EL_ADMIN_DCREATE"] = "Дата создания";
 $MESS["IBLOCK_EL_ADMIN_WCREATE"] = "Кто создал:";
@@ -59,7 +60,7 @@ $MESS["IBEL_A_IBLOCK_MANAGE_HINT"] = "Изменить свойства и пр�
 $MESS["IBEL_A_IBLOCK_MANAGE_HINT_HREF"] = "Настройках информационного блока.";
 $MESS["IBEL_A_COPY_ELEMENT"] = "Копировать";
 $MESS["IBEL_CATALOG_AVAILABLE"] = "Доступность";
-$MESS["IBEL_CATALOG_AVAILABLE_TITLE"] = "Доступность к покупке";
+$MESS["IBEL_CATALOG_AVAILABLE_TITLE_EXT"] = "Доступность товара (не эквивалентна возможности покупки)";
 $MESS["IBEL_CATALOG_BUNDLE"] = "Наличие набора";
 $MESS["IBEL_CATALOG_QUANTITY_EXT"] = "Доступное количество";
 $MESS["IBEL_CATALOG_QUANTITY_RESERVED"] = "Зарезервировано";
@@ -126,4 +127,6 @@ $MESS["IBEL_CATALOG_WIDTH"] = "Ширина (мм)";
 $MESS["IBEL_CATALOG_LENGTH"] = "Длина (мм)";
 $MESS["IBEL_CATALOG_HEIGHT"] = "Высота (мм)";
 $MESS["IBEL_CATALOG_EXTRA_DESCRIPTION"] = "Наценка #VALUE# к базовой цене";
+$MESS["IBEL_SECTIONS_LINK_TITLE"] = "Перейти к элементам раздела";
+$MESS["IBEL_LIST_TITLE"] = "#IBLOCK_NAME#: Список товаров";
 ?>

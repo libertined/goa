@@ -99,8 +99,14 @@ class IblockElementSelector extends CBitrixComponent
 			return;
 		}
 
-		$queryObject = CIBlockElement::getList(array('ID' => 'DESC'),
-			array('=IBLOCK_ID' => $this->arParams['IBLOCK_ID']), false, array('nTopCount' => 50), array('ID', 'NAME'));
+		$queryObject = CIBlockElement::getList(
+			array('ID' => 'DESC'),
+			array(
+				'=IBLOCK_ID' => $this->arParams['IBLOCK_ID'],
+				'CHECK_PERMISSIONS' => 'Y',
+				'MIN_PERMISSION' => 'R'
+			),
+			false, array('nTopCount' => 50), array('ID', 'NAME'));
 		while($element = $queryObject->fetch())
 		{
 			$this->arParams['LAST_ELEMENTS'][] = array('ID' => $element['ID'], 'NAME' => $element['NAME']);

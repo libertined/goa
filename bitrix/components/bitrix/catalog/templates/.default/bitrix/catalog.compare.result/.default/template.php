@@ -11,7 +11,14 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 
-$isAjax = ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST["ajax_action"]) && $_POST["ajax_action"] == "Y");
+$isAjax = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+	$isAjax = (
+		(isset($_POST['ajax_action']) && $_POST['ajax_action'] == 'Y')
+		|| (isset($_POST['compare_result_reload']) && $_POST['compare_result_reload'] == 'Y')
+	);
+}
 
 $templateData = array(
 	'TEMPLATE_THEME' => $this->GetFolder().'/themes/'.$arParams['TEMPLATE_THEME'].'/style.css',
@@ -188,7 +195,7 @@ if (!empty($arResult["SHOW_OFFER_FIELDS"]))
 			<td><?=GetMessage("IBLOCK_OFFER_FIELD_".$code)?></td>
 			<?foreach($arResult["ITEMS"] as $arElement)
 			{
-			?><td><?
+				?><td><?
 				switch ($code)
 				{
 					case 'PREVIEW_PICTURE':
@@ -196,8 +203,8 @@ if (!empty($arResult["SHOW_OFFER_FIELDS"]))
 						if (!empty($arElement["OFFER_FIELDS"][$code]) && is_array($arElement["OFFER_FIELDS"][$code]))
 						{
 							?><img border="0" src="<?= $arElement["OFFER_FIELDS"][$code]["SRC"] ?>"
-							width="auto" height="150"
-							alt="<?= $arElement["OFFER_FIELDS"][$code]["ALT"] ?>" title="<?= $arElement["OFFER_FIELDS"][$code]["TITLE"] ?>"
+								width="auto" height="150"
+								alt="<?= $arElement["OFFER_FIELDS"][$code]["ALT"] ?>" title="<?= $arElement["OFFER_FIELDS"][$code]["TITLE"] ?>"
 							/><?
 						}
 						break;
@@ -205,7 +212,7 @@ if (!empty($arResult["SHOW_OFFER_FIELDS"]))
 						?><?=(is_array($arElement["OFFER_FIELDS"][$code])? implode("/ ", $arElement["OFFER_FIELDS"][$code]): $arElement["OFFER_FIELDS"][$code])?><?
 						break;
 				}
-			?></td><?
+				?></td><?
 			}
 			unset($arElement);
 			?>
@@ -366,7 +373,7 @@ if (!empty($arResult["SHOW_OFFER_PROPERTIES"]))
 		{
 		?>
 		<td>
-			<a onclick="CatalogCompareObj.MakeAjaxAction('<?=CUtil::JSEscape($arElement['~DELETE_URL'])?>');" href="javascript:void(0)"><?=GetMessage("CATALOG_REMOVE_PRODUCT")?></a>
+			<a onclick="CatalogCompareObj.delete('<?=CUtil::JSEscape($arElement['~DELETE_URL'])?>');" href="javascript:void(0)"><?=GetMessage("CATALOG_REMOVE_PRODUCT")?></a>
 		</td>
 		<?
 		}
@@ -383,5 +390,5 @@ if ($isAjax)
 ?>
 </div>
 <script type="text/javascript">
-	var CatalogCompareObj = new BX.Iblock.Catalog.CompareClass("bx_catalog_compare_block");
+	var CatalogCompareObj = new BX.Iblock.Catalog.CompareClass("bx_catalog_compare_block", '<?=CUtil::JSEscape($arResult['~COMPARE_URL_TEMPLATE']); ?>');
 </script>

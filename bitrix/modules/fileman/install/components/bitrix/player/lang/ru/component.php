@@ -13,4 +13,5 @@ $MESS ['PLAYLIST_VIMEO_NOT_SUPPORTED'] = 'Плеер не поддерживае
 $MESS ['PLAYLIST_STREAMING_VIDEO_NOT_SUPPORTED'] = 'Плеер не поддерживает отображение потокового видео в плейлисте';
 $MESS ['NO_SUPPORTED_FILES'] = "Нет доступных к воспроизведению файлов";
 $MESS ['PLAYLIST_FILE_NOT_FOUND'] = 'не является поддерживаемым типом файла';
+$MESS ['VIDEOJS_NOT_SUPPORTED_MESSAGE'] = 'Не найдено подходящего способа для воспроизведения';
 ?>

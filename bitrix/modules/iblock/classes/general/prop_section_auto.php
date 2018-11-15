@@ -4,15 +4,15 @@ use Bitrix\Main\Localization\Loc,
 
 Loc::loadMessages(__FILE__);
 
-define ('BT_UT_SECTION_AUTOCOMPLETE_CODE','SectionAuto');
-
 class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoComplete
 {
+	const USER_TYPE = 'SectionAuto';
+
 	public static function GetUserTypeDescription()
 	{
 		return array(
-			"PROPERTY_TYPE" => "G",
-			"USER_TYPE" => BT_UT_SECTION_AUTOCOMPLETE_CODE,
+			"PROPERTY_TYPE" => Iblock\PropertyTable::TYPE_SECTION,
+			"USER_TYPE" => self::USER_TYPE,
 			"DESCRIPTION" => Loc::getMessage('BT_UT_SAUTOCOMPLETE_DESCR'),
 			"GetPropertyFieldHtml" => array(__CLASS__, "GetPropertyFieldHtml"),
 			"GetPropertyFieldHtmlMulty" => array(__CLASS__,'GetPropertyFieldHtmlMulty'),
@@ -23,6 +23,7 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 			"GetSettingsHTML" => array(__CLASS__,'GetSettingsHTML'),
 			"PrepareSettings" => array(__CLASS__,'PrepareSettings'),
 			"AddFilterFields" => array(__CLASS__,'AddFilterFields'),
+			"GetPublicFilterHTML" => array(__CLASS__,'GetPublicFilterHTML'),
 		);
 	}
 
@@ -62,6 +63,11 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 		return $arResult;
 	}
 
+	public static function GetPublicFilterHTML($arProperty, $strHTMLControlName)
+	{
+		return self::GetAdminFilterHTML($arProperty, $strHTMLControlName);
+	}
+
 	public static function GetPropertyFieldHtml($arProperty, $arValue, $strHTMLControlName)
 	{
 		global $APPLICATION;
@@ -78,13 +84,13 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 			if (!is_array($mxElement))
 			{
 				$strResult = '<input type="text" name="'.htmlspecialcharsbx($strHTMLControlName["VALUE"]).'" id="'.$strHTMLControlName["VALUE"].'" value="" size="5">'.
-					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.intval($arProperty["LINK_IBLOCK_ID"]).'&amp;n='.urlencode($strHTMLControlName["VALUE"]).($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
+					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.intval($arProperty["LINK_IBLOCK_ID"]).'&amp;n='.urlencode($strHTMLControlName["VALUE"]).'&amp;hideiblock='.$arProperty['IBLOCK_ID'].($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
 					'&nbsp;<span id="sp_'.$strHTMLControlName["VALUE"].'" ></span>';
 			}
 			else
 			{
 				$strResult = '<input type="text" name="'.$strHTMLControlName["VALUE"].'" id="'.$strHTMLControlName["VALUE"].'" value="'.$arValue['VALUE'].'" size="5">'.
-					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$arProperty["LINK_IBLOCK_ID"].'&amp;n='.urlencode($strHTMLControlName["VALUE"]).($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
+					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$arProperty["LINK_IBLOCK_ID"].'&amp;n='.urlencode($strHTMLControlName["VALUE"]).'&amp;hideiblock='.$arProperty['IBLOCK_ID'].($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
 					'&nbsp;<span id="sp_'.$strHTMLControlName["VALUE"].'" >'.$mxElement['NAME'].'</span>';
 			}
 		}
@@ -127,7 +133,7 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 				style="float: left; margin-right: 10px; margin-top: 5px;"
 				type="button" value="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT'); ?>"
 				title="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT_DESCR'); ?>"
-				onclick="jsUtils.OpenWindow('/bitrix/admin/iblock_section_search.php?lang=<? echo LANGUAGE_ID; ?>&IBLOCK_ID=<? echo $arProperty["LINK_IBLOCK_ID"]; ?>&n=&k=&lookup=<? echo 'jsMLI_'.$control_id; ?><?=($fixIBlock ? '&iblockfix=y' : '').'&tableId='.$windowTableId; ?>', 900, 700);"><?
+				onclick="jsUtils.OpenWindow('/bitrix/admin/iblock_section_search.php?lang=<? echo LANGUAGE_ID; ?>&IBLOCK_ID=<? echo $arProperty["LINK_IBLOCK_ID"]; ?>&n=&k=&lookup=<? echo 'jsMLI_'.$control_id; ?>&hideiblock=<?=$arProperty['IBLOCK_ID']; ?><?=($fixIBlock ? '&iblockfix=y' : '').'&tableId='.$windowTableId; ?>', 900, 700);"><?
 			}
 			if ('Y' == $arProperty['USER_TYPE_SETTINGS']['SHOW_ADD'] && $fixIBlock)
 			{
@@ -181,14 +187,14 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 
 		if (isset($strHTMLControlName['MODE']) && ('iblock_element_admin' == $strHTMLControlName['MODE']))
 		{
-			$arResult = false;
+			$arResult = [];
 			foreach ($arValues as $intPropertyValueID => $arOneValue)
 			{
 				$mxElement = static::GetPropertyValue($arProperty,$arOneValue);
 				if (is_array($mxElement))
 				{
 					$arResult[] = '<input type="text" name="'.$strHTMLControlName["VALUE"].'['.$intPropertyValueID.']" id="'.$strHTMLControlName["VALUE"].'['.$intPropertyValueID.']" value="'.$arOneValue['VALUE'].'" size="5">'.
-					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$arProperty["LINK_IBLOCK_ID"].'&amp;n='.urlencode($strHTMLControlName["VALUE"].'['.$intPropertyValueID.']').($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
+					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$arProperty["LINK_IBLOCK_ID"].'&amp;n='.urlencode($strHTMLControlName["VALUE"].'['.$intPropertyValueID.']').'&amp;hideiblock='.$arProperty['IBLOCK_ID'].($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
 					'&nbsp;<span id="sp_'.$strHTMLControlName["VALUE"].'['.$intPropertyValueID.']" >'.$mxElement['NAME'].'</span>';
 				}
 			}
@@ -198,7 +204,7 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 				for ($i = 0; $i < $arProperty['MULTIPLE_CNT']; $i++)
 				{
 					$arResult[] = '<input type="text" name="'.$strHTMLControlName["VALUE"].'[n'.$i.']" id="'.$strHTMLControlName["VALUE"].'[n'.$i.']" value="" size="5">'.
-					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$arProperty["LINK_IBLOCK_ID"].'&amp;n='.urlencode($strHTMLControlName["VALUE"].'[n'.$i.']').($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
+					'<input type="button" value="..." onClick="jsUtils.OpenWindow(\'iblock_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$arProperty["LINK_IBLOCK_ID"].'&amp;n='.urlencode($strHTMLControlName["VALUE"].'[n'.$i.']').'&amp;hideiblock='.$arProperty['IBLOCK_ID'].($fixIBlock ? '&amp;iblockfix=y' : '').'&amp;tableId='.$windowTableId.'\', 900, 700);">'.
 					'&nbsp;<span id="sp_'.$strHTMLControlName["VALUE"].'[n'.$i.']" ></span>';
 				}
 			}
@@ -244,7 +250,7 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 				style="float: left; margin-right: 10px; margin-top: 5px;"
 				type="button" value="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT'); ?>"
 				title="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT_MULTI_DESCR'); ?>"
-				onclick="jsUtils.OpenWindow('/bitrix/admin/iblock_section_search.php?lang=<? echo LANGUAGE_ID; ?>&IBLOCK_ID=<? echo $arProperty["LINK_IBLOCK_ID"]; ?>&m=Y&n=&k=&lookup=<? echo 'jsMLI_'.$control_id; ?><?=($fixIBlock ? '&iblockfix=y' : '').'&tableId='.$windowTableId; ?>', 900, 700);"><?
+				onclick="jsUtils.OpenWindow('/bitrix/admin/iblock_section_search.php?lang=<? echo LANGUAGE_ID; ?>&IBLOCK_ID=<? echo $arProperty["LINK_IBLOCK_ID"]; ?>&m=Y&n=&k=&lookup=<? echo 'jsMLI_'.$control_id; ?>&hideiblock=<?=$arProperty['IBLOCK_ID']; ?>.<?=($fixIBlock ? '&iblockfix=y' : '').'&tableId='.$windowTableId; ?>', 900, 700);"><?
 			}
 			if ('Y' == $arProperty['USER_TYPE_SETTINGS']['SHOW_ADD'] && $fixIBlock)
 			{
@@ -374,7 +380,7 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 			));
 		}
 
-		$controlId = $APPLICATION->IncludeComponent(
+		$APPLICATION->IncludeComponent(
 			'bitrix:main.lookup.input',
 			'iblockedit',
 			array(
@@ -519,7 +525,7 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 		</tr>
 		<tr>
 		<td>'.Loc::getMessage('BT_UT_SAUTOCOMPLETE_SETTING_REP_SYMBOL').'</td>
-		<td>'.SelectBoxFromArray($strHTMLControlName["NAME"].'[REP_SYM]',static::GetReplaceSymList(true),htmlspecialcharsbx($arSettings['REP_SYM'])).'&nbsp;<input type="text" name="'.$strHTMLControlName["NAME"].'[OTHER_REP_SYM]" size="1" maxlength="1" value="'.$arSettings['OTHER_REP_SYM'].'"></td>
+		<td>'.SelectBoxFromArray($strHTMLControlName["NAME"].'[REP_SYM]',static::GetReplaceSymList(true),htmlspecialcharsbx($arSettings['REP_SYM'])).'&nbsp;<input type="text" name="'.$strHTMLControlName["NAME"].'[OTHER_REP_SYM]" size="1" maxlength="1" value="'.htmlspecialcharsbx($arSettings['OTHER_REP_SYM']).'"></td>
 		</tr>
 		';
 	}
@@ -531,6 +537,14 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 		$arSettings = static::PrepareSettings($arProperty);
 		$arSymbols = static::GetSymbols($arSettings);
 		$fixIBlock = $arProperty["LINK_IBLOCK_ID"] > 0;
+		$windowTableId = 'iblockprop-'.Iblock\PropertyTable::TYPE_SECTION.'-'.$arProperty['ID'].'-'.$arProperty['LINK_IBLOCK_ID'];
+
+		$isMainUiFilter = ($strHTMLControlName["FORM_NAME"] == "main-ui-filter");
+		$inputName = $strHTMLControlName['VALUE'].'[]';
+		if ($isMainUiFilter)
+		{
+			$inputName = $strHTMLControlName['VALUE'];
+		}
 
 		$strValue = '';
 
@@ -552,11 +566,11 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 			"bitrix:main.lookup.input",
 			"iblockedit",
 			array(
-				"INPUT_NAME" => $strHTMLControlName['VALUE'].'[]',
+				"INPUT_NAME" => $inputName,
 				"INPUT_NAME_STRING" => "inp_".$strHTMLControlName['VALUE'],
 				"INPUT_VALUE_STRING" => $strValue,
 				"START_TEXT" => '',
-				"MULTIPLE" => 'Y',
+				"MULTIPLE" => $isMainUiFilter ? 'N' : 'Y', // TODO
 				'MAX_WIDTH' => '200',
 				'MIN_HEIGHT' => '24',
 				"IBLOCK_ID" => $arProperty["LINK_IBLOCK_ID"],
@@ -564,16 +578,26 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 				'BAN_SYM' => $arSymbols['BAN_SYM_STRING'],
 				'REP_SYM' => $arSymbols['REP_SYM_STRING'],
 				'FILTER' => 'Y',
+				'MAIN_UI_FILTER' => ($isMainUiFilter ? 'Y' : 'N'),
 				'TYPE' => 'SECTION',
 			), null, array("HIDE_ICONS" => "Y")
 		);
-		?><input style="float: left; margin-right: 10px;" type="button" value="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT'); ?>"
+		$inputStyle = 'float: left; margin-right: 10px;';
+		if ($isMainUiFilter)
+		{
+			$inputStyle = 'float: left; margin-right: 4px; margin-top: 7px; margin-left: 10px;';
+		}
+		?><input style="<?=$inputStyle?>" type="button" value="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT'); ?>"
 			title="<? echo Loc::getMessage('BT_UT_SAUTOCOMPLETE_MESS_SEARCH_ELEMENT_MULTI_DESCR'); ?>"
 			onclick="jsUtils.OpenWindow('/bitrix/admin/iblock_section_search.php?lang=<? echo LANGUAGE_ID; ?>&IBLOCK_ID=<? echo $arProperty["LINK_IBLOCK_ID"]; ?>&m=Y&n=&k=&lookup=<? echo 'jsMLI_'.$control_id; ?><?=($fixIBlock ? '&iblockfix=y' : '').'&tableId='.$windowTableId; ?>', 900, 700);"
 		>
 		<script type="text/javascript">
-		indClearHiddenFields = arClearHiddenFields.length;
-		arClearHiddenFields[indClearHiddenFields] = 'jsMLI_<? echo $control_id; ?>';
+			var arClearHiddenFields = arClearHiddenFields;
+			if (!!arClearHiddenFields)
+			{
+				indClearHiddenFields = arClearHiddenFields.length;
+				arClearHiddenFields[indClearHiddenFields] = 'jsMLI_<? echo $control_id; ?>';
+			}
 		</script><?
 		$strResult = ob_get_contents();
 		ob_end_clean();
@@ -716,7 +740,6 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 		$strBanSym = $arSettings['BAN_SYM'];
 		$strRepSym = (BT_UT_AUTOCOMPLETE_REP_SYM_OTHER == $arSettings['REP_SYM'] ? $arSettings['OTHER_REP_SYM'] : $arSettings['REP_SYM']);
 		$arBanSym = str_split($strBanSym,1);
-		$arRepSym = array_fill(0,sizeof($arBanSym),$strRepSym);
 		$arResult = array(
 			'BAN_SYM' => $arBanSym,
 			'REP_SYM' => array_fill(0,sizeof($arBanSym),$strRepSym),
@@ -726,3 +749,5 @@ class CIBlockPropertySectionAutoComplete extends CIBlockPropertyElementAutoCompl
 		return $arResult;
 	}
 }
+
+define ('BT_UT_SECTION_AUTOCOMPLETE_CODE', CIBlockPropertySectionAutoComplete::USER_TYPE); // deprecated

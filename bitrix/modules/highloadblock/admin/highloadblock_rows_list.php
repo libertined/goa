@@ -34,7 +34,7 @@ if ($ENTITY_ID > 0)
 				)->fetch();
 		if ($lng)
 		{
-			$hblockName = $lang['NAME'];
+			$hblockName = $lng['NAME'];
 		}
 		else
 		{
@@ -268,6 +268,8 @@ $lAdmin->NavText($rsData->GetNavPrint(GetMessage("PAGES")));
 while($arRes = $rsData->NavNext(true, "f_"))
 {
 	$row = $lAdmin->AddRow($f_ID, $arRes);
+	$row->AddViewField('ID', '<a href="' . 'highloadblock_row_edit.php?ENTITY_ID='.$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID . '">'.$f_ID.'</a>');
+	
 	if ($canEdit)
 	{
 		$USER_FIELD_MANAGER->AddUserFields('HLBLOCK_'.$hlblock['ID'], $arRes, $row);

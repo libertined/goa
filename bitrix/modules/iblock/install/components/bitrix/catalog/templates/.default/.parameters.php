@@ -100,7 +100,6 @@ $arTemplateParameters["INSTANT_RELOAD"] = array(
 	"TYPE" => "CHECKBOX",
 	"DEFAULT" => "N",
 );
-
 $arTemplateParameters['TEMPLATE_THEME'] = array(
 	'PARENT' => 'VISUAL',
 	'NAME' => GetMessage("CP_BC_TPL_TEMPLATE_THEME"),
@@ -108,6 +107,36 @@ $arTemplateParameters['TEMPLATE_THEME'] = array(
 	'VALUES' => $arThemes,
 	'DEFAULT' => 'blue',
 	'ADDITIONAL_VALUES' => 'Y'
+);
+$arTemplateParameters['SEARCH_PAGE_RESULT_COUNT'] = array(
+	'PARENT' => 'SEARCH_SETTINGS',
+	'NAME' => GetMessage("CP_BC_TPL_SEARCH_PAGE_RESULT_COUNT"),
+	"TYPE" => "STRING",
+	"DEFAULT" => "50",
+);
+$arTemplateParameters['SEARCH_RESTART'] = array(
+	'PARENT' => 'SEARCH_SETTINGS',
+	'NAME' => GetMessage("CP_BC_TPL_SEARCH_RESTART"),
+	"TYPE" => "CHECKBOX",
+	"DEFAULT" => "N",
+);
+$arTemplateParameters['SEARCH_NO_WORD_LOGIC'] = array(
+	'PARENT' => 'SEARCH_SETTINGS',
+	'NAME' => GetMessage("CP_BC_TPL_SEARCH_NO_WORD_LOGIC"),
+	"TYPE" => "CHECKBOX",
+	"DEFAULT" => "Y",
+);
+$arTemplateParameters['SEARCH_USE_LANGUAGE_GUESS'] = array(
+	'PARENT' => 'SEARCH_SETTINGS',
+	'NAME' => GetMessage("CP_BC_TPL_SEARCH_USE_LANGUAGE_GUESS"),
+	"TYPE" => "CHECKBOX",
+	"DEFAULT" => "Y",
+);
+$arTemplateParameters['SEARCH_CHECK_DATES'] = array(
+	'PARENT' => 'SEARCH_SETTINGS',
+	'NAME' => GetMessage("CP_BC_TPL_SEARCH_CHECK_DATES"),
+	"TYPE" => "CHECKBOX",
+	"DEFAULT" => "Y",
 );
 
 $arAllPropList = array();
@@ -180,10 +209,9 @@ if (isset($arCurrentValues['IBLOCK_ID']) && (int)$arCurrentValues['IBLOCK_ID'] >
 			'quantity' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_QUANTITY'),
 			'buttons' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_BUTTONS'),
 			'props' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_PROPS'),
-			'sku' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_SKU'),
-			'compare' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_COMPARE')
+			'sku' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_SKU')
 		)),
-		'DEFAULT' => 'price,props,sku,quantityLimit,quantity,buttons,compare'
+		'DEFAULT' => 'price,props,sku,quantityLimit,quantity,buttons'
 	);
 
 	$lineElementCount = (int)$arCurrentValues['LINE_ELEMENT_COUNT'] ?: 3;
@@ -964,8 +992,8 @@ if (ModuleManager::isModuleInstalled("sale"))
 	if (!isset($arCurrentValues['USE_BIG_DATA']) || $arCurrentValues['USE_BIG_DATA'] == 'Y')
 	{
 		$rcmTypeList = array(
-			'bestsell' => GetMessage('CP_BC_TPL_RCM_BESTSELLERS'),
 			'personal' => GetMessage('CP_BC_TPL_RCM_PERSONAL'),
+			'bestsell' => GetMessage('CP_BC_TPL_RCM_BESTSELLERS'),
 			'similar_sell' => GetMessage('CP_BC_TPL_RCM_SOLD_WITH'),
 			'similar_view' => GetMessage('CP_BC_TPL_RCM_VIEWED_WITH'),
 			'similar' => GetMessage('CP_BC_TPL_RCM_SIMILAR'),
@@ -977,6 +1005,7 @@ if (ModuleManager::isModuleInstalled("sale"))
 			'PARENT' => 'BIG_DATA_SETTINGS',
 			'NAME' => GetMessage('CP_BC_TPL_BIG_DATA_RCM_TYPE'),
 			'TYPE' => 'LIST',
+			'DEFAULT' => 'personal',
 			'VALUES' => $rcmTypeList
 		);
 		unset($rcmTypeList);
@@ -1044,10 +1073,9 @@ if (isset($arCurrentValues['SHOW_TOP_ELEMENTS']) && 'Y' == $arCurrentValues['SHO
 				'quantity' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_QUANTITY'),
 				'buttons' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_BUTTONS'),
 				'props' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_PROPS'),
-				'sku' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_SKU'),
-				'compare' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_COMPARE')
+				'sku' => GetMessage('CP_BC_TPL_PRODUCT_BLOCK_SKU')
 			)),
-			'DEFAULT' => 'price,props,sku,quantityLimit,quantity,buttons,compare'
+			'DEFAULT' => 'price,props,sku,quantityLimit,quantity,buttons'
 		);
 
 		$lineElementCount = (int)$arCurrentValues['TOP_LINE_ELEMENT_COUNT'] ?: 3;
@@ -1204,10 +1232,19 @@ if (isset($arCurrentValues['USE_ENHANCED_ECOMMERCE']) && $arCurrentValues['USE_E
 	);
 }
 
-$arTemplateParameters['USE_RATIO_IN_RANGES'] = array(
-	'PARENT' => 'PRICES',
-	'NAME' => GetMessage('CP_BC_TPL_USE_RATIO_IN_RANGES'),
+$arTemplateParameters['DETAIL_SHOW_POPULAR'] = array(
+	'PARENT' => 'DETAIL_SETTINGS',
+	'NAME' => GetMessage('CP_BC_TPL_DETAIL_SHOW_POPULAR'),
 	'TYPE' => 'CHECKBOX',
-	'HIDDEN' => isset($arCurrentValues['USE_PRICE_COUNT']) && $arCurrentValues['USE_PRICE_COUNT'] === 'Y' ? 'N' : 'Y',
 	'DEFAULT' => 'Y'
 );
+$arTemplateParameters['DETAIL_SHOW_VIEWED'] = array(
+	'PARENT' => 'DETAIL_SETTINGS',
+	'NAME' => GetMessage('CP_BC_TPL_DETAIL_SHOW_VIEWED'),
+	'TYPE' => 'CHECKBOX',
+	'DEFAULT' => 'Y'
+);
+
+// hack to hide component parameters by templates
+$arTemplateParameters['HIDE_USE_ALSO_BUY'] = array();
+?>

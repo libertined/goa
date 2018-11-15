@@ -1,7 +1,7 @@
 <?
-$MESS["INS_TITLE"] = "Bitrix Site Manager #VERS# Installation";
+$MESS["INS_TITLE"] = "Bitrix Site Manager Installation";
 $MESS["INS_TITLE2"] = "System Installation";
-$MESS["INS_TITLE3"] = "Bitrix Site Manager #VERS#";
+$MESS["INS_TITLE3"] = "Bitrix Site Manager";
 $MESS["INS_TITLE1"] = "<font class=\"bitrixtitle\">Bitrix Site Manager #VERS#</font> <font class=\"install\">Installation</font>";
 $MESS["SC_NOTES1"] = "<font color=\"#009900\"><b>Green text</b></font> indicate values that meet the system requirements.<br><font color=\"#FF0000\"><b>Red text</b></font> indicate values that <b>do not</b> meet the system requirements.";
 $MESS["SC_SUBTITLE_REQUIED"] = "Required system parameters";
@@ -280,8 +280,8 @@ $MESS["INST_ALLOW_CALL_REFERENCE"] = "The allow_call_time_pass_reference paramet
 $MESS["INST_UTF8_NOT_SUPPORT"] = "UTF-8 is not supported by PHP (mbstring library is not configured)";
 $MESS["INST_JAVASCRIPT_DISABLED"] = "JavaScript support is required to install Bitrix Site Manager. Apparently, JavaScript is not supported by browser or disabled. Change your browser settings and <a href=\"\">try again</a>.";
 $MESS["INS_UTF_PARAMS"] = "UTF-8 Installation of Bitrix Site Manager";
-$MESS["INST_UTF8_RECOMENDATION"] = "UTF-8 installation of Bitrix Site Manager requires <b>mbstring</b> library with parameters <b>mbstring.func_overload=2</b> and <b>mbstring.internal_encoding=UTF-8</b>.";
-$MESS["ERR_MBSTRING_EXISTS"] = "Non UTF-8 installation of Bitrix Site Manager requires that you set <b>mbstring.func_overload</b> parameter to 0 (zero). Otherwise, install Bitrix Site Manager in UTF-8.";
+$MESS["INST_UTF8_RECOMENDATION1"] = "UTF-8 installation of Bitrix Site Manager requires <b>mbstring</b> library with parameters <b>mbstring.func_overload=2</b> and <b>default_charset=UTF-8</b>.";
+$MESS["ERR_MBSTRING_EXISTS1"] = "Non UTF-8 installation of Bitrix Site Manager requires that you set <b>mbstring.func_overload</b> parameter to 0 (zero). Otherwise, install Bitrix Site Manager in UTF-8.";
 $MESS["BAD_LICENSE_KEY"] = "Incorrect license number.";
 $MESS["NLS_LANGUAGE_TERRITORY"] = "language_territory";
 $MESS["INST_YES"] = "Yes";
@@ -321,4 +321,6 @@ $MESS["SC_EA_ER"] = "PHP eAccelerator is not supported.";
 $MESS["ERR_DATABASE_NAME"] = "Incorrect database name.";
 $MESS["INSTALL_DEVSRV"] = "Development only:";
 $MESS["INSTALL_DEVSRV_NOTE"] = "This installation will be used only for development purpose; no real visitors will see it.";
+$MESS["INST_UTF8_DEFAULT_ENCODING"] = "The values of the default_charset and mbstring.internal_encoding parameters don't match. It is recommended that you delete the mbstring.internal_encoding parameter.";
+$MESS["SC_NO_OPENSSL_LIB_ER"] = "OpenSSL is not available on your PHP.";
 ?>

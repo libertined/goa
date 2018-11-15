@@ -27,6 +27,7 @@ $APPLICATION->IncludeComponent(
 		"GRID_ID" => $arResult["GRID_ID"],
 		"HEADERS" => $arResult["HEADERS"],
 		"ROWS" => $arResult["ELEMENTS_ROWS"],
+		"NAV_OBJECT" => $arResult["NAV"],
 		"FILTER" => $arResult["FILTER"],
 		"FILTER_TEMPLATE_NAME" => 'tabbed',
 		'SORT' => $arResult['SORT'],

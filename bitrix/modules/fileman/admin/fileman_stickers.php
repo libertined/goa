@@ -307,7 +307,7 @@ elseif ($action == 'show_list')
 				<td>
 					<div class="bxstl-fil-cont">
 						<select id="bxstl_fil_page_sel"  style="width: 200px;">
-							<option value="<?= $curPage?>"> <?= GetMessage('FMST_LIST_CURRENT')?> </option>
+							<option value="<?= htmlspecialcharsbx($curPage)?>"> <?= GetMessage('FMST_LIST_CURRENT')?> </option>
 							<option value="all"> <?= GetMessage('FMST_LIST_ALL_PAGES')?> </option>
 							<? for ($i = 0, $l = count($arPages); $i < $l; $i++):
 								if ($arPages[$i]['PAGE_URL'] == $curPage)

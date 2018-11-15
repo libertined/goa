@@ -11,6 +11,10 @@ use Bitrix\Main\Localization\Loc;
 Loc::loadMessages(__FILE__);
 
 
+/**
+ * Group actions panel snippets factory
+ * @package Bitrix\Main\Grid\Panel
+ */
 class Snippet
 {
 	protected $applyButton;
@@ -22,6 +26,10 @@ class Snippet
 	protected $forAllCheckbox;
 
 
+	/**
+	 * Gets save button
+	 * @return array
+	 */
 	public function getSaveEditButton()
 	{
 		if (!is_array($this->saveButton))
@@ -43,6 +51,11 @@ class Snippet
 		return $this->saveButton;
 	}
 
+
+	/**
+	 * Gets cancel button
+	 * @return array
+	 */
 	public function getCancelEditButton()
 	{
 		if (!is_array($this->cancelButton))
@@ -64,6 +77,11 @@ class Snippet
 		return $this->cancelButton;
 	}
 
+
+	/**
+	 * Gets edit button
+	 * @return array
+	 */
 	public function getEditButton()
 	{
 		if (!is_array($this->editButton))
@@ -86,6 +104,11 @@ class Snippet
 		return $this->editButton;
 	}
 
+
+	/**
+	 * Gets edit actions
+	 * @return array
+	 */
 	public function getEditAction()
 	{
 		return array(
@@ -99,6 +122,11 @@ class Snippet
 		);
 	}
 
+
+	/**
+	 * Gets remove button
+	 * @return array
+	 */
 	public function getRemoveButton()
 	{
 		if (!is_array($this->removeButton))
@@ -128,6 +156,11 @@ class Snippet
 		return $this->removeButton;
 	}
 
+
+	/**
+	 * Gets remove acions
+	 * @return array
+	 */
 	public function getRemoveAction()
 	{
 		return array(
@@ -146,6 +179,12 @@ class Snippet
 		);
 	}
 
+
+	/**
+	 * Gets apply button
+	 * @param array $params
+	 * @return array
+	 */
 	public function getApplyButton(array $params)
 	{
 		return array(
@@ -157,6 +196,11 @@ class Snippet
 		);
 	}
 
+
+	/**
+	 * Gets for all checkbox
+	 * @return array
+	 */
 	public function getForAllCheckbox()
 	{
 		if (!is_array($this->forAllCheckbox))

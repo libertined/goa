@@ -28,12 +28,12 @@ $APPLICATION->AddHeadScript("/bitrix/components/bitrix/rating.vote/templates/mob
 		)
 	)
 	{
-		?><div class="post-item-inform-left"><?=$like2?></div><?
+		?><div class="post-item-inform-left"><?=htmlspecialcharsEx($like2)?></div><?
 		?><div class="post-item-inform-right"><span class="post-item-inform-right-text"><?=htmlspecialcharsEx($arResult["TOTAL_VOTES"])?></span></div><?
 	}
 	else
 	{
-		?><div class="post-item-inform-left"><?=$like?></div><?
+		?><div class="post-item-inform-left"><?=htmlspecialcharsEx($like)?></div><?
 		?><div class="post-item-inform-right" style="display: none;"><span class="post-item-inform-right-text"><?=htmlspecialcharsEx($arResult["TOTAL_VOTES"])?></span></div><?
 	}
 

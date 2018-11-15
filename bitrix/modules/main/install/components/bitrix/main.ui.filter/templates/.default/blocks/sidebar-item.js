@@ -29,7 +29,7 @@
 							attrs: {
 								type: 'text',
 								placeholder: 'placeholder' in data ? data.placeholder : '',
-								value: 'text' in data ? data.text : ''
+								value: 'text' in data ? BX.util.htmlspecialchars(BX.util.htmlspecialcharsback(data.text)) : ''
 							}
 						},
 						{

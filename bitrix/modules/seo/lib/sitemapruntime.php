@@ -5,6 +5,7 @@
  * @subpackage seo
  * @copyright 2001-2013 Bitrix
  */
+
 namespace Bitrix\Seo;
 
 use Bitrix\Main\Entity;
@@ -21,7 +22,7 @@ class SitemapRuntimeTable extends Entity\DataManager
 {
 	const ACTIVE = 'Y';
 	const INACTIVE = 'N';
-
+	
 	const ITEM_TYPE_DIR = 'D';
 	const ITEM_TYPE_FILE = 'F';
 	const ITEM_TYPE_IBLOCK = 'I';
@@ -29,22 +30,20 @@ class SitemapRuntimeTable extends Entity\DataManager
 	const ITEM_TYPE_ELEMENT = 'E';
 	const ITEM_TYPE_FORUM = 'G';
 	const ITEM_TYPE_TOPIC = 'T';
-
-
-
+	
 	const PROCESSED = 'Y';
 	const UNPROCESSED = 'N';
-
+	
 	public static function getFilePath()
 	{
 		return __FILE__;
 	}
-
+	
 	public static function getTableName()
 	{
 		return 'b_seo_sitemap_runtime';
 	}
-
+	
 	public static function getMap()
 	{
 		$fieldsMap = array(
@@ -76,7 +75,7 @@ class SitemapRuntimeTable extends Entity\DataManager
 					self::ITEM_TYPE_SECTION,
 					self::ITEM_TYPE_ELEMENT,
 					self::ITEM_TYPE_FORUM,
-					self::ITEM_TYPE_TOPIC
+					self::ITEM_TYPE_TOPIC,
 				),
 			),
 			'ACTIVE' => array(
@@ -88,18 +87,18 @@ class SitemapRuntimeTable extends Entity\DataManager
 				'values' => array(self::INACTIVE, self::ACTIVE),
 			),
 		);
-
+		
 		return $fieldsMap;
 	}
-
-
+	
+	
 	public static function clearByPid($PID)
 	{
 		$connection = \Bitrix\Main\Application::getConnection();
 		$query = $connection->query("
 DELETE
-FROM ".self::getTableName()."
-WHERE PID='".intval($PID)."'
+FROM " . self::getTableName() . "
+WHERE PID='" . intval($PID) . "'
 ");
 	}
 }
@@ -109,14 +108,15 @@ class SitemapRuntime
 	extends SitemapFile
 {
 	const PROGRESS_WIDTH = 500;
-
+	
 	protected $PID = 0;
-
+	private $originalFile = NULL;
+	
 	public function __construct($PID, $fileName, $arSettings)
 	{
 		$this->PID = $PID;
-
-		if($this->partFile == '')
+		
+		if ($this->partFile == '')
 		{
 			$this->partFile = $fileName;
 		}
@@ -145,27 +145,13 @@ class SitemapRuntime
 		$this->__construct($this->PID, $fileName, $this->settings);
 	}
 	
-	public static function isFileExists($PID, $fileName, $arSettings)
-	{
-		$f = new self($PID, $fileName, $arSettings);
-		
-		return $f->isExists();
-	}
-	
-	public static function deleteFile($PID, $fileName, $arSettings)
-	{
-		$f = new self($PID, $fileName, $arSettings);
-		
-		return $f->delete();
-	}
-	
 	public function putSitemapContent(SitemapFile $sitemapFile)
 	{
-//		always write in new empty file - tak nado, a to pechalka ((
-		if($this->isExists())
+//		always write in new empty file - this is necessary
+		if ($this->isExists())
 			$this->delete();
 		
-		if($sitemapFile->isExists())
+		if ($sitemapFile->isExists())
 		{
 			$this->putContents($sitemapFile->getContents());
 			$this->partChanged = true;
@@ -177,6 +163,13 @@ class SitemapRuntime
 		}
 	}
 	
+	
+	public function setOriginalFile(SitemapFile $sitemapFile)
+	{
+		if (isset($sitemapFile))
+			$this->originalFile = $sitemapFile;
+	}
+	
 	/**
 	 * Overwrite parent method to creating temp-files and correctly work with multipart
 	 * Appends new IBlock entry to the existing finished sitemap
@@ -186,21 +179,28 @@ class SitemapRuntime
 	 *
 	 * @return void
 	 */
-	public function appendIBlockEntry($url, $modifiedDate, SitemapFile $sitemapFile)
+	public function appendIBlockEntry($url, $modifiedDate)
 	{
-		if ($sitemapFile->isExists())
+//		if not set original file - to use as common sitemap file
+		if(!$this->originalFile)
+		{
+			parent::appendIBlockEntry($url, $modifiedDate);
+			return;
+		}
+		
+		if ($this->originalFile->isExists())
 		{
 //			move sitemapfile to end, find name of last part
-			while ($sitemapFile->isSplitNeeded())
+			while ($this->originalFile->isSplitNeeded())
 			{
-				$filename = $sitemapFile->split();
+				$filename = $this->originalFile->split();
 			}
 
 //			if part was changed - create new runtime part file
 			if (isset($filename) && $filename)
 				$this->reInit($filename);
 			
-			$this->putSitemapContent($sitemapFile);
+			$this->putSitemapContent($this->originalFile);
 			$this->appendEntry(array(
 				'XML_LOC' => $this->settings['PROTOCOL'] . '://' . \CBXPunycode::toASCII($this->settings['DOMAIN'], $e = NULL) . $url,
 				'XML_LASTMOD' => date('c', $modifiedDate - \CTimeZone::getOffset()),
@@ -219,26 +219,26 @@ class SitemapRuntime
 	 */
 	public function finish()
 	{
-		foreach($this->partList as $key => $partName)
+		foreach ($this->partList as $key => $partName)
 		{
 			$f = new File(Path::combine($this->getDirectoryName(), $partName));
 			$f->rename(str_replace($this->getPrefix(), '', $f->getPath()));
 			$this->partList[$key] = $f->getName();
 		}
-
-		if($this->isCurrentPartNotEmpty())
+		
+		if ($this->isCurrentPartNotEmpty())
 		{
 			if (!$this->footerClosed)
 				$this->addFooter();
 			$this->rename(str_replace($this->getPrefix(), '', $this->getPath()));
 		}
 	}
-
+	
 	protected function getPrefix()
 	{
-		return '~'.$this->PID;
+		return '~' . $this->PID;
 	}
-
+	
 	public static function showProgress($text, $title, $v)
 	{
 		$v = $v >= 0 ? $v : 0;
@@ -249,7 +249,7 @@ class SitemapRuntime
 				"TYPE" => "PROGRESS",
 				"HTML" => true,
 				"MESSAGE" => $title,
-				"DETAILS" => "#PROGRESS_BAR#<div style=\"width: ".self::PROGRESS_WIDTH."px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 20px;\">".Converter::getHtmlConverter()->encode($text)."</div>",
+				"DETAILS" => "#PROGRESS_BAR#<div style=\"width: " . self::PROGRESS_WIDTH . "px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 20px;\">" . Converter::getHtmlConverter()->encode($text) . "</div>",
 				"PROGRESS_TOTAL" => 100,
 				"PROGRESS_VALUE" => $v,
 				"PROGRESS_TEMPLATE" => '#PROGRESS_PERCENT#',
@@ -264,7 +264,7 @@ class SitemapRuntime
 				"DETAILS" => $text,
 			));
 		}
-
+		
 		return $msg->show();
 	}
 }

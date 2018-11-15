@@ -293,6 +293,7 @@ class CIBlockElement extends CAllIBlockElement
 				"IN_SECTIONS"=>"BE.IN_SECTIONS",
 				"SHOW_COUNTER"=>"BE.SHOW_COUNTER",
 				"SHOW_COUNTER_START"=>$DB->DateToCharFunction("BE.SHOW_COUNTER_START"),
+				"SHOW_COUNTER_START_X"=>"BE.SHOW_COUNTER_START",
 				"CODE"=>"BE.CODE",
 				"TAGS"=>"BE.TAGS",
 				"XML_ID"=>"BE.XML_ID",
@@ -443,6 +444,7 @@ class CIBlockElement extends CAllIBlockElement
 
 		foreach($arJoinProps["BE_FPS"] as $iblock_id => $db_prop)
 		{
+			list($iblock_id, $link) = explode("~", $iblock_id, 2);
 			$sFrom .= "\t\t\tLEFT JOIN b_iblock_element_prop_s".$iblock_id." JFPS".$db_prop["CNT"]." ON JFPS".$db_prop["CNT"].".IBLOCK_ELEMENT_ID = BE".$db_prop["JOIN"].".ID\n";
 
 			if($db_prop["IBLOCK_ID"])
@@ -1762,6 +1764,13 @@ class CIBlockElement extends CAllIBlockElement
 				if (isset($property))
 					unset($property);
 			}
+			else
+			{
+				$DB->Query("
+					insert into b_iblock_element_prop_s".$IBLOCK_ID."
+					(IBLOCK_ELEMENT_ID) values (".$ELEMENT_ID.")
+				");
+			}
 			unset($ar);
 			unset($rs);
 		}
@@ -2203,6 +2212,11 @@ class CIBlockElement extends CAllIBlockElement
 								//But save description from incoming value
 								if (array_key_exists("description", $val))
 									$description = trim($val["description"]);
+								elseif (
+									is_array($orderedPROP[$res["ID"]])
+									&& array_key_exists("DESCRIPTION", $orderedPROP[$res["ID"]])
+								)
+									$description = trim($orderedPROP[$res["ID"]]["DESCRIPTION"]);
 
 								$orderedPROP[$res["ID"]] = array(
 									"VALUE" => $res["VALUE"],
@@ -2277,33 +2291,6 @@ class CIBlockElement extends CAllIBlockElement
 					} //foreach($arDBProps[$prop["ID"]] as $res)
 				}
 
-				//Check if we have to save property values id's
-				if ($preserveID)
-				{
-					//Find tail mark where all added files started
-					$tailStart = null;
-					foreach (array_reverse($orderedPROP, true) as $propertyValueId => $val)
-					{
-						if (intval($propertyValueId) > 0)
-							break;
-						$tailStart = $propertyValueId;
-					}
-
-					$prevId = 0;
-					foreach ($orderedPROP as $propertyValueId => $val)
-					{
-						if ($propertyValueId === $tailStart)
-							break;
-
-						if (intval($propertyValueId) < $prevId)
-						{
-							$preserveID = array();
-							break;
-						}
-						$prevId = $propertyValueId;
-					}
-				}
-
 				//Write new values into database in specified order
 				foreach ($orderedPROP as $propertyValueId => $val)
 				{
@@ -2349,13 +2336,13 @@ class CIBlockElement extends CAllIBlockElement
 							WHERE IBLOCK_ELEMENT_ID=".$ELEMENT_ID."
 						");
 					}
-					elseif (array_key_exists($propertyValueId, $preserveID))
+					elseif ($preserveID)
 					{
 						$DB->Query("
 							INSERT INTO ".$strTable."
 							(ID, IBLOCK_ELEMENT_ID, IBLOCK_PROPERTY_ID, VALUE, VALUE_NUM".($val_desc!==false?", DESCRIPTION":"").")
 							SELECT
-								".$preserveID[$propertyValueId]."
+								".array_shift($preserveID)."
 								,".$ELEMENT_ID."
 								,P.ID
 								,'".$DB->ForSql($val)."'

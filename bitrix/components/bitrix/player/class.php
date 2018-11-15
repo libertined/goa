@@ -9,13 +9,15 @@ if(!\Bitrix\Main\Loader::includeModule('fileman'))
 
 class CBitrixPlayer extends CBitrixComponent
 {
-	private $playerType;
-	private $jwConfig;
-	private $path;
-	private $warning = '';
-	private $conf;
+	const PLAYER_JS_PATH = '/bitrix/js/fileman/player';
 
-	private $jwFlashPath;
+	protected $playerType;
+	protected $jwConfig;
+	protected $path;
+	protected $warning = '';
+	protected $conf;
+
+	protected $jwFlashPath;
 
 	public static function escapeFlashVar($str)
 	{
@@ -40,18 +42,23 @@ class CBitrixPlayer extends CBitrixComponent
 		return ( self::isAndroid() || self::isIOS() );
 	}
 
-	private function addFlashVar(&$jwConfig, $key, $value, $default = false)
+	protected function addFlashVar(&$jwConfig, $key, $value, $default = false)
 	{
 		if (!isset($value) || $value == '' || $value == $default)
 			return;
 		$jwConfig[$key] = self::escapeFlashVar($value);
 	}
 
-	private function addJsVar(&$wmvConfig, $key, $value, $default = false)
+	protected function addJsVar(&$wmvConfig, $key, $value, $default = false)
 	{
 		if (!isset($value) || $value == '' || $value === $default)
 			return;
 		$wmvConfig[$key] = CUtil::JSEscape($value);
+	}
+
+	protected static function getFileExtension ($path)
+	{
+		return strtolower(GetFileExtension($path));
 	}
 
 	public function getComponentId ()
@@ -147,8 +154,8 @@ class CBitrixPlayer extends CBitrixComponent
 			"m4a" => "audio/mp4",
 			"xml" => "application/xml",
 		);
-		$ext = GetFileExtension($src);
-		if (empty($ext))
+		$ext = self::getFileExtension($src);
+		if (empty($ext) || strpos($ext, 'php') === 0)
 		{
 			$type = 'application/octet-stream';
 		}
@@ -171,10 +178,10 @@ class CBitrixPlayer extends CBitrixComponent
 	 * @param bool $warning
 	 * @return string
 	 */
-	private function findCorrectFile($path, &$type = null, $warning = false)
+	protected function findCorrectFile($path, &$type = null, $warning = false)
 	{
 		// skip search if type is correct
-		if ((strpos($type, 'video') === 0) || (strpos($type, 'audio') === 0))
+		if ((strpos($type, 'video') === 0) || (strpos($type, 'audio') === 0) || (strpos($type, 'rtmp') === 0))
 			return $path;
 		static $rewriteCondition = '';
 		$uri = new \Bitrix\Main\Web\Uri($path);
@@ -217,9 +224,12 @@ class CBitrixPlayer extends CBitrixComponent
 				$ext = \Bitrix\Disk\ExternalLink::load(array(
 					'HASH' => $hash,
 				));
-				$file = $ext->getFile()->getFile();
-				$type = $file['CONTENT_TYPE'];
-				return $driver->getUrlManager()->getUrlToDownloadByExternalLink($hash);
+				if ($ext)
+				{
+					$file = $ext->getFile()->getFile();
+					$type = $file['CONTENT_TYPE'];
+					return $driver->getUrlManager()->getUrlToDownloadByExternalLink($hash);
+				}
 			}
 		}
 		if (strlen($uri->getHost()) > 0)
@@ -266,8 +276,31 @@ class CBitrixPlayer extends CBitrixComponent
 				}
 			}
 		}
-		$type = self::GetContentType($path);
+		if($uri->getScheme() == 'rtmp')
+		{
+			$type = self::GetRtmpContentType($path);
+		}
+		else
+		{
+			$type = self::GetContentType($path);
+		}
 		return $path;
+	}
+
+	protected static function GetRtmpContentType($src)
+	{
+		$type = "rtmp/mp4";
+		static $arTypes = array(
+			"mp4" => "rtmp/mp4",
+			"mov" => "rtmp/mp4",
+			"flv" => "rtmp/flv",
+		);
+		$ext = self::getFileExtension($src);
+		if(!empty($ext) && isset($arTypes[$ext]))
+		{
+			$type = $arTypes[$ext];
+		}
+		return $type;
 	}
 
 	public static function isYoutubeSource ($path)
@@ -291,7 +324,7 @@ class CBitrixPlayer extends CBitrixComponent
 	public static function isStreamingSource ($path)
 	{
 		$arStreamingExts = array('m3u8', 'ts');
-		$ext = GetFileExtension($path);
+		$ext = self::getFileExtension($path);
 		if (in_array($ext, $arStreamingExts))
 			return true;
 		return false;
@@ -300,7 +333,7 @@ class CBitrixPlayer extends CBitrixComponent
 	public static function isFlashSource ($path)
 	{
 		$arFlashExts = array('flv');
-		$ext = GetFileExtension($path);
+		$ext = self::getFileExtension($path);
 		if (in_array($ext, $arFlashExts))
 			return true;
 		return false;
@@ -309,7 +342,7 @@ class CBitrixPlayer extends CBitrixComponent
 	public static function isAudioSource ($path)
 	{
 		$arAudioExt = array('mp3', 'ogg', 'wav', 'weba');
-		$ext = GetFileExtension($path);
+		$ext = self::getFileExtension($path);
 		if (in_array($ext, $arAudioExt))
 			return true;
 		return false;
@@ -318,14 +351,13 @@ class CBitrixPlayer extends CBitrixComponent
 	public static function isWmvSource ($path, $type)
 	{
 		$arWmvExt = array('wmv', 'wma');
-		$ext = GetFileExtension($path);
+		$ext = self::getFileExtension($path);
 		if (in_array($ext, $arWmvExt))
 			return true;
 		$arWmvTypes = array ('video/x-ms-wmv', 'audio/x-ms-wma');
 		if (in_array($type, $arWmvTypes))
 			return true;
 		return false;
-
 	}
 
 	/**
@@ -392,11 +424,7 @@ class CBitrixPlayer extends CBitrixComponent
 		if ($arParams['PLAYER_TYPE'] != 'videojs' && $arParams['PLAYER_TYPE'] != 'auto')
 			$arParams['SIZE_TYPE'] = 'absolute';
 
-		if ($arParams['SIZE_TYPE'] == 'fluid')
-		{
-			$arParams['WIDTH'] = $arParams['HEIGHT'] = '100%';
-		}
-		elseif ($arParams['SIZE_TYPE'] == 'auto')
+		if ($arParams['SIZE_TYPE'] == 'auto')
 		{
 			$arParams['WIDTH'] = $arParams['HEIGHT'] = '';
 		}
@@ -415,7 +443,7 @@ class CBitrixPlayer extends CBitrixComponent
 		{
 			$arParams['PLAYLIST_SIZE'] = intval($arParams['PLAYLIST_SIZE']);
 			if ($arParams['PLAYLIST_SIZE'] <= 0)
-				$arParams['PLAYLIST_SIZE'] = 190;
+				$arParams['PLAYLIST_SIZE'] = 150;
 
 			$arParams['PLAYLIST_NUMBER'] = intval($arParams['PLAYLIST_NUMBER']);
 			if ($arParams['PLAYLIST_NUMBER'] <= 0)
@@ -450,6 +478,16 @@ class CBitrixPlayer extends CBitrixComponent
 		if ($arParams["PLAYBACK_RATE"] > 3)
 			$arParams["PLAYBACK_RATE"] = 3;
 
+		if($arParams['AUTOSTART'] === 'Y')
+		{
+			$arParams['AUTOSTART_ON_SCROLL'] = 'N';
+		}
+
+		if($arParams['USE_PLAYLIST_AS_SOURCES'] !== 'Y')
+		{
+			$arParams['USE_PLAYLIST_AS_SOURCES'] = 'N';
+		}
+
 		return $arParams;
 	}
 
@@ -458,9 +496,11 @@ class CBitrixPlayer extends CBitrixComponent
 		global $APPLICATION, $USER;
 		$this->jwFlashPath = $this->__path."/mediaplayer/player";
 		$this->playerType = $this->arParams['PLAYER_TYPE'];
+		if (isset($this->arParams['TYPE']))
+			$this->arResult['FILE_TYPE'] = $this->arParams['TYPE'];
 		$this->path = $this->findCorrectFile($this->arParams['PATH'], $this->arResult['FILE_TYPE']);
 
-		$ext = strtolower(GetFileExtension($this->path));
+		$ext = self::getFileExtension($this->path);
 		if (empty($this->playerType) || $this->playerType == 'auto')
 		{
 			if (self::isWmvSource($this->arResult['PATH'], $this->arResult['FILE_TYPE']))
@@ -474,14 +514,13 @@ class CBitrixPlayer extends CBitrixComponent
 			CComponentUtil::__ShowError(GetMessage("SWF_DENIED"));
 			return false;
 		}
-
-		CUtil::InitJSCore(array('ajax'));
-
+		CJSCore::Init(['ajax']);
 		if (isset($this->arParams['PLAYER_ID']) && strlen($this->arParams['PLAYER_ID']) > 0)
 			$this->arResult['ID'] = $this->arParams['PLAYER_ID'];
 		else
 			$this->arResult['ID'] = "bx_".$this->playerType."_player_".$this->getComponentId();
 
+		$this->arResult['CSS_FILES'] = $this->arResult['JS_FILES'] = array();
 		if ($this->playerType == 'wmv')
 		{
 			$this->processWmv();
@@ -495,7 +534,6 @@ class CBitrixPlayer extends CBitrixComponent
 			// process video.js
 			// flags for used technologies
 			$this->arResult['WMV'] = $this->arResult['FLASH'] = $this->arResult['STREAM'] = $this->arResult['COMMON_VIDEO'] = $this->arResult['YOUTUBE'] = $this->arResult['AUDIO_FILE'] = false;
-			$this->arResult['CSS_FILES'] = $this->arResult['JS_FILES'] = array();
 			$this->arResult['VIDEOJS_PARAMS'] = array(
 				'autoplay' => false,
 				'preload' => false,
@@ -504,6 +542,10 @@ class CBitrixPlayer extends CBitrixComponent
 				'width' => $this->arParams['WIDTH'],
 				'techOrder' => array('html5', 'flash'),
 				'fluid' => false,
+				'notSupportedMessage' => GetMessage('VIDEOJS_NOT_SUPPORTED_MESSAGE'),
+				'errorMessages' => array(
+					4 => GetMessage('VIDEOJS_ERROR_MESSAGE_4'),
+				),
 			);
 			if ($this->arParams['SIZE_TYPE'] == 'fluid')
 				$this->arResult['VIDEOJS_PARAMS']['fluid'] = true;
@@ -526,8 +568,10 @@ class CBitrixPlayer extends CBitrixComponent
 				}
 				foreach ($this->arResult['TRACKS'] as $key => &$arTrack)
 				{
-					if ($this->processTrack ($arTrack) === false)
-						unset ($this->arResult['TRACKS'][$key]);
+					if($this->processTrack ($arTrack) === false)
+					{
+						unset($this->arResult['TRACKS'][$key]);
+					}
 				}
 			}
 			else
@@ -551,17 +595,31 @@ class CBitrixPlayer extends CBitrixComponent
 				$this->arResult['PATH'] = $this->arResult['TRACKS'][0]['src'];
 				$this->arResult['FILE_TYPE'] = $this->arResult['TRACKS'][0]['type'];
 			}
+			else
+			{
+				$this->arResult['TRACKS'] = array_values($this->arResult['TRACKS']);
+			}
+			CJSCore::Init(['player']);
+			$playerScripts = CJSCore::getExtInfo('player');
+			foreach($playerScripts['js'] as $script)
+			{
+				$this->arResult['JS_FILES'][] = $script;
+			}
+			foreach($playerScripts['css'] as $script)
+			{
+				$this->arResult['CSS_FILES'][] = $script;
+			}
 			$this->arResult['VIDEOJS_PARAMS']['sources'] = $this->arResult['TRACKS'];
-			\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/videojs/video.js');
-			$this->arResult['JS_FILES'][] = $this->__path.'/videojs/video.js';
-			$APPLICATION->setAdditionalCss($this->__path.'/videojs/video-js.css');
-			$this->arResult['CSS_FILES'][] = $this->__path.'/videojs/video-js.css';
 			$this->processSkin();
+			if($this->arResult['SKIN_NAME'])
+			{
+				$this->arResult['VIDEOJS_PARAMS']['skin'] = $this->arResult['SKIN_NAME'];
+			}
 			if ($this->arResult['VIMEO'])
 			{
 				array_unshift($this->arResult['VIDEOJS_PARAMS']['techOrder'], 'vimeo');
-				\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/videojs/vimeo.js');
-				$this->arResult['JS_FILES'][] = $this->__path.'/videojs/vimeo.js';
+				\Bitrix\Main\Page\Asset::getInstance()->addJs(static::PLAYER_JS_PATH.'/videojs/vimeo.js');
+				$this->arResult['JS_FILES'][] = static::PLAYER_JS_PATH.'/videojs/vimeo.js';
 			}
 			if ($this->arResult['YOUTUBE'])
 			{
@@ -573,8 +631,8 @@ class CBitrixPlayer extends CBitrixComponent
 				if ($this->arParams['REPEAT'] == "always")
 					$this->arResult['VIDEOJS_PARAMS']['youtube']['loop'] = 1;
 
-				\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/videojs/youtube.js');
-				$this->arResult['JS_FILES'][] = $this->__path.'/videojs/youtube.js';
+				\Bitrix\Main\Page\Asset::getInstance()->addJs(static::PLAYER_JS_PATH.'/videojs/youtube.js');
+				$this->arResult['JS_FILES'][] = static::PLAYER_JS_PATH.'/videojs/youtube.js';
 			}
 			if ($this->arResult['COMMON_VIDEO'] || $this->arResult['AUDIO_FILE'])
 			{
@@ -590,8 +648,8 @@ class CBitrixPlayer extends CBitrixComponent
 			if ($this->arResult['STREAM'])
 			{
 				$this->arParams['START_TIME'] = 0;
-				\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/videojs/videojs-contrib-hls.js');
-				$this->arResult['JS_FILES'][] = $this->__path.'/videojs/videojs-contrib-hls.js';
+				\Bitrix\Main\Page\Asset::getInstance()->addJs(static::PLAYER_JS_PATH.'/videojs/videojs-contrib-hls.js');
+				$this->arResult['JS_FILES'][] = static::PLAYER_JS_PATH.'/videojs/videojs-contrib-hls.js';
 			}
 			if ($this->arResult['WMV'] && count ($this->arResult['TRACKS']) > 1)
 			{
@@ -601,18 +659,28 @@ class CBitrixPlayer extends CBitrixComponent
 				$this->arResult['PLAYLIST_CONFIG'] = array();
 				\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/wmvplayer/silverlight.js');
 				\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/wmvplayer/wmvplayer.js');
-				\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/videojs/wmv.js');
+				\Bitrix\Main\Page\Asset::getInstance()->addJs(static::PLAYER_JS_PATH.'/videojs/wmv.js');
 				$this->arResult['JS_FILES'][] = $this->__path.'/wmvplayer/silverlight.js';
 				$this->arResult['JS_FILES'][] = $this->__path.'/wmvplayer/wmvplayer.js';
-				$this->arResult['JS_FILES'][] = $this->__path.'/videojs/wmv.js';
+				$this->arResult['JS_FILES'][] = static::PLAYER_JS_PATH.'/videojs/wmv.js';
 				array_unshift($this->arResult['VIDEOJS_PARAMS']['techOrder'], 'wmv');
+			}
+			if($this->arResult['FLASH'])
+			{
+				$this->arResult['VIDEOJS_PARAMS']['hasFlash'] = true;
 			}
 			// flash and vimeo techs doesn't support playbackRate and currentTime properties
 			if ($this->arResult['FLASH'] || $this->arResult['VIMEO'])
 			{
 				$this->arParams['PLAYBACK_RATE'] = 1;
 				$this->arParams['START_TIME'] = 0;
-				$this->arResult['VIDEOJS_PARAMS']['flash']['swf'] = $this->__path.'/videojs/video-js.swf';
+				$this->arResult['VIDEOJS_PARAMS']['flash']['swf'] = static::PLAYER_JS_PATH.'/videojs/video-js.swf';
+			}
+			if($this->arParams['AUTOSTART_ON_SCROLL'] === 'Y')
+			{
+				$this->arResult['AUTOSTART_ON_SCROLL'] = 'Y';
+				$this->arResult['VIDEOJS_PARAMS']['autostart'] = true;
+				$this->arParams['START_TIME'] = 0;
 			}
 			$this->arResult['VOLUME'] = $this->arParams['VOLUME'] / 100;
 			if ($this->arParams['MUTE'] === "Y")
@@ -626,20 +694,44 @@ class CBitrixPlayer extends CBitrixComponent
 				// a strange bug - vimeo doesn't play without a poster
 				$this->arResult['VIDEOJS_PARAMS']['poster'] = $this->__path.'/images/black.png';
 			}
-			if ($this->arParams['AUTOSTART'] === "Y")
+			if($this->arParams['AUTOSTART'] === "Y")
 				$this->arParams['START_TIME'] = 0;
+
+			if($this->arParams['START_TIME'] > 0)
+			{
+				$this->arResult['VIDEOJS_PARAMS']['startTime'] = $this->arParams['START_TIME'];
+			}
+
+			if($this->arParams['LAZYLOAD'] === 'Y')
+			{
+				$this->arResult['LAZYLOAD'] = true;
+				$this->arResult['VIDEOJS_PARAMS']['lazyload'] = true;
+			}
 		}
 
 		$this->arResult['PLAYER_TYPE'] = $this->playerType;
 
-		if($this->arParams['USE_PLAYLIST'] == 'Y')
+		if($this->arParams['USE_PLAYLIST'] == 'Y' && $this->arParams['USE_PLAYLIST_AS_SOURCES'] !== 'Y')
 		{
 			$this->processPlaylist();
+			if(!empty($this->arResult['VIDEOJS_PLAYLIST_PARAMS']))
+			{
+				$this->arResult['VIDEOJS_PARAMS']['playlistParams'] = $this->arResult['VIDEOJS_PLAYLIST_PARAMS'];
+			}
 		}
 
-		if (!empty($this->warning) && $USER->IsAdmin() && !(defined ('ADMIN_SECTION') && ADMIN_SECTION === true))
+		if (!empty($this->warning) && $USER->IsAdmin() && !(defined ('ADMIN_SECTION') && ADMIN_SECTION === true) && $this->arParams['HIDE_ERRORS'] !== 'Y')
 		{
 			CComponentUtil::__ShowError($this->warning);
+		}
+
+		foreach($this->arResult['JS_FILES'] as $key => $file)
+		{
+			$this->arResult['JS_FILES'][$key] = CUtil::GetAdditionalFileURL($file);
+		}
+		foreach($this->arResult['CSS_FILES'] as $key => $file)
+		{
+			$this->arResult['CSS_FILES'][$key] = CUtil::GetAdditionalFileURL($file);
 		}
 
 		$this->includeComponentTemplate();
@@ -715,7 +807,6 @@ class CBitrixPlayer extends CBitrixComponent
 	 */
 	protected function processJwPlayer()
 	{
-		global $USER;
 		\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path . '/mediaplayer/jwplayer.js');
 		$this->arResult['JS_FILES'][] = $this->__path.'/mediaplayer/jwplayer.js';
 		$this->jwConfig = array(
@@ -766,7 +857,7 @@ class CBitrixPlayer extends CBitrixComponent
 		}
 
 		// Skining
-		$skinExt = strtolower(GetFileExtension($this->arParams['SKIN']));
+		$skinExt = self::getFileExtension($this->arParams['SKIN']);
 		$skinName = substr($this->arParams['SKIN'], 0, -strlen($skinExt) - 1);
 
 		if ($this->arParams['SKIN'] != '' && $this->arParams['SKIN'] != 'default')
@@ -793,7 +884,7 @@ class CBitrixPlayer extends CBitrixComponent
 			}
 		}
 
-		$this->addFlashVar($this->jwConfig, 'autostart', ($this->arParams['AUTOSTART'] == 'Y'), false);
+		$this->addFlashVar($this->jwConfig, 'autostart', ($this->arParams['AUTOSTART'] == 'Y'? 'true' : ''), false);
 		$this->addFlashVar($this->jwConfig, 'repeat', $this->arParams['REPEAT'], 'none');
 		$this->addFlashVar($this->jwConfig, 'volume', $this->arParams['VOLUME'], 90);
 		$this->addFlashVar($this->jwConfig, 'mute', ($this->arParams['MUTE'] == 'Y'), false);
@@ -879,6 +970,10 @@ class CBitrixPlayer extends CBitrixComponent
 		}
 		if (self::isYoutubeSource($arTrack['src']))
 		{
+			if($this->arParams['USE_PLAYLIST_AS_SOURCES'] === 'Y')
+			{
+				return false;
+			}
 			if ($this->arResult['AUDIO_FILE'])
 			{
 				$this->warning .= GetMessage("PLAYLIST_AUDIO_AND_VIDEO_NOT_SUPPORTED")."<br />";
@@ -890,6 +985,10 @@ class CBitrixPlayer extends CBitrixComponent
 		}
 		elseif (self::isVimeoSource($arTrack['src']))
 		{
+			if($this->arParams['USE_PLAYLIST_AS_SOURCES'] === 'Y')
+			{
+				return false;
+			}
 			if ($this->arResult['AUDIO_FILE'])
 			{
 				$this->warning .= GetMessage("PLAYLIST_AUDIO_AND_VIDEO_NOT_SUPPORTED")."<br />";
@@ -926,7 +1025,15 @@ class CBitrixPlayer extends CBitrixComponent
 		}
 		elseif (self::isWmvSource($arTrack['src'], $arTrack['type']))
 		{
+			if($this->arParams['USE_PLAYLIST_AS_SOURCES'] === 'Y')
+			{
+				return false;
+			}
 			$this->arResult['WMV'] = true;
+		}
+		elseif (strpos($arTrack['type'], 'rtmp') === 0)
+		{
+			$this->arResult['FLASH'] = $this->arResult['STREAM'] = true;
 		}
 		elseif (strpos($arTrack['type'], 'video') === 0)
 		{
@@ -956,27 +1063,40 @@ class CBitrixPlayer extends CBitrixComponent
 	protected function processSkin()
 	{
 		global $APPLICATION;
-		$this->arResult['SKIN'] = '';
+		$this->arResult['SKIN_JS'] = $this->arResult['SKIN_CSS'] = '';
 		$this->arResult['SKIN_NAME'] = 'vjs-default-skin';
-		if ($this->arParams['SKIN'] != '' && $this->arParams['SKIN'] != 'default')
+		if($this->arParams['SKIN'] != '' && $this->arParams['SKIN'] != 'default')
 		{
-			$skinExt = strtolower(GetFileExtension($this->arParams['SKIN']));
+			$skinExt = self::getFileExtension($this->arParams['SKIN']);
 			$this->arResult['SKIN_NAME'] = substr($this->arParams['SKIN'], 0, -strlen($skinExt) - 1);
 
 			if ($skinExt == 'css')
 			{
 				if (file_exists($_SERVER['DOCUMENT_ROOT'] . $this->arParams['SKIN_PATH'] . $this->arParams['SKIN']))
 				{
-					$this->arResult['SKIN'] = $this->arParams['SKIN_PATH'] . $this->arParams['SKIN'];
+					$this->arResult['SKIN_CSS'] = $this->arParams['SKIN_PATH'] . $this->arParams['SKIN'];
 				}
 				elseif (file_exists($_SERVER['DOCUMENT_ROOT'] . $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '/' . $this->arParams['SKIN']))
 				{
-					$this->arResult['SKIN'] = $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '/' . $this->arParams['SKIN'];
+					$this->arResult['SKIN_CSS'] = $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '/' . $this->arParams['SKIN'];
 				}
-				if ($this->arResult['SKIN'] != '')
+				if ($this->arResult['SKIN_CSS'] != '')
 				{
-					$APPLICATION->setAdditionalCss($this->arResult['SKIN']);
-					$this->arResult['CSS_FILES'][] = $this->arResult['SKIN'];
+					$APPLICATION->setAdditionalCss($this->arResult['SKIN_CSS']);
+					$this->arResult['CSS_FILES'][] = $this->arResult['SKIN_CSS'];
+					if(file_exists($_SERVER['DOCUMENT_ROOT'] . $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '.js'))
+					{
+						$this->arResult['SKIN_JS'] = $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '.js';
+					}
+					elseif(file_exists($_SERVER['DOCUMENT_ROOT'] . $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '/' . $this->arParams['SKIN_NAME'] . '.js'))
+					{
+						$this->arResult['SKIN_JS'] = $this->arParams['SKIN_PATH'] . $this->arResult['SKIN_NAME'] . '/' . $this->arParams['SKIN_NAME'] . '.js';
+					}
+					if($this->arResult['SKIN_JS'] != '')
+					{
+						\Bitrix\Main\Page\Asset::getInstance()->addJs($this->arResult['SKIN_JS']);
+						$this->arResult['JS_FILES'][] = $this->arResult['SKIN_JS'];
+					}
 					$this->arResult['SKIN_NAME'] = 'vjs-' . $this->arResult['SKIN_NAME'] . '-skin';
 				}
 			}
@@ -989,14 +1109,12 @@ class CBitrixPlayer extends CBitrixComponent
 	protected function processPlaylist()
 	{
 		global $USER, $APPLICATION;
+		\Bitrix\Main\Page\Asset::getInstance()->addJs(self::PLAYER_JS_PATH.'/videojs/videojs-playlist-dev.js');
+		$this->arResult['JS_FILES'][] = self::PLAYER_JS_PATH.'/videojs/videojs-playlist-dev.js';
+		$APPLICATION->setAdditionalCss(self::PLAYER_JS_PATH.'/videojs/videojs-playlist.css');
+		$this->arResult['CSS_FILES'][] = self::PLAYER_JS_PATH.'/videojs/videojs-playlist.css';
 		if (count($this->arResult['TRACKS']) > 1)
 		{
-			// original plugin doesn't support multiple players
-			\Bitrix\Main\Page\Asset::getInstance()->addJs($this->__path.'/videojs/videojs-playlist-dev.js');
-			$this->arResult['JS_FILES'][] = $this->__path.'/videojs/videojs-playlist-dev.js';
-			$APPLICATION->setAdditionalCss($this->__path.'/videojs/videojs-playlist.css');
-			$this->arResult['CSS_FILES'][] = $this->__path.'/videojs/videojs-playlist.css';
-
 			$this->arResult['VIDEOJS_PLAYLIST_PARAMS'] = array(
 				'videos' => $this->arResult['TRACKS'],
 				'playlist' => array(
@@ -1049,7 +1167,7 @@ class CBitrixPlayer extends CBitrixComponent
 				"ICON" => "bx-context-toolbar-edit-icon",
 				"TITLE" => ($playlistExists ? GetMessage("PLAYER_PLAYLIST_EDIT") : GetMessage("PLAYER_PLAYLIST_ADD")),
 			));
-			echo '<script>if (JCPopup) {window.jsPopup_playlist = new JCPopup({suffix: "playlist", zIndex: 3000});}</script>'; // create instance of JCPopup: jsPopup_playlist
+			echo '<script>BX.ready(function(){if (typeof JCPopup === \'object\') {window.jsPopup_playlist = new JCPopup({suffix: "playlist", zIndex: 3000});}});</script>';
 			$this->AddIncludeAreaIcons($arIcons);
 		}
 	}

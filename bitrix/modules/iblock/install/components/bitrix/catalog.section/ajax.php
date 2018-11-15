@@ -1,6 +1,7 @@
 <?
 /** @global \CMain $APPLICATION */
 define('STOP_STATISTICS', true);
+define('NOT_CHECK_PERMISSIONS', true);
 
 $siteId = isset($_REQUEST['siteId']) && is_string($_REQUEST['siteId']) ? $_REQUEST['siteId'] : '';
 $siteId = substr(preg_replace('/[^a-z0-9_]/i', '', $siteId), 0, 2);
@@ -21,16 +22,28 @@ $signer = new \Bitrix\Main\Security\Sign\Signer;
 try
 {
 	$template = $signer->unsign($request->get('template'), 'catalog.section');
-	$parameters = $signer->unsign($request->get('parameters'), 'catalog.section');
+	$paramString = $signer->unsign($request->get('parameters'), 'catalog.section');
 }
 catch (\Bitrix\Main\Security\Sign\BadSignatureException $e)
 {
 	die();
 }
 
+$parameters = unserialize(base64_decode($paramString));
+if (isset($parameters['PARENT_NAME']))
+{
+	$parent = new CBitrixComponent();
+	$parent->InitComponent($parameters['PARENT_NAME'], $parameters['PARENT_TEMPLATE_NAME']);
+	$parent->InitComponentTemplate($parameters['PARENT_TEMPLATE_PAGE']);
+}
+else
+{
+	$parent = false;
+}
+
 $APPLICATION->IncludeComponent(
 	'bitrix:catalog.section',
 	$template,
-	unserialize(base64_decode($parameters)),
-	false
+	$parameters,
+	$parent
 );

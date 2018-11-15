@@ -387,27 +387,11 @@ class SitemapIblock
 			);
 
 			if($element)
-			{
 				$dbRes = \CIBlockElement::getByID($fields["ID"]);
-			}
 			else
-			{
 				$dbRes = \CIBlockSection::getByID($fields["ID"]);
-			}
-
-			$newFields = $dbRes->fetch();
-			$newFields['LANG_DIR'] = $siteDirs[$sitemap['SITE_ID']];
-//			use just date(). it is not true, but because we use BEFORE event, we cant use real lastmod date, only previous value
-			$date = date('d.m.Y H:i:s');
 			
-			$url = $element ? $sitemap['DETAIL_PAGE_URL'] : $sitemap['SECTION_PAGE_URL'];
-			$urlType = $element ? 'E' : 'S';
-			//remove or replace SERVER_NAME
-			$url = self::prepareUrlToReplace($url, $sitemap['SITE_ID']);
-			$rule = array(
-				'url' => \CIBlock::replaceDetailUrl($url, $newFields, false, $urlType),
-				'lastmod' => MakeTimeStamp($date),
-			);
+			$newFields = $dbRes->fetch();
 			
 			$sitemapFile = new SitemapFile($fileName, $sitemap);
 //			try remove entry from original file, to not create temp files to all parts
@@ -418,20 +402,37 @@ class SitemapIblock
 			$sitemapRuntimeId = $sitemap['SITE_ID'] . '-' . uniqid();
 			$sitemapRuntimeId .= isset($fields['ID']) ? '-' . $fields['ID'] . '-' : '';
 			$sitemapRuntimeFile = new SitemapRuntime($sitemapRuntimeId, $fileName, $sitemap);
-
-//			processing
-			if ($newFields["ACTIVE"] !== "N")
+			
+//			check ACTIVITY by active, date or etc, add entry only for active
+			if(self::checkActivity($element, $newFields))
 			{
-				$sitemapRuntimeFile->appendIblockEntry($rule['url'], $rule['lastmod'], $sitemapFile);
+				$newFields['LANG_DIR'] = $siteDirs[$sitemap['SITE_ID']];
+
+//				use just date(). it is not true, but because we use BEFORE event, we cant use real lastmod date, only previous value
+				$date = date('d.m.Y H:i:s');
+				
+				$url = $element ? $sitemap['DETAIL_PAGE_URL'] : $sitemap['SECTION_PAGE_URL'];
+				$urlType = $element ? 'E' : 'S';
+//				remove or replace SERVER_NAME
+				$url = self::prepareUrlToReplace($url, $sitemap['SITE_ID']);
+				$rule = array(
+					'url' => \CIBlock::replaceDetailUrl($url, $newFields, false, $urlType),
+					'lastmod' => MakeTimeStamp($date),
+				);
+				
+				$sitemapRuntimeFile->setOriginalFile($sitemapFile);
+				$sitemapRuntimeFile->appendIblockEntry($rule['url'], $rule['lastmod']);
 			}
 			
+//			rename RUNTIME file to original SITEMAPFILE name, or just remove TMP file
+//			after this in original file will be added always changes
 			if ($sitemapRuntimeFile->isNotEmpty() && $sitemapRuntimeFile->isCurrentPartNotEmpty())
 				$sitemapRuntimeFile->finish();
 			else
 				$sitemapRuntimeFile->delete();
 			
 			$sitemapIndex = new SitemapIndex($sitemap['SITEMAP_FILE'], $sitemap);
-			$sitemapIndex->appendIndexEntry($sitemapRuntimeFile);
+			$sitemapIndex->appendIndexEntry($sitemapFile);
 			
 			if ($sitemap['ROBOTS'] == 'Y')
 			{
@@ -440,8 +441,6 @@ class SitemapIblock
 					array(RobotsFile::SITEMAP_RULE, $sitemapIndex->getUrl())
 				);
 			}
-			
-			unset($sitemapRuntimeFile, $sitemapIndex, $robotsFile);
 		}
 	}
 
@@ -556,17 +555,6 @@ class SitemapIblock
 			
 			foreach ($sitemaps as $sitemap)
 			{
-				$fields['LANG_DIR'] = $siteDirs[$sitemap['SITE_ID']];
-				
-				$url = $name == 'ADDSECTION' ? $sitemap['SECTION_PAGE_URL'] : $sitemap['DETAIL_PAGE_URL'];
-				$urlType = $name == 'ADDSECTION' ? 'S' : 'E';
-//				remove or replace SERVER_NAME
-				$url = self::prepareUrlToReplace($url, $sitemap['SITE_ID']);
-				$rule = array(
-					'url' => \CIBlock::replaceDetailUrl($url, $fields, false, $urlType),
-					'lastmod' => MakeTimeStamp($fields['TIMESTAMP_X']),
-				);
-
 				$fileName = str_replace(
 					array('#IBLOCK_ID#', '#IBLOCK_CODE#', '#IBLOCK_XML_ID#'),
 					array($fields['IBLOCK_ID'], $sitemap['IBLOCK_CODE'], $sitemap['IBLOCK_XML_ID']),
@@ -579,16 +567,32 @@ class SitemapIblock
 				$sitemapRuntimeId = $sitemap['SITE_ID'] . '-' . uniqid();
 				$sitemapRuntimeId .= isset($fields['ID']) ? '-' . $fields['ID'] . '-' : '';
 				$sitemapRuntimeFile = new SitemapRuntime($sitemapRuntimeId, $fileName, $sitemap);
-
-//				processing
-				$sitemapRuntimeFile->appendIblockEntry($rule['url'], $rule['lastmod'], $sitemapFile);
+				
+				if(self::checkActivity($name == 'ADDELEMENT' ? true : false, $fields))
+				{
+					$fields['LANG_DIR'] = $siteDirs[$sitemap['SITE_ID']];
+					
+					$url = $name == 'ADDSECTION' ? $sitemap['SECTION_PAGE_URL'] : $sitemap['DETAIL_PAGE_URL'];
+					$urlType = $name == 'ADDSECTION' ? 'S' : 'E';
+//					remove or replace SERVER_NAME
+					$url = self::prepareUrlToReplace($url, $sitemap['SITE_ID']);
+					$rule = array(
+						'url' => \CIBlock::replaceDetailUrl($url, $fields, false, $urlType),
+						'lastmod' => MakeTimeStamp($fields['TIMESTAMP_X']),
+					);
+					
+					$sitemapRuntimeFile->setOriginalFile($sitemapFile);
+					$sitemapRuntimeFile->appendIblockEntry($rule['url'], $rule['lastmod']);
+				}
+				
+//				after this in original file will be added always changes
 				if ($sitemapRuntimeFile->isNotEmpty() && $sitemapRuntimeFile->isCurrentPartNotEmpty())
 					$sitemapRuntimeFile->finish();
 				else
 					$sitemapRuntimeFile->delete();
 				
 				$sitemapIndex = new SitemapIndex($sitemap['SITEMAP_FILE'], $sitemap);
-				$sitemapIndex->appendIndexEntry($sitemapRuntimeFile);
+				$sitemapIndex->appendIndexEntry($sitemapFile);
 				
 				if ($sitemap['ROBOTS'] == 'Y')
 				{
@@ -597,8 +601,6 @@ class SitemapIblock
 						array(RobotsFile::SITEMAP_RULE, $sitemapIndex->getUrl())
 					);
 				}
-				
-				unset($sitemapRuntimeFile, $robotsFile, $sitemapIndex);
 			}
 		}
 	}
@@ -614,6 +616,47 @@ class SitemapIblock
 		}
 		
 		return $siteDirs;
+	}
+	
+	
+	private static function checkActivity($isElement, $fields)
+	{
+		if(array_key_exists("ACTIVE", $fields) && $fields["ACTIVE"] == "N")
+			return false;
+		
+//		for iblock element and iblock section we check different fields
+		if($isElement)
+		{
+//			activity may be in field DATE_ACTIVE_ or ACTIVE_, check both
+			if(
+				array_key_exists("DATE_ACTIVE_FROM", $fields) && $fields["DATE_ACTIVE_FROM"] &&
+				new \DateTime($fields["DATE_ACTIVE_FROM"]) > new \DateTime($fields["TIMESTAMP_X"])
+			)
+				return false;
+			if(
+				array_key_exists("ACTIVE_FROM", $fields) && $fields["ACTIVE_FROM"] &&
+				new \DateTime($fields["ACTIVE_FROM"]) > new \DateTime($fields["TIMESTAMP_X"])
+			)
+				return false;
+			
+			if(
+				array_key_exists("DATE_ACTIVE_TO", $fields) && $fields["DATE_ACTIVE_TO"] &&
+				new \DateTime($fields["DATE_ACTIVE_TO"]) < new \DateTime($fields["TIMESTAMP_X"])
+			)
+				return false;
+			if(
+				array_key_exists("ACTIVE_TO", $fields) && $fields["ACTIVE_TO"] &&
+				new \DateTime($fields["ACTIVE_TO"]) < new \DateTime($fields["TIMESTAMP_X"])
+			)
+				return false;
+		}
+		else
+		{
+			if(array_key_exists("GLOBAL_ACTIVE", $fields) && $fields["GLOBAL_ACTIVE"] == "N")
+				return false;
+		}
+		
+		return true;
 	}
 	
 	

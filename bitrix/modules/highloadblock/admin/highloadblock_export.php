@@ -123,6 +123,10 @@ if ($request->get('start') == 'Y' && $server->getRequestMethod() == 'POST')
 	{
 		$error = Loc::getMessage('XML_FILENAME_IS_NOT_XML');
 	}
+	if (!preg_match('/^[a-zA-Z0-9_\/.]+$/', $NS['url_data_file'], $n))
+	{
+		$error = Loc::getMessage('XML_FILENAME_IS_NOT_CORRECT');
+	}
 
 	// first level errors
 	if ($error != '')
@@ -344,6 +348,11 @@ if ($request->get('start') == 'Y' && $server->getRequestMethod() == 'POST')
 				}
 			}
 		}
+		else
+		{
+			$NS['percent'] = 100;
+			$NS['finish'] = true;
+		}
 
 		$NS['step']++;
 	}
@@ -528,7 +537,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admi
 			<select id="object">
 				<option value="0"></option>
 				<?foreach ($hlsVisual as $row):?>
-				<option value="<?= $row['ID']?>"><?= htmlspecialcharsbx($row['NAME_LANG'])?> [<?= $row['ID']?>]</option>
+				<option value="<?= intval($row['ID'])?>"><?= htmlspecialcharsbx($row['NAME_LANG'])?> [<?= $row['ID']?>]</option>
 				<?endforeach;?>
 			</select>
 		</td>

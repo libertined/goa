@@ -1,9 +1,10 @@
 <?
 
 use Bitrix\Main\UI\Filter\Type;
-use Bitrix\Main\UI\Filter\Field;
+use Bitrix\Main\UI\Filter\FieldAdapter;
 use Bitrix\Main\UI\Filter\DateType;
 use Bitrix\Main\UI\Filter\NumberType;
+use Bitrix\Main\UI\Filter\Theme;
 use Bitrix\Main\Localization\Loc;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
@@ -21,7 +22,11 @@ class CMainUiFilter extends CBitrixComponent
 	protected $jsFolder = "/js/";
 	protected $blocksFolder = "/blocks/";
 	protected $cssFolder = "/css/";
+	protected $themesFolder = "/themes/";
+	protected $configName = "config.json";
 	protected $commonOptions;
+	protected $theme;
+	protected $themeInstance;
 
 
 	protected function prepareResult()
@@ -38,6 +43,7 @@ class CMainUiFilter extends CBitrixComponent
 		$this->arResult["ENABLE_LABEL"] = $this->prepareEnableLabel();
 		$this->arResult["ENABLE_LIVE_SEARCH"] = $this->prepareEnableLiveSearch();
 		$this->arResult["DISABLE_SEARCH"] = $this->prepareDisableSearch();
+		$this->arResult["COMPACT_STATE"] = $this->prepareCompactState();
 		$this->arResult["MAIN_UI_FILTER__AND"] = Loc::getMessage('MAIN_UI_FILTER__AND');
 		$this->arResult["MAIN_UI_FILTER__MORE"] = Loc::getMessage('MAIN_UI_FILTER__MORE');
 		$this->arResult["MAIN_UI_FILTER__BEFORE"] = Loc::getMessage("MAIN_UI_FILTER__BEFORE");
@@ -57,8 +63,35 @@ class CMainUiFilter extends CBitrixComponent
 		$this->arResult["MAIN_UI_FILTER__REMOVE_FIELD"] = Loc::getMessage("MAIN_UI_FILTER__REMOVE_FIELD");
 		$this->arResult["MAIN_UI_FILTER__CONFIRM_MESSAGE_FOR_ALL"] = Loc::getMessage("MAIN_UI_FILTER__CONFIRM_MESSAGE_FOR_ALL");
 		$this->arResult["MAIN_UI_FILTER__CONFIRM_APPLY_FOR_ALL"] = Loc::getMessage("MAIN_UI_FILTER__CONFIRM_APPLY_FOR_ALL");
+		$this->arResult["MAIN_UI_FILTER__DATE_NEXT_DAYS_LABEL"] = Loc::getMessage("MAIN_UI_FILTER__DATE_NEXT_DAYS_LABEL");
+		$this->arResult["MAIN_UI_FILTER__DATE_PREV_DAYS_LABEL"] = Loc::getMessage("MAIN_UI_FILTER__DATE_PREV_DAYS_LABEL");
 		$this->arResult["CLEAR_GET"] = $this->prepareClearGet();
 		$this->arResult["VALUE_REQUIRED_MODE"] = $this->prepareValueRequiredMode();
+		$this->arResult["THEME"] = $this->getTheme();
+		$this->arResult["RESET_TO_DEFAULT_MODE"] = $this->prepareResetToDefaultMode();
+		$this->arResult["COMMON_PRESETS_ID"] = $this->arParams["COMMON_PRESETS_ID"];
+		$this->arResult["IS_AUTHORIZED"] = $this->prepareIsAuthorized();
+		$this->arResult["LAZY_LOAD"] = $this->arParams["LAZY_LOAD"];
+		$this->arResult["VALUE_REQUIRED"] = $this->arParams["VALUE_REQUIRED"];
+	}
+
+
+	protected static function prepareIsAuthorized()
+	{
+		global $USER;
+		return $USER->isAuthorized();
+	}
+
+	protected function prepareResetToDefaultMode()
+	{
+		$result = true;
+
+		if (isset($this->arParams["RESET_TO_DEFAULT_MODE"]) && is_bool($this->arParams["RESET_TO_DEFAULT_MODE"]))
+		{
+			$result = $this->arParams["RESET_TO_DEFAULT_MODE"];
+		}
+
+		return $result;
 	}
 
 	protected function prepareValueRequiredMode()
@@ -96,6 +129,18 @@ class CMainUiFilter extends CBitrixComponent
 		return $this->arResult["ENABLE_LIVE_SEARCH"];
 	}
 
+	protected function prepareCompactState()
+	{
+		$result = false;
+
+		if (isset($this->arParams["COMPACT_STATE"]) && $this->arParams["COMPACT_STATE"])
+		{
+			$result = true;
+		}
+
+		return $result;
+	}
+
 	protected function prepareEnableLabel()
 	{
 		$this->arResult["ENABLE_LABEL"] = false;
@@ -114,7 +159,8 @@ class CMainUiFilter extends CBitrixComponent
 		{
 			$this->options = new \Bitrix\Main\UI\Filter\Options(
 				$this->arParams["FILTER_ID"],
-				$this->arParams["FILTER_PRESETS"]
+				$this->arParams["FILTER_PRESETS"],
+				$this->arParams["COMMON_PRESETS_ID"]
 			);
 		}
 
@@ -162,20 +208,20 @@ class CMainUiFilter extends CBitrixComponent
 
 
 
-	protected static function prepareSelectValue(Array $items = array(), $value = "")
+	protected static function prepareSelectValue(Array $items = array(), $value = "", $strictMode = false)
 	{
-		$result = array();
-
 		foreach ($items as $key => $item)
 		{
-			if ($item["VALUE"] == $value)
+			if (
+				(!$strictMode && $item["VALUE"] == $value) ||
+				($strictMode && $item["VALUE"] === $value)
+			)
 			{
-				$result = $item;
-				continue;
+				return $item;
 			}
 		}
 
-		return $result;
+		return array();
 	}
 
 	protected static function prepareMultiselectValue(Array $items = array(), Array $value = array())
@@ -280,76 +326,141 @@ class CMainUiFilter extends CBitrixComponent
 		return array_key_exists($field["NAME"], $presetFields) ? $presetFields[$field["NAME"]] : "";
 	}
 
-	protected function preparePresetFields(Array $presetRows = array(), Array $presetFields = array())
+	protected static function compatibleDateselValue($value = "")
+	{
+		$dateMap = array(
+			"" => DateType::NONE,
+			"today" => DateType::CURRENT_DAY,
+			"yesterday" => DateType::YESTERDAY,
+			"tomorrow" => DateType::TOMORROW,
+			"week_ago" => DateType::LAST_WEEK,
+			"month" => DateType::MONTH,
+			"month_ago" => DateType::LAST_MONTH,
+			"exact" => DateType::EXACT,
+			"after" => DateType::RANGE,
+			"before" => DateType::RANGE,
+			"interval" => DateType::RANGE
+		);
+
+		return array_key_exists($value, $dateMap) ? $dateMap[$value] : $value;
+	}
+
+	protected function preparePresetFields($presetRows = array(), $presetFields = array())
 	{
 		$result = array();
 
-		foreach ($presetRows as $rowKey => $rowName)
+		if (is_array($presetRows) && is_array($presetFields))
 		{
-			$field = $this->getField($rowName);
-
-			if (empty($field))
+			foreach ($presetRows as $rowKey => $rowName)
 			{
-				continue;
-			}
+				$field = $this->getField($rowName);
 
-			$value = array_key_exists($rowName, $presetFields) ? $presetFields[$rowName] : "";
-
-			switch ($field["TYPE"])
-			{
-				case Type::SELECT :
+				if (empty($field))
 				{
-					if (!empty($value) && is_array($value))
+					continue;
+				}
+
+				$value = array_key_exists($rowName, $presetFields) ? $presetFields[$rowName] : "";
+
+				switch ($field["TYPE"])
+				{
+					case Type::SELECT :
 					{
-						$values = array_values($value);
-						$value = $values[0];
+						if (!empty($value) && is_array($value))
+						{
+							$values = array_values($value);
+							$value = $values[0];
+						}
+
+						$field["VALUE"] = self::prepareSelectValue($field["ITEMS"], $value, $field["STRICT"]);
+						break;
 					}
 
-					$field["VALUE"] = self::prepareSelectValue($field["ITEMS"], $value);
-					break;
+					case Type::MULTI_SELECT :
+					{
+						$value = is_array($value) ? $value : array();
+						$field["VALUE"] = self::prepareMultiselectValue($field["ITEMS"], $value);
+						break;
+					}
+
+					case Type::DATE :
+					{
+						$presetFields[$field["NAME"]."_datesel"] = self::compatibleDateselValue(
+							$presetFields[$field["NAME"]."_datesel"]
+						);
+						$field["SUB_TYPE"] = self::prepareSubtype($field, $presetFields, "_datesel");
+						$field["VALUES"] = self::prepareValue($field, $presetFields, "_datesel");
+
+						if (is_array($field["YEARS_SWITCHER"]))
+						{
+							$field["YEARS_SWITCHER"]["VALUE"] = self::prepareSelectValue(
+								$field["YEARS_SWITCHER"]["ITEMS"],
+								$presetFields[$field["NAME"]."_allow_year"],
+								$field["STRICT"]
+							);
+						}
+
+						break;
+					}
+
+					case Type::CUSTOM_DATE :
+					{
+						$days = array();
+
+						if (isset($presetFields[$field["NAME"]."_days"]) && is_array($presetFields[$field["NAME"]."_days"]))
+						{
+							$days = $presetFields[$field["NAME"]."_days"];
+						}
+
+						$months = array();
+
+						if (isset($presetFields[$field["NAME"]."_months"]) && is_array($presetFields[$field["NAME"]."_months"]))
+						{
+							$months = $presetFields[$field["NAME"]."_months"];
+						}
+
+						$years = array();
+
+						if (isset($presetFields[$field["NAME"]."_years"]) && is_array($presetFields[$field["NAME"]."_years"]))
+						{
+							$years = $presetFields[$field["NAME"]."_years"];
+						}
+
+						$field["VALUE"] = array(
+							"days" => $days,
+							"months" => $months,
+							"years" => $years
+						);
+					}
+
+					case Type::NUMBER :
+					{
+						$field["SUB_TYPE"] = self::prepareSubtype($field, $presetFields, "_numsel");
+						$field["VALUES"] = self::prepareValue($field, $presetFields, "_numsel");
+						break;
+					}
+
+					case Type::CUSTOM_ENTITY :
+					{
+						$field["VALUES"] = self::prepareCustomEntityValue($field, $presetFields);
+						break;
+					}
+
+					case Type::CUSTOM :
+					{
+						$field["_VALUE"] = self::prepareCustomValue($field, $presetFields);
+						break;
+					}
+
+					case Type::STRING :
+					{
+						$field["VALUE"] = $value;
+						break;
+					}
 				}
 
-				case Type::MULTI_SELECT :
-				{
-					$value = is_array($value) ? $value : array();
-					$field["VALUE"] = self::prepareMultiselectValue($field["ITEMS"], $value);
-					break;
-				}
-
-				case Type::DATE :
-				{
-					$field["SUB_TYPE"] = self::prepareSubtype($field, $presetFields, "_datesel");
-					$field["VALUES"] = self::prepareValue($field, $presetFields, "_datesel");
-					break;
-				}
-
-				case Type::NUMBER :
-				{
-					$field["SUB_TYPE"] = self::prepareSubtype($field, $presetFields, "_numsel");
-					$field["VALUES"] = self::prepareValue($field, $presetFields, "_numsel");
-					break;
-				}
-
-				case Type::CUSTOM_ENTITY :
-				{
-					$field["VALUES"] = self::prepareCustomEntityValue($field, $presetFields);
-					break;
-				}
-
-				case Type::CUSTOM :
-				{
-					$field["_VALUE"] = self::prepareCustomValue($field, $presetFields);
-					break;
-				}
-
-				case Type::STRING :
-				{
-					$field["VALUE"] = $value;
-					break;
-				}
+				$result[] = $field;
 			}
-
-			$result[] = $field;
 		}
 
 		return $result;
@@ -365,6 +476,8 @@ class CMainUiFilter extends CBitrixComponent
 
 		if (!empty($optionsPresets) && is_array($optionsPresets))
 		{
+			$index = 0;
+
 			foreach ($optionsPresets as $presetId => $presetFields)
 			{
 				$rows = array();
@@ -380,13 +493,31 @@ class CMainUiFilter extends CBitrixComponent
 				$fields = isset($presetFields["fields"]) && is_array($presetFields["fields"])
 					? $presetFields["fields"] : array();
 
+				if (isset($presetFields["for_all"]))
+				{
+					$forAll = $presetFields["for_all"];
+				}
+				else
+				{
+					$forAll = !$this->arParams["FILTER_PRESETS"][$presetId]["disallow_for_all"];
+				}
+
 				$preset = array(
 					"ID" => $presetId,
-					"SORT" => $presetFields["sort"],
+					"SORT" => $presetFields["sort"] !== null ? $presetFields["sort"] : $index,
 					"TITLE" => $presetFields["name"],
 					"FIELDS" => $this->preparePresetFields($rows, $fields),
+					"FOR_ALL" => $forAll,
 					"IS_PINNED" => false
 				);
+
+				$additionalFields = $options->getAdditionalPresetFields($presetId);
+
+				if (is_array($additionalFields))
+				{
+					$additionalRows = \Bitrix\Main\UI\Filter\Options::getRowsFromFields($additionalFields);
+					$preset["ADDITIONAL"] = $this->preparePresetFields($additionalRows, $additionalFields);
+				}
 
 				if ($arOptions["default"] === $presetId)
 				{
@@ -423,6 +554,8 @@ class CMainUiFilter extends CBitrixComponent
 				{
 					$this->arResult["PRESETS"][] = $preset;
 				}
+
+				$index++;
 			}
 
 			if (isset($arFilter["PRESET_ID"]))
@@ -448,13 +581,17 @@ class CMainUiFilter extends CBitrixComponent
 
 	protected function prepareDefaultPreset()
 	{
-		if (!is_array($this->arResult["CURRENT_PRESET"]))
+		global $USER;
+
+		if (!is_array($this->arResult["CURRENT_PRESET"]) &&
+			$USER->CanDoOperation("edit_other_settings"))
 		{
 			$this->arResult["CURRENT_PRESET"] = array(
 				"ID" => "default_filter",
 				"TITLE" => Loc::getMessage("MAIN_UI_FILTER__DEFAULT_FILTER_TITLE"),
 				"FIELDS" => $this->prepareFilterRows(),
-				"FIELDS_COUNT" => $this->prepareFieldsCount()
+				"FIELDS_COUNT" => $this->prepareFieldsCount(),
+				"FOR_ALL" => true
 			);
 		}
 
@@ -559,6 +696,7 @@ class CMainUiFilter extends CBitrixComponent
 	{
 		$sourcePresets = $this->arParams["FILTER_PRESETS"];
 		$presets = array();
+		$sort = 0;
 
 		if (!empty($sourcePresets) && is_array($sourcePresets))
 		{
@@ -566,14 +704,20 @@ class CMainUiFilter extends CBitrixComponent
 
 			foreach ($sourcePresets as $presetId => $presetFields)
 			{
-				$rows = array_keys($presetFields["fields"]);
-				$preset["ID"] = $presetId;
-				$preset["TITLE"] = $presetFields["name"];
-				$preset["FIELDS"] = $this->preparePresetFields($rows, $presetFields["fields"]);
-				$preset["IS_DEFAULT"] = true;
-				$preset["PINNED"] = $presetFields["default"] == true;
+				if ($presetId !== "default_filter")
+				{
+					$rows = is_array($presetFields["fields"]) ? array_keys($presetFields["fields"]) : array();
+					$preset["ID"] = $presetId;
+					$preset["TITLE"] = $presetFields["name"];
+					$preset["SORT"] = $sort;
+					$preset["FIELDS"] = $this->preparePresetFields($rows, $presetFields["fields"]);
+					$preset["IS_DEFAULT"] = true;
+					$preset["FOR_ALL"] = !$presetFields["disallow_for_all"];
+					$preset["PINNED"] = $presetFields["default"] == true;
 
-				$presets[] = $preset;
+					$presets[] = $preset;
+					$sort++;
+				}
 			}
 		}
 
@@ -600,11 +744,15 @@ class CMainUiFilter extends CBitrixComponent
 			$rows = array_keys($this->prepareFilterRowsParam());
 		}
 
+		$sort++;
+
 		$presets[] = array(
 			"ID" => "default_filter",
 			"TITLE" => Loc::getMessage("MAIN_UI_FILTER__DEFAULT_FILTER_TITLE"),
+			"SORT" => $sort,
 			"FIELDS" => $this->preparePresetFields($rows, $rows),
-			"IS_DEFAULT" => true
+			"IS_DEFAULT" => true,
+			"FOR_ALL" => true
 		);
 
 		return $presets;
@@ -652,109 +800,10 @@ class CMainUiFilter extends CBitrixComponent
 			{
 				foreach ($sourceFields as $sourceFieldKey => $sourceField)
 				{
-					switch ($sourceField["type"])
-					{
-						case "list" : {
-							$items = array();
-
-							if (isset($sourceField["items"]) && !empty($sourceField["items"]) && is_array($sourceField["items"]))
-							{
-								foreach ($sourceField["items"] as $selectItemValue => $selectItemText)
-								{
-									$items[] = array("NAME" => $selectItemText, "VALUE" => $selectItemValue);
-								}
-							}
-
-							if ($sourceField["params"]["multiple"] === "Y")
-							{
-								$field = Field::multiSelect($sourceField["id"], $items, array(), $sourceField["name"], $sourceField["placeholder"]);
-							}
-							else
-							{
-								if (empty($items[0]["VALUE"]) && empty($items[0]["NAME"]))
-								{
-									$items[0]["NAME"] = Loc::getMessage("MAIN_UI_FILTER__NOT_SET");
-								}
-
-								if (!empty($items[0]["VALUE"]) && !empty($items[0]["NAME"]))
-								{
-									array_unshift($items, array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NOT_SET"), "VALUE" => ""));
-								}
-
-								$field = Field::select($sourceField["id"], $items, array(), $sourceField["name"], $sourceField["placeholder"]);
-							}
-
-							break;
-						}
-
-						case "date" : {
-							$field = Field::date($sourceField["id"], DateType::NONE, array(), $sourceField["name"], $sourceField["placeholder"], $sourceField["time"], $sourceField["exclude"]);
-							break;
-						}
-
-						case "number" : {
-							$field = Field::number($sourceField["id"], NumberType::SINGLE, array(), $sourceField["name"], $sourceField["placeholder"]);
-							$subTypes = array();
-							$subType = is_array($field["SUB_TYPE"]) ? $field["SUB_TYPE"]["VALUE"] : $field["SUB_TYPE"];
-							$dateTypesList = NumberType::getList();
-
-							foreach ($dateTypesList as $key => $type)
-							{
-								$subTypes[] = array(
-									"NAME" => Loc::getMessage("MAIN_UI_FILTER__NUMBER_".$key),
-									"PLACEHOLDER" => "",
-									"VALUE" => $type
-								);
-
-								if ($type === $subType)
-								{
-									$field["SUB_TYPE"] = array(
-										"NAME" => Loc::getMessage("MAIN_UI_FILTER__NUMBER_".$key),
-										"PLACEHOLDER" => "",
-										"VALUE" => $subType
-									);
-								}
-							}
-
-							$field["SUB_TYPES"] = $subTypes;
-
-							break;
-						}
-
-						case "custom" : {
-							$field = Field::custom($sourceField["id"], $sourceField["value"], $sourceField["name"], $sourceField["placeholder"], $sourceField["style"]);
-							break;
-						}
-
-						case "custom_entity" : {
-							$field = Field::customEntity($sourceField["id"], $sourceField["name"], $sourceField["placeholder"]);
-							break;
-						}
-
-						case "checkbox" : {
-
-							$values = isset($sourceField["valueType"]) && $sourceField["valueType"] === "numeric"
-								? array("1", "0")
-								: array("Y", "N");
-
-							$items = array(
-								array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NOT_SET"), "VALUE" => ""),
-								array("NAME" => Loc::getMessage("MAIN_UI_FILTER__YES"), "VALUE" => $values[0]),
-								array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NO"), "VALUE" => $values[1])
-							);
-
-							$field = Field::select($sourceField["id"], $items, $items[0], $sourceField["name"], $sourceField["placeholder"]);
-
-							break;
-						}
-
-						default : {
-							$field = Field::string($sourceField["id"], "", $sourceField["name"], $sourceField["placeholder"]);
-							break;
-						}
-					}
-
-					$this->arResult["FIELDS"][] = $field;
+					$this->arResult["FIELDS"][] = array_merge(
+						FieldAdapter::adapt($sourceField),
+						array("STRICT" => $sourceField["strict"] === true)
+					);
 				}
 			}
 		}
@@ -829,6 +878,33 @@ class CMainUiFilter extends CBitrixComponent
 		}
 	}
 
+	protected function includeStyles($folder)
+	{
+		$tmpl = $this->getTemplate();
+		$absPath = $_SERVER["DOCUMENT_ROOT"].$tmpl->GetFolder().$folder;
+		$relPath = $tmpl->GetFolder().$folder;
+
+		if (is_dir($absPath))
+		{
+			$dir = opendir($absPath);
+
+			if($dir)
+			{
+				while(($file = readdir($dir)) !== false)
+				{
+					$ext = getFileExtension($file);
+
+					if ($ext === 'css' && !(strpos($file, 'map.css') !== false || strpos($file, 'min.css') !== false))
+					{
+						$tmpl->addExternalCss($relPath.$file);
+					}
+				}
+
+				closedir($dir);
+			}
+		}
+	}
+
 	protected function includeComponentBlocks()
 	{
 		$blocksFolder = $this->getBlocksFolder();
@@ -887,6 +963,82 @@ class CMainUiFilter extends CBitrixComponent
 		{
 			$this->arParams["FILTER_PRESETS"] = array();
 		}
+
+		if (!is_array($this->arParams["CONFIG"]))
+		{
+			$this->arParams["CONFIG"] = array();
+		}
+	}
+
+	protected function getTheme()
+	{
+		if (!$this->theme && isset($this->arParams["THEME"]) && !empty($this->arParams["THEME"]))
+		{
+			$availableThemes = Theme::getList();
+			if (in_array($this->arParams["THEME"], $availableThemes))
+			{
+				$this->theme = $this->arParams["THEME"];
+			}
+		}
+
+		if (!$this->theme)
+		{
+			$this->theme = Theme::DEFAULT_FILTER;
+		}
+
+		return $this->theme;
+	}
+
+	protected function includeTheme()
+	{
+		$theme = $this->getTheme();
+		if ($theme !== Theme::DEFAULT_FILTER)
+		{
+			$themePath = strtolower($theme);
+			$themePath = $this->themesFolder.$themePath."/";
+
+			$this->includeStyles($themePath);
+			$this->includeScripts($themePath);
+		}
+	}
+
+	protected function getConfig($path)
+	{
+		$file = new \Bitrix\Main\IO\File($path);
+		$config = array();
+
+		if ($file->isExists())
+		{
+			$jsonConfig = $file->getContents();
+
+			if (!empty($jsonConfig))
+			{
+				$config = \Bitrix\Main\Web\Json::decode($jsonConfig);
+			}
+		}
+
+		return $config;
+	}
+
+	protected function getAbsoluteThemesPath()
+	{
+		$templatePath = $this->getTemplate()->getFolder();
+		$relativeThemesPath = $templatePath.$this->themesFolder;
+		$absolutePath = \Bitrix\Main\IO\Path::convertRelativeToAbsolute($relativeThemesPath);
+		return $absolutePath;
+	}
+
+	public function prepareConfig()
+	{
+		$themesPath = $this->getAbsoluteThemesPath();
+		$themeId = $this->getTheme();
+		$themeFolder = strtolower($themeId);
+		$defaultConfigPath = $themesPath."/".$this->configName;
+		$themeConfigPath = $themesPath."/".$themeFolder."/".$this->configName;
+		$defaultConfig = $this->getConfig($defaultConfigPath);
+		$themeConfig = $this->getConfig($themeConfigPath);
+		$paramsConfig = $this->arParams["CONFIG"];
+		return array_merge($defaultConfig, $themeConfig, $paramsConfig);
 	}
 
 	public function executeComponent()
@@ -902,6 +1054,7 @@ class CMainUiFilter extends CBitrixComponent
 			$this->includeComponentTemplate();
 			$this->includeComponentScripts();
 			$this->includeComponentBlocks();
+			$this->includeTheme();
 		}
 	}
 }

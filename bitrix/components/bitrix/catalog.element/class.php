@@ -111,7 +111,27 @@ class CatalogElementComponent extends Element
 			}
 
 			// price for anonymous
-			$optimalPrice = \CCatalogProduct::GetOptimalPrice($priceProductId, 1, array(2), $renewal = 'N', array(), $this->getSiteId(), array());
+			if ($this->useDiscountCache)
+			{
+				if ($this->storage['USE_SALE_DISCOUNTS'])
+				{
+					$priceTypes = array();
+					$priceIterator = Catalog\GroupAccessTable::getList(array(
+						'select' => array('CATALOG_GROUP_ID'),
+						'filter' => array('GROUP_ID' => 2, '=ACCESS' => Catalog\GroupAccessTable::ACCESS_BUY),
+						'order' => array('CATALOG_GROUP_ID' => 'ASC')
+					));
+					while ($priceType = $priceIterator->fetch())
+					{
+						$priceTypeId = (int)$priceType['CATALOG_GROUP_ID'];
+						$priceTypes[$priceTypeId] = $priceTypeId;
+						unset($priceTypeId);
+					}
+					Catalog\Discount\DiscountManager::preloadPriceData(array($priceProductId), $priceTypes);
+					Catalog\Product\Price::loadRoundRules($priceTypes);
+				}
+			}
+			$optimalPrice = \CCatalogProduct::GetOptimalPrice($priceProductId, 1, array(2), 'N', array(), $this->getSiteId(), array());
 			$counterData['price'] = $optimalPrice['RESULT_PRICE']['DISCOUNT_PRICE'];
 			$counterData['currency'] = $optimalPrice['RESULT_PRICE']['CURRENCY'];
 
@@ -221,18 +241,19 @@ class CatalogElementComponent extends Element
 					);
 					\CSaleViewedProduct::Add($fields);
 				}
+
 				$_SESSION['VIEWED_PRODUCT'] = $this->arResult['ID'];
 			}
 
-			if ($this->arParams['SET_VIEWED_IN_COMPONENT'] === 'Y' && !empty($arResult['VIEWED_PRODUCT']))
+			if ($this->arParams['SET_VIEWED_IN_COMPONENT'] === 'Y' && !empty($this->arResult['VIEWED_PRODUCT']))
 			{
 				if (Loader::includeModule('catalog') && Loader::includeModule('sale'))
 				{
 					Catalog\CatalogViewedProductTable::refresh(
-						$arResult['VIEWED_PRODUCT']['OFFER_ID'],
+						$this->arResult['VIEWED_PRODUCT']['OFFER_ID'],
 						\CSaleBasket::GetBasketUserID(),
 						$this->getSiteId(),
-						$arResult['VIEWED_PRODUCT']['PRODUCT_ID']
+						$this->arResult['VIEWED_PRODUCT']['PRODUCT_ID']
 					);
 				}
 			}

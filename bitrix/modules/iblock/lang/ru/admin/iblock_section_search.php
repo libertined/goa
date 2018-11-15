@@ -1,6 +1,9 @@
 <?
 $MESS["IBLOCK_SECSEARCH_TITLE"] = "Поиск раздела";
 $MESS["IBLOCK_SECSEARCH_IBLOCK"] = "Информационный блок:";
+$MESS["IBLOCK_SECSEARCH_PARENT_ID"] = "Раздел-родитель";
+$MESS["IBLOCK_SECSEARCH_ALL_PARENTS"] = "(любой)";
+$MESS["IBLOCK_SECSEARCH_ROOT_PARENT_ID"] = "Верхний уровень";
 $MESS["IBLOCK_SECSEARCH_ID"] = "ID раздела";
 $MESS["IBLOCK_SECSEARCH_NAME"] = "Название";
 $MESS["IBLOCK_SECSEARCH_ACTIVE"] = "Активность";

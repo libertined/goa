@@ -155,7 +155,6 @@ if (check_bitrix_sessid())
 		if (
 			isset($_POST['SEARCH_SONET_GROUPS'])
 			&& $_POST['SEARCH_SONET_GROUPS'] == 'Y'
-			&& method_exists('CSocNetLogDestination', 'searchSonetGroups')
 		)
 		{
 			$searchResults['SONET_GROUPS'] = CSocNetLogDestination::searchSonetGroups(array(
@@ -282,9 +281,23 @@ if (check_bitrix_sessid())
 				|| in_array("CRMCONTACT", $arCrmAllowedTypes)
 			)
 			{
+				$searchParts = preg_split ('/[\s]+/', $search, 2, PREG_SPLIT_NO_EMPTY);
+				if(count($searchParts) < 2)
+				{
+					$arFilter = array('%FULL_NAME' => $search);
+				}
+				else
+				{
+					$arFilter = array('LOGIC' => 'AND');
+					for($i = 0; $i < 2; $i++)
+					{
+						$arFilter["__INNER_FILTER_NAME_{$i}"] = array('%FULL_NAME' => $searchParts[$i]);
+					}
+				}
+
 				$dbContacts = CCrmContact::GetListEx(
 					$arOrder = array(),
-					$arFilter = array('%FULL_NAME' => $search),
+					$arFilter,
 					$arGroupBy = false,
 					$arNavStartParams = array('nTopCount' => 20),
 					$arSelectFields = array('ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'COMPANY_TITLE', 'PHOTO')
@@ -322,14 +335,20 @@ if (check_bitrix_sessid())
 				|| in_array("CRMCOMPANY", $arCrmAllowedTypes)
 			)
 			{
+				$arFilter = array('%TITLE' => $search);
+				if(isset($_POST['CRMCOMPANYMY']) && $_POST['CRMCOMPANYMY'] == 'Y')
+				{
+					$arFilter['=IS_MY_COMPANY'] = 'Y';
+				}
+
 				$arCompanyTypeList = CCrmStatus::GetStatusListEx('COMPANY_TYPE');
 				$arCompanyIndustryList = CCrmStatus::GetStatusListEx('INDUSTRY');
 				$dbCompanies = CCrmCompany::GetListEx(
-					$arOrder = array(),
-					$arFilter = array('%TITLE' => $search),
-					$arGroupBy = false,
-					$arNavStartParams = array('nTopCount' => 20),
-					$arSelectFields = array('ID', 'TITLE', 'COMPANY_TYPE', 'INDUSTRY',  'LOGO')
+					array(),
+					$arFilter,
+					false,
+					array('nTopCount' => 20),
+					array('ID', 'TITLE', 'COMPANY_TYPE', 'INDUSTRY',  'LOGO')
 				);
 
 				while ($dbCompanies && ($arCompany = $dbCompanies->fetch()))
@@ -434,7 +453,6 @@ if (check_bitrix_sessid())
 			$searchResults['LEADS'] = $arLeads;
 			$searchResults['DEALS'] = $arDeals;
 		}
-
 		echo CUtil::PhpToJsObject($searchResults);
 	}
 	elseif ($_POST['LD_DEPARTMENT_RELATION'] == 'Y')

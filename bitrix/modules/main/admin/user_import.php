@@ -17,7 +17,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/prolog.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/csv_user_import.php");
 
-if(!$USER->IsAdmin())
+if(!$USER->CanDoOperation('edit_php'))
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
 //Download sample
@@ -266,7 +266,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $tabStep > 2 && check_bitrix_sessid(
 			while ($csvImport->ImportUser())
 			{
 				if(($mess = $csvImport->GetErrorMessage()) <> '')
-					echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape($mess)."');</script>";
+					echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape(_ShowHtmlspec($mess))."');</script>";
 
 				if (USER_IMPORT_EXECUTION_TIME > 0 && (getmicrotime()-START_EXEC_TIME) > USER_IMPORT_EXECUTION_TIME)
 					die("<script type=\"text/javascript\">parent.window.Start('".$csvFile->GetPos()."',".$cntUsersImport.");</script>");
@@ -307,7 +307,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $tabStep > 2 && check_bitrix_sessid(
 
 			if (!empty($strUserImportError))
 			{
-				echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape($strUserImportError)."');</script>";
+				echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape(_ShowHtmlspec($strUserImportError))."');</script>";
 			}
 
 			die("<script type=\"text/javascript\">parent.window.End($cntUsersImport);</script>");

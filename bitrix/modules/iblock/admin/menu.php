@@ -14,14 +14,14 @@ IncludeModuleLangFile(__FILE__);
 
 function _get_elements_menu($arType, $arIBlock, $SECTION_ID)
 {
-	$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null));
+	$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null, "skip_public" => true));
 
 	$SECTION_ID = intval($SECTION_ID);
 	if($SECTION_ID <= 0)
 	{
 		return array(
 			"text" => htmlspecialcharsex($arIBlock["ELEMENTS_NAME"]),
-			"url" => htmlspecialcharsbx($urlElementAdminPage."&find_el_y=Y"),
+			"url" => htmlspecialcharsbx($urlElementAdminPage."&find_el_y=Y"."&apply_filter=Y"),
 			"more_url" => array(
 				$urlElementAdminPage."&find_el_y=Y",
 				$urlElementAdminPage."&find_section_section=-1",
@@ -43,7 +43,7 @@ function _get_elements_menu($arType, $arIBlock, $SECTION_ID)
 	{
 		return array(
 			"text" => htmlspecialcharsex($arIBlock["ELEMENTS_NAME"]),
-			"url" => htmlspecialcharsbx($urlElementAdminPage."&find_section_section=".$SECTION_ID),
+			"url" => htmlspecialcharsbx($urlElementAdminPage."&find_section_section=".$SECTION_ID."&SECTION_ID=".$SECTION_ID."&apply_filter=Y"),
 			"more_url" => array(
 				"iblock_element_edit.php?".$arIBlock["URL_PART"]."&find_section_section=".$SECTION_ID,
 				$urlElementAdminPage."&find_section_section=".$SECTION_ID,
@@ -61,8 +61,8 @@ function _get_elements_menu($arType, $arIBlock, $SECTION_ID)
 
 function _get_other_elements_menu($arType, $arIBlock, $arSection, &$more_url)
 {
-	$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null));
-	$more_url[] = $urlElementAdminPage."&find_section_section=".(int)$arSection["ID"];
+	$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null, "skip_public" => true));
+	$more_url[] = $urlElementAdminPage."&find_section_section=".(int)$arSection["ID"]."&SECTION_ID=".(int)$arSection["ID"];
 
 	if (($arSection["RIGHT_MARGIN"] - $arSection["LEFT_MARGIN"]) > 1)
 	{
@@ -109,7 +109,7 @@ function _get_sections_menu($arType, $arIBlock, $DEPTH_LEVEL, $SECTION_ID, $arSe
 		}
 	}
 
-	$urlSectionAdminPage = CIBlock::GetAdminSectionListLink($arIBlock["ID"], array("menu" => null));
+	$urlSectionAdminPage = CIBlock::GetAdminSectionListLink($arIBlock["ID"], array("menu" => null, "skip_public" => true));
 
 	$arSections = array();
 
@@ -133,7 +133,8 @@ function _get_sections_menu($arType, $arIBlock, $DEPTH_LEVEL, $SECTION_ID, $arSe
 		{
 			$arSections[] = array(
 				"text" => GetMessage("IBLOCK_MENU_ALL_OTH"),
-				"url" => htmlspecialcharsbx($urlSectionAdminPage."&find_section_section=".(int)$arSection["IBLOCK_SECTION_ID"]),
+				"url" => htmlspecialcharsbx($urlSectionAdminPage."&find_section_section=".
+					(int)$arSection["IBLOCK_SECTION_ID"]."&SECTION_ID=".(int)$arSection["IBLOCK_SECTION_ID"]."&apply_filter=Y"),
 				"more_url" => array(
 					$urlSectionAdminPage."&find_section_section=".(int)$arSection["IBLOCK_SECTION_ID"],
 					$urlSectionAdminPage,
@@ -155,7 +156,8 @@ function _get_sections_menu($arType, $arIBlock, $DEPTH_LEVEL, $SECTION_ID, $arSe
 		}
 		$arSectionTmp = array(
 			"text" => htmlspecialcharsex($arSection["NAME"]),
-			"url" => htmlspecialcharsbx($urlSectionAdminPage."&find_section_section=".$arSection["ID"]),
+			"url" => htmlspecialcharsbx($urlSectionAdminPage."&find_section_section=".$arSection["ID"].
+				"&SECTION_ID=".$arSection["ID"]."&apply_filter=Y"),
 			"more_url" => array(
 				$urlSectionAdminPage."&find_section_section=".$arSection["ID"],
 				"iblock_section_edit.php?".$arIBlock["URL_PART"]."&ID=".$arSection["ID"],
@@ -191,7 +193,7 @@ function _get_sections_menu($arType, $arIBlock, $DEPTH_LEVEL, $SECTION_ID, $arSe
 
 	while($arSection = $rsSections->Fetch())
 	{
-		$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null));
+		$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null, "skip_public" => true));
 		$arSections[0]["more_url"][] = $urlElementAdminPage."&find_section_section=".(int)$arSection["ID"];
 	}
 
@@ -225,17 +227,17 @@ function _get_iblocks_menu($arType)
 				)
 					$arItems = _get_sections_menu($arType, $arIBlock, 1, 0);
 				else
-					$arItems = false;
+					$arItems = array();
 			}
 			else
 			{
 				$arItems = _get_sections_menu($arType, $arIBlock, 1, 0);
 			}
 
-			$urlSectionAdminPage = CIBlock::GetAdminSectionListLink($arIBlock["ID"], array("menu" => null));
+			$urlSectionAdminPage = CIBlock::GetAdminSectionListLink($arIBlock["ID"], array("menu" => null, "skip_public" => true));
 			$arMenuItem = array(
 				"text" => $arIBlock["NAME~"],
-				"url" => htmlspecialcharsbx($urlSectionAdminPage."&find_section_section=0"),
+				"url" => htmlspecialcharsbx($urlSectionAdminPage."&find_section_section=0"."&apply_filter=Y&clear_filter=Y"),
 				"more_url" => array(
 					$urlSectionAdminPage."&find_section_section=0",
 					$urlSectionAdminPage."&find_section_section=-1",
@@ -256,7 +258,7 @@ function _get_iblocks_menu($arType)
 				"items" => $arItems,
 			);
 
-			if(!count($arItems))
+			if (empty($arItems))
 			{
 				$arMenuItem["more_url"][] = "iblock_element_edit.php?IBLOCK_ID=".$arIBlock["ID"]."&type=".$arType["ID"];
 				$arMenuItem["more_url"][] = "iblock_history_list.php?IBLOCK_ID=".$arIBlock["ID"]."&type=".$arType["ID"];
@@ -266,10 +268,10 @@ function _get_iblocks_menu($arType)
 		}
 		else
 		{
-			$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null));
+			$urlElementAdminPage = CIBlock::GetAdminElementListLink($arIBlock["ID"], array("menu" => null, "skip_public" => true));
 			$arIBlocks[] = array(
 				"text" => $arIBlock["NAME~"],
-				"url" => htmlspecialcharsbx($urlElementAdminPage),
+				"url" => htmlspecialcharsbx($urlElementAdminPage)."&apply_filter=Y",
 				"more_url" => array(
 					"iblock_element_edit.php?".$arIBlock["URL_PART"],
 					"iblock_history_list.php?".$arIBlock["URL_PART"],
@@ -379,6 +381,7 @@ while($arType = $rsTypes->Fetch())
 $bHasXRight = false;
 $bHasWRight = false;
 $bHasSRight = false;
+$bHasERight = false;
 
 if ($bUserIsAdmin)
 {
@@ -401,6 +404,8 @@ if ($bUserIsAdmin)
 		$bHasWRight = true;
 		$arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["IBLOCKS"]["S"][] = $arItem;
 		$bHasSRight = true;
+		$arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["IBLOCKS"]["E"][] = $arItem;
+		$bHasERight = true;
 	}
 }
 else
@@ -449,6 +454,25 @@ else
 		);
 		$bHasSRight = true;
 	}
+
+	$rsIBlocks = CIBlock::GetList(array("SORT"=>"asc", "NAME"=>"ASC"), array(
+		"MIN_PERMISSION" => "X",
+		"OPERATION" => "iblock_export",
+	));
+	while($arIBlock = $rsIBlocks->Fetch())
+	{
+		if(!$arIBlock["ELEMENTS_NAME"])
+			$arIBlock["ELEMENTS_NAME"] = $arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["ELEMENT_NAME"]?: GetMessage("IBLOCK_MENU_ELEMENTS");
+
+		$arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["IBLOCKS"]["E"][] = array(
+			"ID" => $arIBlock["ID"],
+			"NAME" => $arIBlock["NAME"],
+			"NAME~" => htmlspecialcharsex($arIBlock["NAME"]),
+			"ELEMENTS_NAME" => $arIBlock["ELEMENTS_NAME"],
+			"URL_PART" => "type=".$arIBlock["IBLOCK_TYPE_ID"]."&lang=".LANGUAGE_ID."&IBLOCK_ID=".$arIBlock["ID"],
+		);
+		$bHasERight = true;
+	}
 }
 
 //Build menu items
@@ -476,10 +500,10 @@ foreach($arTypes as $type_id => $arType)
 	}
 }
 
-if($bUserIsAdmin || $bHasWRight || $bHasXRight || $bHasSRight)
+if($bUserIsAdmin || $bHasWRight || $bHasXRight || $bHasSRight || $bHasERight)
 {
 	$arItems = array();
-	if($bHasXRight)
+	if($bHasXRight || $bHasERight)
 	{
 		$arItems[] = array(
 			"text" => GetMessage("IBLOCK_MENU_EXPORT"),

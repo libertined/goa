@@ -75,6 +75,7 @@ $arClasses = array(
 	'\Bitrix\Iblock\TypeLanguageTable' => "lib/typelanguage.php",
 	'\Bitrix\Iblock\BizprocType\UserTypeProperty' => "lib/bizproctype/usertypeproperty.php",
 	'\Bitrix\Iblock\BizprocType\ECrm' => "lib/bizproctype/ecrm.php",
+	'\Bitrix\Iblock\BizprocType\Money' => "lib/bizproctype/money.php",
 	'\Bitrix\Iblock\BizprocType\UserTypePropertyDiskFile' => "lib/bizproctype/usertypepropertydiskfile.php",
 	'\Bitrix\Iblock\BizprocType\UserTypePropertyElist' => "lib/bizproctype/usertypepropertyelist.php",
 	'\Bitrix\Iblock\BizprocType\UserTypePropertyEmployee' => "lib/bizproctype/usertypepropertyemployee.php",
@@ -86,6 +87,7 @@ $arClasses = array(
 	'\Bitrix\Iblock\Component\Tools' => "lib/component/tools.php",
 	'\Bitrix\Iblock\Helpers\Admin\Property' => "lib/helpers/admin/property.php",
 	'\Bitrix\Iblock\Helpers\Filter\Property' => "lib/helpers/filter/property.php",
+	'\Bitrix\Iblock\Helpers\Filter\PropertyManager' => "lib/helpers/filter/propertymanager.php",
 	'\Bitrix\Iblock\InheritedProperty\BaseTemplate' => "lib/inheritedproperty/basetemplate.php",
 	'\Bitrix\Iblock\InheritedProperty\BaseValues' => "lib/inheritedproperty/basevalues.php",
 	'\Bitrix\Iblock\InheritedProperty\ElementTemplates' => "lib/inheritedproperty/elementtemplates.php",
@@ -94,6 +96,7 @@ $arClasses = array(
 	'\Bitrix\Iblock\InheritedProperty\IblockValues' => "lib/inheritedproperty/iblockvalues.php",
 	'\Bitrix\Iblock\InheritedProperty\SectionTemplates' => "lib/inheritedproperty/sectiontemplates.php",
 	'\Bitrix\Iblock\InheritedProperty\SectionValues' => "lib/inheritedproperty/sectionvalues.php",
+	'\Bitrix\Iblock\InheritedProperty\ValuesQueue' => "lib/inheritedproperty/valuesqueue.php",
 	'\Bitrix\Iblock\Model\Section' => "lib/model/section.php",
 	'\Bitrix\Iblock\PropertyIndex\Dictionary' => "lib/propertyindex/dictionary.php",
 	'\Bitrix\Iblock\PropertyIndex\Element' => "lib/propertyindex/element.php",
@@ -993,7 +996,7 @@ function ImportXMLFile($file_name, $iblock_type="-", $site_id='', $section_actio
 		if(!$obCatalog->IndexTemporaryTables())
 			return GetMessage("IBLOCK_XML2_INDEX_ERROR");
 
-		$xml_root = 1;
+		$xml_root = $obCatalog->GetRoot();
 		$bUpdateIBlock = true;
 	}
 
@@ -1001,7 +1004,11 @@ function ImportXMLFile($file_name, $iblock_type="-", $site_id='', $section_actio
 
 	$result = $obCatalog->ImportMetaData($xml_root, $iblock_type, $site_id, $bUpdateIBlock);
 	if($result !== true)
+	{
+		if($sync)
+			$obCatalog->EndSession();
 		return GetMessage("IBLOCK_XML2_METADATA_ERROR").implode("\n", $result);
+	}
 
 	$obCatalog->ImportSections();
 	$obCatalog->DeactivateSections($section_action);

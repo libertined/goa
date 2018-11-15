@@ -164,7 +164,7 @@ if (isset($arCurrentValues['IBLOCK_ID']) && 0 < intval($arCurrentValues['IBLOCK_
 		'VALUES' => $defaultValue + $arFilePropList
 	);
 
-	if ($viewModeValue === 'SECTION')
+	if ($viewModeValue === 'SECTION' || $viewModeValue === 'SLIDER')
 	{
 		$arTemplateParameters['LABEL_PROP'] = array(
 			'PARENT' => 'VISUAL',
@@ -371,7 +371,7 @@ if ($boolCatalog)
 	);
 }
 
-if ($viewModeValue === 'SLIDER' || $viewModeValue === 'BANNER')
+if ($viewModeValue === 'SECTION' || $viewModeValue === 'SLIDER')
 {
 	$arTemplateParameters['ROTATE_TIMER'] = array(
 		'PARENT' => 'VISUAL',
@@ -385,10 +385,6 @@ if ($viewModeValue === 'SLIDER' || $viewModeValue === 'BANNER')
 		'TYPE' => 'CHECKBOX',
 		'DEFAULT' => 'Y'
 	);
-}
-
-if ($viewModeValue === 'SECTION')
-{
 	$arTemplateParameters['PRODUCT_SUBSCRIPTION'] = array(
 		'PARENT' => 'VISUAL',
 		'NAME' => GetMessage('CP_BCT_TPL_PRODUCT_SUBSCRIPTION'),
@@ -420,6 +416,7 @@ if ($viewModeValue === 'SECTION')
 
 	$lineElementCount = (int)$arCurrentValues['LINE_ELEMENT_COUNT'] ?: 3;
 	$pageElementCount = (int)$arCurrentValues['ELEMENT_COUNT'] ?: 9;
+	$variantsMap = $viewModeValue === 'SLIDER' ? CatalogTopComponent::getTemplateVariantsMapForSlider() : CatalogTopComponent::getTemplateVariantsMap();
 
 	$arTemplateParameters['PRODUCT_ROW_VARIANTS'] = array(
 		'PARENT' => 'VISUAL',
@@ -435,7 +432,7 @@ if ($viewModeValue === 'SECTION')
 			'quantity' => GetMessage('CP_BCT_TPL_SETTINGS_QUANTITY'),
 			'quantityBigData' => GetMessage('CP_BCT_TPL_SETTINGS_QUANTITY_BIG_DATA')
 		)),
-		'JS_DATA' => Json::encode(CatalogTopComponent::getTemplateVariantsMap()),
+		'JS_DATA' => Json::encode($variantsMap),
 		'DEFAULT' => Json::encode(CatalogTopComponent::predictRowVariants($lineElementCount, $pageElementCount))
 	);
 	$arTemplateParameters['ENLARGE_PRODUCT'] = array(
@@ -478,10 +475,9 @@ if ($viewModeValue === 'SECTION')
 			'quantity' => GetMessage('CP_BCT_TPL_PRODUCT_BLOCK_QUANTITY'),
 			'buttons' => GetMessage('CP_BCT_TPL_PRODUCT_BLOCK_BUTTONS'),
 			'props' => GetMessage('CP_BCT_TPL_PRODUCT_BLOCK_PROPS'),
-			'sku' => GetMessage('CP_BCT_TPL_PRODUCT_BLOCK_SKU'),
-			'compare' => GetMessage('CP_BCT_TPL_PRODUCT_BLOCK_COMPARE')
+			'sku' => GetMessage('CP_BCT_TPL_PRODUCT_BLOCK_SKU')
 		)),
-		'DEFAULT' => 'price,props,sku,quantityLimit,quantity,buttons,compare'
+		'DEFAULT' => 'price,props,sku,quantityLimit,quantity,buttons'
 	);
 
 	$arTemplateParameters['SHOW_SLIDER'] = array(

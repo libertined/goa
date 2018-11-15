@@ -5,7 +5,7 @@
 
 	/**
 	 * @param {HtmlElement} node
-	 * @param {BX.Main.grid} parent
+	 * @param {BX.Main.grid} [parent]
 	 * @constructor
 	 */
 	BX.Grid.Element = function(node, parent)

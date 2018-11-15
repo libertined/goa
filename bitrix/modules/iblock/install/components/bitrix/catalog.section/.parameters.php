@@ -7,10 +7,11 @@
  * @global CUserTypeManager $USER_FIELD_MANAGER
  */
 
-use Bitrix\Main\Loader;
-use Bitrix\Main\Web\Json;
-use Bitrix\Iblock;
-use Bitrix\Currency;
+use Bitrix\Main\Loader,
+	Bitrix\Main\Web\Json,
+	Bitrix\Iblock,
+	Bitrix\Catalog,
+	Bitrix\Currency;
 
 global $USER_FIELD_MANAGER;
 
@@ -23,6 +24,18 @@ $iblockExists = (!empty($arCurrentValues['IBLOCK_ID']) && (int)$arCurrentValues[
 
 $arIBlockType = CIBlockParameters::GetIBlockTypes();
 
+$offersIblock = array();
+if ($catalogIncluded)
+{
+	$iterator = Catalog\CatalogIblockTable::getList(array(
+		'select' => array('IBLOCK_ID'),
+		'filter' => array('!=PRODUCT_IBLOCK_ID' => 0)
+	));
+	while ($row = $iterator->fetch())
+		$offersIblock[$row['IBLOCK_ID']] = true;
+	unset($row, $iterator);
+}
+
 $arIBlock = array();
 $iblockFilter = !empty($arCurrentValues['IBLOCK_TYPE'])
 	? array('TYPE' => $arCurrentValues['IBLOCK_TYPE'], 'ACTIVE' => 'Y')
@@ -31,9 +44,13 @@ $iblockFilter = !empty($arCurrentValues['IBLOCK_TYPE'])
 $rsIBlock = CIBlock::GetList(array('SORT' => 'ASC'), $iblockFilter);
 while ($arr = $rsIBlock->Fetch())
 {
-	$arIBlock[$arr['ID']] = '['.$arr['ID'].'] '.$arr['NAME'];
+	$id = (int)$arr['ID'];
+	if (isset($offersIblock[$id]))
+		continue;
+	$arIBlock[$id] = '['.$id.'] '.$arr['NAME'];
 }
-unset($arr, $rsIBlock, $iblockFilter);
+unset($id, $arr, $rsIBlock, $iblockFilter);
+unset($offersIblock);
 
 $defaultValue = array('-' => GetMessage('CP_BCS_EMPTY'));
 
@@ -195,13 +212,12 @@ $arComponentParameters = array(
 		'COMPARE' => array(
 			'NAME' => GetMessage('IBLOCK_COMPARE')
 		),
+		'ANALYTICS_SETTINGS' => array(
+			'NAME' => GetMessage('ANALYTICS_SETTINGS')
+		),
 		'EXTENDED_SETTINGS' => array(
 			'NAME' => GetMessage('IBLOCK_EXTENDED_SETTINGS'),
 			'SORT' => 10000
-		),
-		'ANALYTICS_SETTINGS' => array(
-			'NAME' => GetMessage('ANALYTICS_SETTINGS'),
-			'SORT' => 11000
 		)
 	),
 	'PARAMETERS' => array(
@@ -659,7 +675,7 @@ if ($catalogIncluded)
 
 	$arComponentParameters['PARAMETERS']['HIDE_NOT_AVAILABLE'] = array(
 		'PARENT' => 'DATA_SOURCE',
-		'NAME' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_EXT2'),
+		'NAME' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE'),
 		'TYPE' => 'LIST',
 		'DEFAULT' => 'N',
 		'VALUES' => array(

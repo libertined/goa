@@ -1,4 +1,5 @@
 <?
+$MESS["admin_lib_menu_landing"] = "Sites";
 $MESS["admin_lib_hide_menu"] = "Hide menu";
 $MESS["admin_lib_show_menu"] = "Show menu";
 $MESS["admin_lib_less_buttons"] = "Use small buttons in menu";
@@ -222,4 +223,5 @@ $MESS["admin_lib_required"] = "Required fields";
 $MESS["admin_lib_menu_marketing"] = "Marketing";
 $MESS["admin_lib_sso_auth"] = "Authentication";
 $MESS["admin_lib_sso_auth_title"] = "To view available sites, please sign in using your Bitrix24 account and enable site list access.";
+$MESS["admin_lib_grid_page_sizes_all_title"] = "All";
 ?>

@@ -98,24 +98,25 @@ class ECrm extends UserTypeProperty
 	 */
 	public static function renderControlMultiple(FieldType $fieldType, array $field, $value, $allowSelection, $renderMode)
 	{
-		if ($allowSelection)
+		$selectorValue = null;
+		$typeValue = array();
+		if (!is_array($value) || is_array($value) && \CBPHelper::isAssociativeArray($value))
+			$value = array($value);
+
+		foreach ($value as $v)
 		{
-			$selectorValue = null;
-			if(is_array($value))
-			{
-				$value = current($value);
-			}
-			if (\CBPActivity::isExpression($value))
-			{
-				$selectorValue = $value;
-				$value = null;
-			}
-			return static::renderControlSelector($field, $selectorValue, true, '', $fieldType);
+			if (\CBPActivity::isExpression($v))
+				$selectorValue = $v;
+			else
+				$typeValue[] = $v;
 		}
+		// need to show at least one control
+		if (empty($typeValue))
+			$typeValue[] = null;
 
 		$property = static::getUserType($fieldType);
 
-		if (!empty($property['GetPublicEditHTMLMulty']))
+		if(!empty($property['GetPublicEditHTMLMulty']))
 		{
 			$fieldName = static::generateControlName($field);
 			$renderResult = call_user_func_array(
@@ -128,7 +129,7 @@ class ECrm extends UserTypeProperty
 						'IS_REQUIRED' => $fieldType->isRequired() ? 'Y' : 'N',
 						'PROPERTY_USER_TYPE' => $property
 					),
-					array('VALUE' => $value),
+					array('VALUE' => $typeValue),
 					array(
 						'FORM_NAME' => $field['Form'],
 						'VALUE' => $fieldName,
@@ -139,9 +140,21 @@ class ECrm extends UserTypeProperty
 			);
 		}
 		else
-			$renderResult = static::renderControl($fieldType, $field, $value, $allowSelection, $renderMode);
+		{
+			$renderResult = static::renderControl($fieldType, $field, '', $allowSelection, $renderMode);
+		}
+
+		if($allowSelection)
+		{
+			$renderResult .= static::renderControlSelector($field, $selectorValue, true, '', $fieldType);
+		}
 
 		return $renderResult;
+	}
+
+	public static function extractValueSingle(FieldType $fieldType, array $field, array $request)
+	{
+		return static::extractValueMultiple($fieldType, $field, $request);
 	}
 
 	private static function getIblockId(FieldType $fieldType)
@@ -150,4 +163,15 @@ class ECrm extends UserTypeProperty
 		$type = explode('_', $documentType[2]);
 		return intval($type[1]);
 	}
+
+	public static function toSingleValue(FieldType $fieldType, $value)
+	{
+		if (is_array($value))
+		{
+			$values = array_values($value);
+			return isset($values[0]) ? $values[0] : null;
+		}
+		return parent::toSingleValue($fieldType, $value);
+	}
+
 }

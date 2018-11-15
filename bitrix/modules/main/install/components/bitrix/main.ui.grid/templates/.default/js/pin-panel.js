@@ -27,24 +27,6 @@
 			this.animationDuration = 200;
 			this.panel = this.getPanel();
 			this.bindOnRowsEvents();
-			this.bindOnScroll();
-		},
-
-		bindOnScroll: function()
-		{
-			BX.bind(window, 'scroll', BX.delegate(this._onWindowScroll, this));
-		},
-
-		_onWindowScroll: function(event)
-		{
-			if (window.scrollX !== this.lastScrollX)
-			{
-				var scrollLeft = BX.scrollLeft(window);
-				var panelPos = this.getPanelRect();
-				BX.style(this.getPanel(), 'left', panelPos.left - scrollLeft + 'px');
-			}
-
-			this.lastScrollX = window.scrollX;
 		},
 
 		bindOnRowsEvents: function()
@@ -60,13 +42,13 @@
 		bindOnWindowEvents: function()
 		{
 			BX.bind(window, 'resize', BX.proxy(this._onResize, this));
-			BX.bind(window, 'scroll', BX.proxy(this._onScroll, this));
+			document.addEventListener('scroll', BX.proxy(this._onScroll, this), BX.Grid.Utils.listenerParams({passive: true}));
 		},
 
 		unbindOnWindowEvents: function()
 		{
 			BX.unbind(window, 'resize', BX.proxy(this._onResize, this));
-			BX.unbind(window, 'scroll', BX.proxy(this._onScroll, this));
+			document.removeEventListener('scroll', BX.proxy(this._onScroll, this), BX.Grid.Utils.listenerParams({passive: true}));
 		},
 
 		getPanel: function() {
@@ -140,6 +122,22 @@
 			return (this.getScrollBottom() - this.getPanelRect().height) <= this.getPanelPrevBottom();
 		},
 
+		adjustPanelPosition: function()
+		{
+			var scrollX = window.pageXOffset;
+			this.lastScrollX = this.lastScrollX !== null ? this.lastScrollX : scrollX;
+
+			BX.Grid.Utils.requestAnimationFrame(BX.proxy(function() {
+				if (scrollX !== this.lastScrollX)
+				{
+					var panelPos = this.getPanelRect();
+					BX.style(this.getPanel(), 'left', panelPos.left - scrollX + 'px');
+				}
+			}, this));
+
+			this.lastScrollX = scrollX;
+		},
+
 		pinController: function(isNeedAnimation)
 		{
 			if(!this.getPanel())
@@ -175,6 +173,8 @@
 					BX.style(this.getPanel(), 'position', '');
 					BX.style(this.getPanel(), 'top', '');
 				}
+
+				this.adjustPanelPosition();
 			}
 			else
 			{

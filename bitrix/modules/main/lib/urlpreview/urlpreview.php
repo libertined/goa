@@ -19,6 +19,19 @@ class UrlPreview
 	/** @var int Maximum allowed length of the description. */
 	const MAX_DESCRIPTION = 500;
 
+	const IFRAME_MAX_WIDTH = 640;
+	const IFRAME_MAX_HEIGHT = 340;
+
+	protected static $trustedHosts = [
+		'youtube.com' => 'youtube.com',
+		'youtu.be' => 'youtu.be',
+		'vimeo.com' => 'vimeo.com',
+		'rutube.ru' => 'rutube.ru',
+		'facebook.com' => 'facebook.com',
+		'vk.com' => 'vk.com',
+		'instagram.com' => 'instagram.com',
+	];
+
 	/**
 	 * Returns associated metadata for the specified URL
 	 *
@@ -204,9 +217,10 @@ class UrlPreview
 	 *
 	 * @param array $ids Array of record's IDs.
 	 * @param bool $checkAccess Should method check current user's access to the internal entities, or not.
-	 * @return array Array with provided IDs as the keys.
+	 * @params int $userId. Id of the users to check access. If == 0, will check access for current user.
+	 * @return array|false Array with provided IDs as the keys.
 	 */
-	public static function getMetadataAndHtmlByIds(array $ids, $checkAccess = true)
+	public static function getMetadataAndHtmlByIds(array $ids, $checkAccess = true, $userId = 0)
 	{
 		if(!static::isEnabled())
 			return false;
@@ -224,7 +238,7 @@ class UrlPreview
 		{
 			if($metadata['TYPE'] == UrlMetadataTable::TYPE_DYNAMIC)
 			{
-				$metadata['HTML'] = static::getDynamicPreview($metadata['URL'], $checkAccess);
+				$metadata['HTML'] = static::getDynamicPreview($metadata['URL'], $checkAccess, $userId);
 				if($metadata['HTML'] === false)
 					continue;
 			}
@@ -263,9 +277,10 @@ class UrlPreview
 	 * not be fetched, deletes record.
 	 * @param int $id Metadata record's id.
 	 * @param bool $checkAccess Should method check current user's access to the entity, or not.
+	 * @params int $userId. Id of the users to check access. If == 0, will check access for current user.
 	 * @return array|false Metadata if fetched, false otherwise.
 	 */
-	public static function resolveTemporaryMetadata($id, $checkAccess = true)
+	public static function resolveTemporaryMetadata($id, $checkAccess = true, $userId = 0)
 	{
 		$metadata = UrlMetadataTable::getById($id)->fetch();
 		if(!is_array($metadata))
@@ -290,7 +305,7 @@ class UrlPreview
 		}
 		else if($metadata['TYPE'] == UrlMetadataTable::TYPE_DYNAMIC)
 		{
-			if($preview = static::getDynamicPreview($metadata['URL'], $checkAccess))
+			if($preview = static::getDynamicPreview($metadata['URL'], $checkAccess, $userId))
 			{
 				$metadata['HTML'] = $preview;
 				return $metadata;
@@ -304,9 +319,10 @@ class UrlPreview
 	 * Returns HTML code for the dynamic (internal url) preview.
 	 * @param string $url URL of the internal document.
 	 * @param bool $checkAccess Should method check current user's access to the entity, or not.
+	 * @params int $userId. Id of the users to check access. If userId == 0, will check access for current user.
 	 * @return string|false HTML code of the preview, or false if case of any errors (including access denied)/
 	 */
-	public static function getDynamicPreview($url, $checkAccess = true)
+	public static function getDynamicPreview($url, $checkAccess = true, $userId = 0)
 	{
 		$routeRecord = Router::dispatch(new Uri(static::unfoldShortLink($url)));
 		if($routeRecord === false)
@@ -318,7 +334,10 @@ class UrlPreview
 			$parameters = $routeRecord['PARAMETERS'];
 			$parameters['URL'] = $url;
 
-			if ($checkAccess && (!method_exists($className, 'checkUserReadAccess') || !$className::checkUserReadAccess($parameters, static::getCurrentUserId())))
+			if($userId == 0)
+				$userId = static::getCurrentUserId();
+
+			if ($checkAccess && (!method_exists($className, 'checkUserReadAccess') || $userId == 0 || !$className::checkUserReadAccess($parameters, $userId)))
 				return false;
 
 			if (method_exists($className, 'buildPreview'))
@@ -334,14 +353,18 @@ class UrlPreview
 	 * Returns attach for the IM message with the requested internal entity content.
 	 * @param string $url URL of the internal document.
 	 * @param bool $checkAccess Should method check current user's access to the entity, or not.
-	 * @return \CIMMessageParamAttach : false
+	 * @params int $userId. Id of the users to check access. If userId == 0, will check access for current user.
+	 * @return \CIMMessageParamAttach | false
 	 */
-	public static function getImAttach($url, $checkAccess = true)
+	public static function getImAttach($url, $checkAccess = true, $userId = 0)
 	{
 		//todo: caching
 		$routeRecord = Router::dispatch(new Uri(static::unfoldShortLink($url)));
 		if($routeRecord === false)
 			return false;
+
+		if($userId == 0)
+			$userId = static::getCurrentUserId();
 
 		if(isset($routeRecord['MODULE']) && Loader::includeModule($routeRecord['MODULE']))
 		{
@@ -349,7 +372,7 @@ class UrlPreview
 			$parameters = $routeRecord['PARAMETERS'];
 			$parameters['URL'] = $url;
 
-			if ($checkAccess && (!method_exists($className, 'checkUserReadAccess') || !$className::checkUserReadAccess($parameters, static::getCurrentUserId())))
+			if ($checkAccess && (!method_exists($className, 'checkUserReadAccess') || $userId == 0 || !$className::checkUserReadAccess($parameters, $userId)))
 				return false;
 
 			if (method_exists($className, 'getImAttach'))
@@ -363,9 +386,10 @@ class UrlPreview
 	/**
 	 * Returns true if current user has read access to the content behind internal url.
 	 * @param string $url URL of the internal document.
+	 * @params int $userId. Id of the users to check access. If userId == 0, will check access for current user.
 	 * @return bool True if current user has read access to the main entity of the document, or false otherwise.
 	 */
-	public static function checkDynamicPreviewAccess($url)
+	public static function checkDynamicPreviewAccess($url, $userId = 0)
 	{
 		$routeRecord = Router::dispatch(new Uri(static::unfoldShortLink($url)));
 		if($routeRecord === false)
@@ -376,7 +400,10 @@ class UrlPreview
 			$className = $routeRecord['CLASS'];
 			$parameters = $routeRecord['PARAMETERS'];
 
-			return (method_exists($className, 'checkUserReadAccess') && $className::checkUserReadAccess($parameters, static::getCurrentUserId()));
+			if($userId == 0)
+				$userId = static::getCurrentUserId();
+
+			return (method_exists($className, 'checkUserReadAccess') && $userId > 0 && $className::checkUserReadAccess($parameters, $userId));
 		}
 		return false;
 	}
@@ -523,8 +550,15 @@ class UrlPreview
 			return false;
 
 		$htmlContentType = strtolower($httpClient->getHeaders()->getContentType());
+		$peerIpAddress = $httpClient->getPeerAddress();
 		if($htmlContentType !== 'text/html')
-			return static::getFileMetadata($httpClient->getEffectiveUrl(), $httpClient->getHeaders());
+		{
+
+			$metadata = static::getFileMetadata($httpClient->getEffectiveUrl(), $httpClient->getHeaders());
+			$metadata['EXTRA']['PEER_IP_ADDRESS'] = $peerIpAddress;
+			$metadata['EXTRA']['PEER_IP_PRIVATE'] = static::isIpAddressPrivate($peerIpAddress);
+			return $metadata;
+		}
 
 		$html = $httpClient->getResult();
 		$htmlDocument = new HtmlDocument($html, $uri);
@@ -548,6 +582,15 @@ class UrlPreview
 						static::MAX_DESCRIPTION
 				);
 			}
+
+			if(!is_array($metadata['EXTRA']))
+			{
+				$metadata['EXTRA'] = array();
+			}
+			$metadata['EXTRA'] = array_merge($metadata['EXTRA'], array(
+				'PEER_IP_ADDRESS' => $peerIpAddress,
+				'PEER_IP_PRIVATE' => static::isIpAddressPrivate($peerIpAddress)
+			));
 
 			return $metadata;
 		}
@@ -653,10 +696,9 @@ class UrlPreview
 	 * Returns id of currently logged user.
 	 * @return int User's id.
 	 */
-	protected static function getCurrentUserId()
+	public static function getCurrentUserId()
 	{
-		global $USER;
-		return $USER->getId();
+		return ($GLOBALS['USER'] instanceof \CUser) ? (int)$GLOBALS['USER']->getId() : 0;
 	}
 
 	/**
@@ -697,6 +739,102 @@ class UrlPreview
 					)
 			);
 		}
+		return $result;
+	}
+
+	/**
+	 * @param string $ipAddress
+	 * @return bool
+	 */
+	public static function isIpAddressPrivate($ipAddress)
+	{
+		return filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false;
+	}
+
+	/**
+	 * Returns true if host of $uri is in $trustedHosts list.
+	 *
+	 * @param Uri $uri
+	 * @return bool
+	 */
+	public static function isHostTrusted(Uri $uri)
+	{
+		$result = false;
+		$domainNameParts = explode('.', $uri->getHost());
+		if(is_array($domainNameParts) && ($partsCount = count($domainNameParts)) >= 2)
+		{
+			$domainName = $domainNameParts[$partsCount-2] . '.' . $domainNameParts[$partsCount-1];
+			$result = isset(static::$trustedHosts[$domainName]);
+		}
+		return $result;
+	}
+
+	/**
+	 * Returns video metaData for $url if its host is trusted.
+	 *
+	 * @param string $url
+	 * @return array|false
+	 */
+	public static function fetchVideoMetaData($url)
+	{
+		$uri = new Uri($url);
+		if(static::isHostTrusted($uri) || static::isEnabled())
+		{
+			$url = static::normalizeUrl($url);
+			$metadataId = static::reserveIdForUrl($url);
+			$metadata = static::fetchUrlMetadata($url);
+			if(is_array($metadata) && count($metadata) > 0)
+			{
+				$result = UrlMetadataTable::update($metadataId, $metadata);
+				$metadata['ID'] = $result->getId();
+			}
+			else
+			{
+				return false;
+			}
+			if(isset($metadata['EMBED']) && !empty($metadata['EMBED']) && strpos($metadata['EMBED'], '<iframe') === false)
+			{
+				$url = static::getInnerFrameUrl($metadata['ID'], $metadata['EXTRA']['PROVIDER_NAME']);
+				if(intval($metadata['EXTRA']['VIDEO_WIDTH']) <= 0)
+				{
+					$metadata['EXTRA']['VIDEO_WIDTH'] = self::IFRAME_MAX_WIDTH;
+				}
+				if(intval($metadata['EXTRA']['VIDEO_HEIGHT']) <= 0)
+				{
+					$metadata['EXTRA']['VIDEO_HEIGHT'] = self::IFRAME_MAX_HEIGHT;
+				}
+				$metadata['EMBED'] = '<iframe src="'.$url.'" allowfullscreen="" width="'.$metadata['EXTRA']['VIDEO_WIDTH'].'" height="'.$metadata['EXTRA']['VIDEO_HEIGHT'].'" frameborder="0"></iframe>';
+			}
+
+			if($metadata['EMBED'] || $metadata['EXTRA']['VIDEO'])
+			{
+				return $metadata;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns inner frame url to embed third parties html video players.
+	 *
+	 * @param int $id
+	 * @param string $provider
+	 * @return bool|string
+	 */
+	public static function getInnerFrameUrl($id, $provider = '')
+	{
+		$result = false;
+
+		$componentPath = \CComponentEngine::makeComponentPath('bitrix:main.urlpreview');
+		if(!empty($componentPath))
+		{
+			$componentPath = getLocalPath('components'.$componentPath.'/frame.php');
+			$uri = new Uri($componentPath);
+			$uri->addParams(array('id' => $id, 'provider' => $provider));
+			$result = static::normalizeUrl($uri->getLocator());
+		}
+
 		return $result;
 	}
 }

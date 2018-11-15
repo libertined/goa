@@ -236,7 +236,7 @@ function RemoveTab(event)
 {
 	if (event)
 	{
-		var tab = event.srcElement.parentNode;
+		var tab = event.target.parentNode;
 		var m = tab.id.match(/^tab_cont_(.+)$/);
 		if (m)
 		{
@@ -350,6 +350,15 @@ function __FPHPSubmit()
 	}
 }
 
+function __FPHPClear()
+{
+	var selectedTab = BX('editTab_active_tab');
+	var m = selectedTab.value.match(/^tab(\d+)$/);
+	var textarea = BX('query' + m[1]);
+	textarea.value = '';
+	textarea.focus();
+}
+
 function compareMaps(map1, map2)
 {
 	var testVal;
@@ -423,7 +432,7 @@ for ($i = 1; $i <= $query_count - ($remove? 1: 0); $i++)
 <?$editTab->Buttons();
 ?>
 <input<?if(!$isAdmin) echo " disabled"?> type="button" accesskey="x" name="execute" value="<?echo GetMessage("php_cmd_button")?>" onclick="return __FPHPSubmit();" class="adm-btn-save">
-<input type="reset" value="<?echo GetMessage("php_cmd_button_clear")?>">
+<input type="button" value="<?echo GetMessage("php_cmd_button_clear")?>" onclick="this.form.reset(); __FPHPClear();">
 
 <input type="checkbox" value="Y" name="result_as_text" id="result_as_text">
 <label for="result_as_text"><?=GetMessage("php_cmd_text_result")?></label>

@@ -511,7 +511,8 @@ class CComponentUtil
 					"NAME" => GetMessage("COMP_PROP_SET_TITLE"),
 					"TYPE" => "CHECKBOX",
 					"DEFAULT" => "Y",
-					"ADDITIONAL_VALUES" => "N"
+					"ADDITIONAL_VALUES" => "N",
+					"REFRESH" => "Y"
 				);
 			}
 			elseif ($arParamKeys[$i] == "CACHE_TIME")
@@ -779,6 +780,46 @@ class CComponentUtil
 					"ADDITIONAL_VALUES" => "N"
 				);
 			}
+			elseif ($arParamKeys[$i] == "USER_CONSENT")
+			{
+				$arComponentParameters["GROUPS"]["USER_CONSENT"] = array(
+					"NAME" => GetMessage("COMP_GROUP_USER_CONSENT"),
+					"SORT" => 350
+				);
+
+				$arComponentParameters["PARAMETERS"]["USER_CONSENT"] = array(
+					"PARENT" => "USER_CONSENT",
+					"NAME" => GetMessage("COMP_PROP_USER_CONSENT_USE"),
+					"TYPE" => "CHECKBOX",
+					"DEFAULT" => "N",
+					"ADDITIONAL_VALUES" => "N"
+				);
+
+				$arComponentParameters["PARAMETERS"]["USER_CONSENT_ID"] = array(
+					"PARENT" => "USER_CONSENT",
+					"NAME" => GetMessage("COMP_PROP_USER_CONSENT_ID"),
+					"TYPE" => "LIST",
+					"VALUES" => array(GetMessage("COMP_PROP_USER_CONSENT_ID_DEF")) + \Bitrix\Main\UserConsent\Agreement::getActiveList(),
+					"MULTIPLE" => "N",
+					"DEFAULT" => "",
+				);
+
+				$arComponentParameters["PARAMETERS"]["USER_CONSENT_IS_CHECKED"] = array(
+					"PARENT" => "USER_CONSENT",
+					"NAME" => GetMessage("COMP_PROP_USER_CONSENT_IS_CHECKED"),
+					"TYPE" => "CHECKBOX",
+					"DEFAULT" => "Y",
+					"ADDITIONAL_VALUES" => "N"
+				);
+
+				$arComponentParameters["PARAMETERS"]["USER_CONSENT_IS_LOADED"] = array(
+					"PARENT" => "USER_CONSENT",
+					"NAME" => GetMessage("COMP_PROP_USER_CONSENT_IS_LOADED"),
+					"TYPE" => "CHECKBOX",
+					"DEFAULT" => "N",
+					"ADDITIONAL_VALUES" => "N"
+				);
+			}
 			else
 			{
 				$parent = $arComponentParameters["PARAMETERS"][$arParamKeys[$i]]["PARENT"];
@@ -796,7 +837,7 @@ class CComponentUtil
 			}
 		}
 
-		if (CHTMLPagesCache::isOn())
+		if (\Bitrix\Main\Composite\Helper::isOn())
 		{
 			$arComponentParameters["GROUPS"]["COMPOSITE_SETTINGS"] = array(
 				"NAME" => GetMessage("COMP_GROUP_COMPOSITE_SETTINGS"),
@@ -1393,8 +1434,10 @@ class CComponentUtil
 		return $DB->DateFormatToPHP(CSite::GetDateFormat("FULL"));
 	}
 
-	public static function GetDateTimeFormatted($timestamp, $dateTimeFormat = false, $offset = 0)
+	public static function GetDateTimeFormatted($timestamp, $dateTimeFormat = false, $offset = 0, $hideToday = false)
 	{
+		global $DB;
+
 		static $arFormatWOYear = array();
 		static $arFormatTime = array();
 		static $defaultDateTimeFormat = false;
@@ -1406,7 +1449,7 @@ class CComponentUtil
 		{
 			if (!$defaultDateTimeFormat)
 			{
-				$defaultDateTimeFormat = $GLOBALS["DB"]->DateFormatToPHP(FORMAT_DATETIME);
+				$defaultDateTimeFormat = $DB->DateFormatToPHP(FORMAT_DATETIME);
 			}
 			$dateTimeFormat = $defaultDateTimeFormat;
 		}
@@ -1420,13 +1463,13 @@ class CComponentUtil
 
 		if (empty($arFormatTime[$dateTimeFormat]))
 		{
-			$arFormatTime[$dateTimeFormat] = preg_replace('/[\/.,\s]+$/', '', preg_replace('/^[\/.,\s]+/', '', preg_replace('/[dDjlFmMnYyo]/', '', $dateTimeFormat)));
+			$arFormatTime[$dateTimeFormat] = preg_replace(array('/[dDjlFmMnYyo]/', '/^[\/.,\s\-]+/', '/[\/.,\s\-]+$/'), '', $dateTimeFormat);
 		}
 		$timeFormat = $arFormatTime[$dateTimeFormat];
 
-		$arFormat = Array(
+		$arFormat = array(
 			"tomorrow" => "tomorrow, ".$timeFormat,
-			"today" => "today, ".$timeFormat,
+			"today" => ($hideToday ? $timeFormat : "today, ".$timeFormat),
 			"yesterday" => "yesterday, ".$timeFormat,
 			"" => (
 				date("Y", $timestamp) == date("Y")

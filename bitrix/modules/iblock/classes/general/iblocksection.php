@@ -8,7 +8,7 @@ class CAllIBlockSection
 	protected static $arSectionPathCache = array();
 	protected static $arSectionNavChainCache = array();
 
-	function GetFilter($arFilter=Array())
+	public static function GetFilter($arFilter=Array())
 	{
 		global $DB;
 		$arIBlockFilter = Array();
@@ -157,9 +157,11 @@ class CAllIBlockSection
 		return CIBlockSection::GetList(Array("left_margin"=>"asc"), $arFilter, false, $arSelect);
 	}
 
-	public static function GetNavChain($IBLOCK_ID, $SECTION_ID, $arSelect = array())
+	public static function GetNavChain($IBLOCK_ID, $SECTION_ID, $arSelect = array(), $arrayResult = false)
 	{
 		global $DB;
+
+		$arrayResult = ($arrayResult === true);
 
 		$IBLOCK_ID = (int)$IBLOCK_ID;
 
@@ -272,8 +274,12 @@ class CAllIBlockSection
 		}
 		while ($SECTION_ID > 0);
 
+		$sectionPath = array_reverse($sectionPath);
+		if ($arrayResult)
+			return $sectionPath;
+
 		$res = new CDBResult;
-		$res->InitFromArray(array_reverse($sectionPath));
+		$res->InitFromArray($sectionPath);
 		$res = new CIBlockResult($res);
 		$res->bIBlockSection = true;
 		return $res;
@@ -1031,7 +1037,11 @@ class CAllIBlockSection
 		$ipropTemplates = new \Bitrix\Iblock\InheritedProperty\SectionTemplates($db_record["IBLOCK_ID"], $db_record["ID"]);
 		if(is_set($arFields, "PICTURE"))
 		{
-			if(strlen($arFields["PICTURE"]["name"])<=0 && strlen($arFields["PICTURE"]["del"])<=0)
+			if (
+				(!isset($arFields["PICTURE"]["name"]) || $arFields["PICTURE"]["name"] === '')
+				&& (!isset($arFields["PICTURE"]["del"]) || $arFields["PICTURE"]["del"] === '')
+				&& !array_key_exists("description", $arFields["PICTURE"])
+			)
 			{
 				unset($arFields["PICTURE"]);
 			}
@@ -1050,7 +1060,11 @@ class CAllIBlockSection
 
 		if(is_set($arFields, "DETAIL_PICTURE"))
 		{
-			if(strlen($arFields["DETAIL_PICTURE"]["name"])<=0 && strlen($arFields["DETAIL_PICTURE"]["del"])<=0)
+			if (
+				(!isset($arFields["DETAIL_PICTURE"]["name"]) || $arFields["DETAIL_PICTURE"]["name"] === '')
+				&& (!isset($arFields["DETAIL_PICTURE"]["del"]) || $arFields["DETAIL_PICTURE"]["del"] === '')
+				&& !array_key_exists("description", $arFields["DETAIL_PICTURE"])
+			)
 			{
 				unset($arFields["DETAIL_PICTURE"]);
 			}
@@ -2149,6 +2163,7 @@ class CAllIBlockSection
 			"EXTERNAL_ID"		=>$arFilter["EXTERNAL_ID"],
 			"ACTIVE"		=>$arFilter["ACTIVE"],
 
+			"CNT_ACTIVE"		=>$arFilter["CNT_ACTIVE"],
 			"CNT_ALL"		=>$arFilter["CNT_ALL"],
 			"ELEMENT_SUBSECTIONS"	=>$arFilter["ELEMENT_SUBSECTIONS"],
 		);
@@ -2357,22 +2372,36 @@ class CAllIBlockSection
 		return $res["CNT"];
 	}
 
-	function _check_rights_sql($min_permission)
+	protected static function _check_rights_sql($min_permission, $permissionsBy = null)
 	{
 		global $DB, $USER;
 		$min_permission = (strlen($min_permission)==1) ? $min_permission : "R";
 
-		if(is_object($USER))
+		if ($permissionsBy !== null)
+			$permissionsBy = (int)$permissionsBy;
+		if ($permissionsBy < 0)
+			$permissionsBy = null;
+
+		if ($permissionsBy !== null)
 		{
-			$iUserID = intval($USER->GetID());
-			$strGroups = $USER->GetGroups();
-			$bAuthorized = $USER->IsAuthorized();
+			$iUserID = $permissionsBy;
+			$strGroups = implode(',', CUser::GetUserGroup($permissionsBy));
+			$bAuthorized = false;
 		}
 		else
 		{
-			$iUserID = 0;
-			$strGroups = "2";
-			$bAuthorized = false;
+			if (is_object($USER))
+			{
+				$iUserID = (int)$USER->GetID();
+				$strGroups = $USER->GetGroups();
+				$bAuthorized = $USER->IsAuthorized();
+			}
+			else
+			{
+				$iUserID = 0;
+				$strGroups = "2";
+				$bAuthorized = false;
+			}
 		}
 
 		$stdPermissions = "
@@ -2398,7 +2427,7 @@ class CAllIBlockSection
 		if($operation)
 		{
 			$acc = new CAccess;
-			$acc->UpdateCodes();
+			$acc->UpdateCodes($permissionsBy !== null ? array('USER_ID' => $permissionsBy) : false);
 		}
 
 		if($operation == "section_read")
@@ -2463,11 +2492,16 @@ class CAllIBlockSection
 
 		$bCheckPermissions = !array_key_exists("CHECK_PERMISSIONS", $arFilter) || $arFilter["CHECK_PERMISSIONS"]!=="N";
 		$bIsAdmin = is_object($USER) && $USER->IsAdmin();
-		if($bCheckPermissions && !$bIsAdmin)
+		$permissionsBy = null;
+		if ($bCheckPermissions && isset($arFilter['PERMISSIONS_BY']))
 		{
-			$min_permission = (strlen($arFilter["MIN_PERMISSION"])==1) ? $arFilter["MIN_PERMISSION"] : "R";
-			$arSqlSearch[] = CIBlockSection::_check_rights_sql($min_permission);
+			$permissionsBy = (int)$arFilter['PERMISSIONS_BY'];
+			if ($permissionsBy < 0)
+				$permissionsBy = null;
 		}
+		if($bCheckPermissions && ($permissionsBy !== null || !$bIsAdmin))
+			$arSqlSearch[] = self::_check_rights_sql($arFilter["MIN_PERMISSION"], $permissionsBy);
+		unset($permissionsBy);
 
 		$strSqlSearch = "";
 		foreach($arSqlSearch as $i=>$strSearch)
@@ -2551,17 +2585,17 @@ class CAllIBlockSection
 
 	public static function getSectionCodePath($sectionId)
 	{
-		if (!array_key_exists($sectionId, self::$arSectionPathCache))
+		if (!isset(self::$arSectionPathCache[$sectionId]))
 		{
 			self::$arSectionPathCache[$sectionId] = "";
-			$res = CIBlockSection::GetNavChain(0, $sectionId, array("ID", "CODE"));
-			while ($a = $res->Fetch())
+			$res = CIBlockSection::GetNavChain(0, $sectionId, ["ID", "CODE"], true);
+			foreach ($res as $a)
 			{
-				self::$arSectionCodeCache[$a["ID"]] = urlencode($a["CODE"]);
-				self::$arSectionPathCache[$sectionId] .= urlencode($a["CODE"])."/";
+				self::$arSectionCodeCache[$a["ID"]] = rawurlencode($a["CODE"]);
+				self::$arSectionPathCache[$sectionId] .= rawurlencode($a["CODE"])."/";
 			}
+			unset($a, $res);
 			self::$arSectionPathCache[$sectionId] = rtrim(self::$arSectionPathCache[$sectionId], "/");
-
 		}
 		return self::$arSectionPathCache[$sectionId];
 	}
@@ -2577,7 +2611,7 @@ class CAllIBlockSection
 			$res = $DB->Query("SELECT IBLOCK_ID, CODE FROM b_iblock_section WHERE ID = ".$sectionId);
 			while ($a = $res->Fetch())
 			{
-				self::$arSectionCodeCache[$sectionId] = urlencode($a["CODE"]);
+				self::$arSectionCodeCache[$sectionId] = rawurlencode($a["CODE"]);
 			}
 		}
 		return self::$arSectionCodeCache[$sectionId];

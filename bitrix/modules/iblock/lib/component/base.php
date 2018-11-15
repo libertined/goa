@@ -41,6 +41,9 @@ abstract class Base extends \CBitrixComponent
 	protected $filterFields = array();
 	protected $sortFields = array();
 
+	/** @var array Array of ids to show directly */
+	protected $productIds = array();
+
 	protected $productIdMap = array();
 	protected $iblockProducts = array();
 	protected $elements = array();
@@ -245,8 +248,21 @@ abstract class Base extends \CBitrixComponent
 			$params['CURRENT_BASE_PAGE'] = $uri->getUri();
 		}
 
+		// parent component params for correct template load through ajax
+		if (!isset($params['PARENT_NAME']) && $parent = $this->getParent())
+		{
+			$params['PARENT_NAME'] = $parent->getName();
+			$params['PARENT_TEMPLATE_NAME'] = $parent->getTemplateName();
+			$params['PARENT_TEMPLATE_PAGE'] = $parent->getTemplatePage();
+		}
+
 		// save original parameters for further ajax requests
 		$this->arResult['ORIGINAL_PARAMETERS'] = $params;
+
+		if (isset($params['CUSTOM_SITE_ID']))
+		{
+			$this->setSiteId($params['CUSTOM_SITE_ID']);
+		}
 
 		// for AJAX_MODE set original ajax_id from initial load
 		if (isset($params['AJAX_MODE']) && $params['AJAX_MODE'] === 'Y')
@@ -268,6 +284,8 @@ abstract class Base extends \CBitrixComponent
 		$params['SECTION_ID'] = isset($params['SECTION_ID']) ? (int)$params['SECTION_ID'] : 0;
 		$params['SECTION_CODE'] = isset($params['SECTION_CODE']) ? trim($params['SECTION_CODE']) : '';
 		$params['SECTION_URL'] = isset($params['SECTION_URL']) ? trim($params['SECTION_URL']) : '';
+		$params['STRICT_SECTION_CHECK'] = isset($params['STRICT_SECTION_CHECK']) && $params['STRICT_SECTION_CHECK'] === 'Y';
+
 		$params['DETAIL_URL'] = isset($params['DETAIL_URL']) ? trim($params['DETAIL_URL']) : '';
 		$params['BASKET_URL'] = isset($params['BASKET_URL']) ? trim($params['BASKET_URL']) : '/personal/basket.php';
 
@@ -304,13 +322,15 @@ abstract class Base extends \CBitrixComponent
 		$params['DISPLAY_COMPARE'] = isset($params['DISPLAY_COMPARE']) && $params['DISPLAY_COMPARE'] === 'Y';
 		$params['COMPARE_PATH'] = isset($params['COMPARE_PATH']) ? trim($params['COMPARE_PATH']) : '';
 		$params['COMPARE_NAME'] = isset($params['COMPARE_NAME']) ? trim($params['COMPARE_NAME']) : 'CATALOG_COMPARE_LIST';
-		$params['USE_PRICE_COUNT'] = isset($params['USE_PRICE_COUNT']) && $params['USE_PRICE_COUNT'] === 'Y';
+		$params['USE_COMPARE_LIST'] = (isset($params['USE_COMPARE_LIST']) && $params['USE_COMPARE_LIST'] === 'Y' ? 'Y' : 'N');
 
+		$params['USE_PRICE_COUNT'] = isset($params['USE_PRICE_COUNT']) && $params['USE_PRICE_COUNT'] === 'Y';
 		$params['SHOW_PRICE_COUNT'] = isset($params['SHOW_PRICE_COUNT']) ? (int)$params['SHOW_PRICE_COUNT'] : 1;
 		if ($params['SHOW_PRICE_COUNT'] <= 0)
 		{
 			$params['SHOW_PRICE_COUNT'] = 1;
 		}
+		$params['FILL_ITEM_ALL_PRICES'] = isset($params['FILL_ITEM_ALL_PRICES']) && $params['FILL_ITEM_ALL_PRICES'] === 'Y';
 
 		$params['USE_PRODUCT_QUANTITY'] = isset($params['USE_PRODUCT_QUANTITY']) && $params['USE_PRODUCT_QUANTITY'] === 'Y';
 
@@ -365,6 +385,10 @@ abstract class Base extends \CBitrixComponent
 			$params['CACHE_GROUPS'] = 'Y';
 		}
 
+		if (isset($params['~PRICE_CODE']))
+		{
+			$params['PRICE_CODE'] = $params['~PRICE_CODE'];
+		}
 		if (!isset($params['PRICE_CODE']) || !is_array($params['PRICE_CODE']))
 		{
 			$params['PRICE_CODE'] = array();
@@ -390,6 +414,15 @@ abstract class Base extends \CBitrixComponent
 
 				$params['SECTION_ID'] = $sectionId;
 			}
+		}
+
+		if (!isset($params['FILTER_IDS']))
+		{
+			$params['FILTER_IDS'] = array();
+		}
+		elseif (!is_array($params['FILTER_IDS']))
+		{
+			$params['FILTER_IDS'] = array($params['FILTER_IDS']);
 		}
 
 		return $params;
@@ -446,12 +479,11 @@ abstract class Base extends \CBitrixComponent
 	{
 		if ($this->useCatalog && $this->useDiscountCache)
 		{
-			if (!$this->storage['USE_SALE_DISCOUNTS'])
-				\CCatalogDiscount::ClearDiscountCache(array(
-					'PRODUCT' => true,
-					'SECTIONS' => true,
-					'PROPERTIES' => true
-				));
+			\CCatalogDiscount::ClearDiscountCache(array(
+				'PRODUCT' => true,
+				'SECTIONS' => true,
+				'PROPERTIES' => true
+			));
 		}
 	}
 
@@ -525,7 +557,6 @@ abstract class Base extends \CBitrixComponent
 				if (!empty($catalog) && is_array($catalog))
 				{
 					$this->isIblockCatalog = $this->isIblockCatalog || $catalog['CATALOG_TYPE'] != \CCatalogSku::TYPE_PRODUCT;
-					$this->useDiscountCache = true;
 					$catalogs[$iblockId] = $catalog;
 				}
 			}
@@ -551,20 +582,30 @@ abstract class Base extends \CBitrixComponent
 		{
 			$this->storage['PRICES_MAP'][$priceType['ID']] = $priceType['CODE'];
 			if ($priceType['CAN_BUY'])
-				$this->storage['PRICES_CAN_BUY'][] = $priceType['ID'];
+				$this->storage['PRICES_CAN_BUY'][$priceType['ID']] = $priceType['ID'];
 		}
 
 		$this->storage['PRICE_TYPES'] = array();
 		if ($this->useCatalog)
 			$this->storage['PRICE_TYPES'] = \CCatalogGroup::GetListArray();
 
-		if ($this->useCatalog && $this->useDiscountCache && !empty($this->storage['PRICES_ALLOW']))
+		$this->useDiscountCache = false;
+		if ($this->useCatalog)
+		{
+			if (!empty($this->storage['CATALOGS']) && !empty($this->storage['PRICES_ALLOW']))
+				$this->useDiscountCache = true;
+		}
+
+		if ($this->useCatalog && $this->useDiscountCache)
 		{
 			$this->useDiscountCache = \CIBlockPriceTools::SetCatalogDiscountCache(
 				$this->storage['PRICES_ALLOW'],
 				$this->getUserGroups()
 			);
 		}
+
+		if ($this->useCatalog)
+			Catalog\Product\Price::loadRoundRules($this->storage['PRICES_ALLOW']);
 	}
 
 	/**
@@ -665,7 +706,12 @@ abstract class Base extends \CBitrixComponent
 	 */
 	protected function getBigDataProductIds()
 	{
-		$this->arParams['FILTER_IDS'] = is_array($this->request->get('shownIds')) ? $this->request->get('shownIds') : array();
+		$shownIds = $this->request->get('shownIds');
+		if (!empty($shownIds) && is_array($shownIds))
+		{
+			$this->arParams['FILTER_IDS'] += $shownIds;
+		}
+
 		$this->arParams['PAGE_ELEMENT_COUNT'] = $this->request->get('count') ?: 20;
 		$this->arParams['FILTER'] = $this->arParams['FILTER'] ?: array('PAYED');
 		$this->arParams['BY'] = $this->arParams['BY'] ?: 'AMOUNT';
@@ -1256,7 +1302,7 @@ abstract class Base extends \CBitrixComponent
 
 		if (!empty($this->arParams['FILTER']))
 		{
-			$filter = defined('SITE_ID') && !SITE_ID ? array('=LID' => $this->getSiteId()) : array();
+			$filter = array('=LID' => $this->getSiteId());
 			$subFilter = array('LOGIC' => 'OR');
 
 			$statuses = array(
@@ -1582,15 +1628,15 @@ abstract class Base extends \CBitrixComponent
 						{
 							$fieldName = key($childResult);
 
-							if (!is_array($result[$fieldName]) || !isset($result[$fieldName]['LOGIC']))
+							if (!isset($result['LOGIC']))
 							{
-								$result[$fieldName] = array(
+								$result = array(
 									'LOGIC' => $condition['DATA']['All'],
-									$result[$fieldName]
+									array($fieldName => $result[$fieldName])
 								);
 							}
 
-							$result[$fieldName][] = $childResult[$fieldName];
+							$result[][$fieldName] = $childResult[$fieldName];
 						}
 						else
 						{
@@ -1739,28 +1785,35 @@ abstract class Base extends \CBitrixComponent
 
 			foreach ($result as $name => $value)
 			{
-				if (($ind = strpos($name, 'CondIBProp')) !== false)
+				if (!empty($result[$name]) && is_array($result[$name]))
 				{
-					list($prefix, $iblock, $propertyId) = explode(':', $name);
-					$operator = $ind > 0 ? substr($prefix, 0, $ind) : '';
-
-					$catalogInfo = \CCatalogSku::GetInfoByIBlock($iblock);
-					if (!empty($catalogInfo))
+					$this->parsePropertyCondition($result[$name], $condition, $params);
+				}
+				else
+				{
+					if (($ind = strpos($name, 'CondIBProp')) !== false)
 					{
-						if (
-							$catalogInfo['CATALOG_TYPE'] != \CCatalogSku::TYPE_CATALOG
-							&& $catalogInfo['IBLOCK_ID'] == $iblock
-						)
-						{
-							$subFilter[$operator.'PROPERTY_'.$propertyId] = $value;
-						}
-						else
-						{
-							$result[$operator.'PROPERTY_'.$propertyId] = $value;
-						}
-					}
+						list($prefix, $iblock, $propertyId) = explode(':', $name);
+						$operator = $ind > 0 ? substr($prefix, 0, $ind) : '';
 
-					unset($result[$name]);
+						$catalogInfo = \CCatalogSku::GetInfoByIBlock($iblock);
+						if (!empty($catalogInfo))
+						{
+							if (
+								$catalogInfo['CATALOG_TYPE'] != \CCatalogSku::TYPE_CATALOG
+								&& $catalogInfo['IBLOCK_ID'] == $iblock
+							)
+							{
+								$subFilter[$operator.'PROPERTY_'.$propertyId] = $value;
+							}
+							else
+							{
+								$result[$operator.'PROPERTY_'.$propertyId] = $value;
+							}
+						}
+
+						unset($result[$name]);
+					}
 				}
 			}
 
@@ -1849,7 +1902,8 @@ abstract class Base extends \CBitrixComponent
 			'QUANTITY' => null,
 			'QUANTITY_TRACE' => null,
 			'CAN_BUY_ZERO' => null,
-			'SUBSCRIPTION' => null
+			'SUBSCRIPTION' => null,
+			'BUNDLE' => null
 		);
 
 		if (isset($element['CATALOG_TYPE']))
@@ -1867,19 +1921,16 @@ abstract class Base extends \CBitrixComponent
 		 * CATALOG_*
 		 */
 		if (isset($element['CATALOG_AVAILABLE']))
+		{
 			$element['PRODUCT']['AVAILABLE'] = $element['CATALOG_AVAILABLE'];
-		if (isset($element['CATALOG_VAT']))
 			$element['PRODUCT']['VAT_RATE'] = $element['CATALOG_VAT'];
-		if (isset($element['CATALOG_VAT_INCLUDED']))
 			$element['PRODUCT']['VAT_INCLUDED'] = $element['CATALOG_VAT_INCLUDED'];
-		if (isset($element['CATALOG_QUANTITY']))
 			$element['PRODUCT']['QUANTITY'] = $element['CATALOG_QUANTITY'];
-		if (isset($element['CATALOG_QUANTITY_TRACE']))
 			$element['PRODUCT']['QUANTITY_TRACE'] = $element['CATALOG_QUANTITY_TRACE'];
-		if (isset($element['CATALOG_CAN_BUY_ZERO']))
 			$element['PRODUCT']['CAN_BUY_ZERO'] = $element['CATALOG_CAN_BUY_ZERO'];
-		if (isset($element['CATALOG_SUBSCRIPTION']))
 			$element['PRODUCT']['SUBSCRIPTION'] = $element['CATALOG_SUBSCRIPTION'];
+			$element['PRODUCT']['BUNDLE'] = $element['CATALOG_BUNDLE'];
+		}
 		/* it is not the final version - end*/
 
 		$element['PROPERTIES'] = array();
@@ -1888,7 +1939,9 @@ abstract class Base extends \CBitrixComponent
 		$element['PRODUCT_PROPERTIES_FILL'] = array();
 		$element['OFFERS'] = array();
 		$element['OFFER_ID_SELECTED'] = 0;
-		$element['CHECK_QUANTITY'] = $element['PRODUCT']['QUANTITY_TRACE'] === 'Y' && $element['PRODUCT']['CAN_BUY_ZERO'] === 'N';
+
+		if (!empty($this->storage['CATALOGS'][$element['IBLOCK_ID']]))
+			$element['CHECK_QUANTITY'] = $this->isNeedCheckQuantity($element['PRODUCT']);
 
 		if ($this->getAction() === 'bigDataLoad')
 		{
@@ -1934,7 +1987,7 @@ abstract class Base extends \CBitrixComponent
 		$propertyCodes = array_fill_keys($propertyCodes, true);
 
 		$propertyIterator = Iblock\PropertyTable::getList(array(
-			'select' => array('ID', 'CODE'),
+			'select' => array('ID', 'CODE', 'SORT'),
 			'filter' => array('=IBLOCK_ID' => $iblock, '=ACTIVE' => 'Y'),
 			'order' => array('SORT' => 'ASC', 'ID' => 'ASC')
 		));
@@ -2158,47 +2211,61 @@ abstract class Base extends \CBitrixComponent
 		if ($enableCompatible)
 			$select[] = 'EXTRA_ID';
 
-		$iterator = Catalog\PriceTable::getList(array(
-			'select' => $select,
-			'filter' => array('@PRODUCT_ID' => $itemIds, '@CATALOG_GROUP_ID' => $this->storage['PRICES_ALLOW']),
-			'order' => array('PRODUCT_ID' => 'ASC', 'CATALOG_GROUP_ID' => 'ASC')
-		));
-		while ($row = $iterator->fetch())
+		$pagedItemIds = array_chunk($itemIds, 500);
+		foreach ($pagedItemIds as $pageIds)
 		{
-			$id = (int)$row['PRODUCT_ID'];
-			unset($row['PRODUCT_ID']);
-			if (!isset($this->prices[$id]))
-				$this->prices[$id] = array(
-					'RATIO' => array(),
-					'QUANTITY' => array(),
-					'SIMPLE' => array()
-				);
+			if (empty($pageIds))
+				continue;
 
-			if ($row['QUANTITY_FROM'] !== null || $row['QUANTITY_TO'] !== null)
+			$iterator = Catalog\PriceTable::getList(array(
+				'select' => $select,
+				'filter' => array('@PRODUCT_ID' => $pageIds, '@CATALOG_GROUP_ID' => $this->storage['PRICES_ALLOW']),
+				'order' => array('PRODUCT_ID' => 'ASC', 'CATALOG_GROUP_ID' => 'ASC')
+			));
+			while ($row = $iterator->fetch())
 			{
-				$hash = $this->getQuantityRangeHash($row);
-				if (!isset($quantityList[$id][$hash]))
-					$quantityList[$id][$hash] = array(
-						'HASH' => $hash,
-						'QUANTITY_FROM' => $row['QUANTITY_FROM'],
-						'QUANTITY_TO' => $row['QUANTITY_TO'],
-						'SORT_FROM' => (int)$row['QUANTITY_FROM'],
-						'SORT_TO' => ($row['QUANTITY_TO'] === null ? INF : (int)$row['QUANTITY_TO'])
+				$id = (int)$row['PRODUCT_ID'];
+				unset($row['PRODUCT_ID']);
+				if (!isset($this->prices[$id]))
+				{
+					$this->prices[$id] = array(
+						'RATIO' => array(),
+						'QUANTITY' => array(),
+						'SIMPLE' => array()
 					);
-				if (!isset($this->prices[$id]['QUANTITY'][$hash]))
-					$this->prices[$id]['QUANTITY'][$hash] = array();
-				$this->prices[$id]['QUANTITY'][$hash][$row['CATALOG_GROUP_ID']] = $row;
-				unset($hash);
-			}
-			elseif ($row['MEASURE_RATIO_ID'] === null && $row['QUANTITY_FROM'] === null && $row['QUANTITY_TO'] === null)
-			{
-				$this->prices[$id]['SIMPLE'][$row['CATALOG_GROUP_ID']] = $row;
-			}
-			$this->storage['CURRENCY_LIST'][$row['CURRENCY']] = $row['CURRENCY'];
+				}
 
-			unset($id);
+				if ($row['QUANTITY_FROM'] !== null || $row['QUANTITY_TO'] !== null)
+				{
+					$hash = $this->getQuantityRangeHash($row);
+					if (!isset($quantityList[$id][$hash]))
+					{
+						$quantityList[$id][$hash] = array(
+							'HASH' => $hash,
+							'QUANTITY_FROM' => $row['QUANTITY_FROM'],
+							'QUANTITY_TO' => $row['QUANTITY_TO'],
+							'SORT_FROM' => (int)$row['QUANTITY_FROM'],
+							'SORT_TO' => ($row['QUANTITY_TO'] === null ? INF : (int)$row['QUANTITY_TO'])
+						);
+					}
+					if (!isset($this->prices[$id]['QUANTITY'][$hash]))
+					{
+						$this->prices[$id]['QUANTITY'][$hash] = array();
+					}
+					$this->prices[$id]['QUANTITY'][$hash][$row['CATALOG_GROUP_ID']] = $row;
+					unset($hash);
+				}
+				elseif ($row['MEASURE_RATIO_ID'] === null && $row['QUANTITY_FROM'] === null && $row['QUANTITY_TO'] === null)
+				{
+					$this->prices[$id]['SIMPLE'][$row['CATALOG_GROUP_ID']] = $row;
+				}
+				$this->storage['CURRENCY_LIST'][$row['CURRENCY']] = $row['CURRENCY'];
+
+				unset($id);
+			}
+			unset($row, $iterator);
 		}
-		unset($row, $iterator);
+		unset($pageIds, $pagedItemIds);
 
 		foreach ($itemIds as $id)
 		{
@@ -2271,35 +2338,52 @@ abstract class Base extends \CBitrixComponent
 			$productPrices = $this->prices[$id];
 			$result = array(
 				'ITEM_PRICE_MODE' => null,
-				'ITEM_PRICES' => array()
+				'ITEM_PRICES' => array(),
+				'ITEM_PRICES_CAN_BUY' => false
 			);
+			if ($this->arParams['FILL_ITEM_ALL_PRICES'])
+				$result['ITEM_ALL_PRICES'] = array();
+			$priceBlockIndex = 0;
 			if (!empty($productPrices['QUANTITY']))
 			{
 				$result['ITEM_PRICE_MODE'] = Catalog\ProductTable::PRICE_MODE_QUANTITY;
 				$ratio = current($this->ratios[$id]);
 				foreach ($this->quantityRanges[$id] as $range)
 				{
-					$blockPrice = $this->calculatePriceBlock(
+					$priceBlock = $this->calculatePriceBlock(
 						$items[$index],
 						$productPrices['QUANTITY'][$range['HASH']],
 						$ratio['RATIO'],
 						$this->arParams['USE_PRICE_COUNT'] || $this->checkQuantityRange($range)
 					);
-					if (!empty($blockPrice))
+					if (!empty($priceBlock))
 					{
-						if ($blockPrice['QUANTITY_FROM'] === null)
+						$minimalPrice = ($this->arParams['FILL_ITEM_ALL_PRICES']
+							? $priceBlock['MINIMAL_PRICE']
+							: $priceBlock
+						);
+						if ($minimalPrice['QUANTITY_FROM'] === null)
 						{
-							$blockPrice['MIN_QUANTITY'] = $ratio['RATIO'];
+							$minimalPrice['MIN_QUANTITY'] = $ratio['RATIO'];
 						}
 						else
 						{
-							$blockPrice['MIN_QUANTITY'] = $ratio['RATIO'] * ((int)($blockPrice['QUANTITY_FROM']/$ratio['RATIO']));
-							if ($blockPrice['MIN_QUANTITY'] < $blockPrice['QUANTITY_FROM'])
-								$blockPrice['MIN_QUANTITY'] += $ratio['RATIO'];
+							$minimalPrice['MIN_QUANTITY'] = $ratio['RATIO'] * ((int)($minimalPrice['QUANTITY_FROM']/$ratio['RATIO']));
+							if ($minimalPrice['MIN_QUANTITY'] < $minimalPrice['QUANTITY_FROM'])
+								$minimalPrice['MIN_QUANTITY'] += $ratio['RATIO'];
 						}
-						$result['ITEM_PRICES'][] = $blockPrice;
+						$result['ITEM_PRICES'][$priceBlockIndex] = $minimalPrice;
+						if (isset($this->storage['PRICES_CAN_BUY'][$minimalPrice['PRICE_TYPE_ID']]))
+							$result['ITEM_PRICES_CAN_BUY'] = true;
+						if ($this->arParams['FILL_ITEM_ALL_PRICES'])
+						{
+							$priceBlock['ALL_PRICES']['MIN_QUANTITY'] = $minimalPrice['MIN_QUANTITY'];
+							$result['ITEM_ALL_PRICES'][$priceBlockIndex] = $priceBlock['ALL_PRICES'];
+						}
+						unset($minimalPrice);
+						$priceBlockIndex++;
 					}
-					unset($blockPrice);
+					unset($priceBlock);
 				}
 				unset($range);
 				unset($ratio);
@@ -2308,23 +2392,47 @@ abstract class Base extends \CBitrixComponent
 			{
 				$result['ITEM_PRICE_MODE'] = Catalog\ProductTable::PRICE_MODE_SIMPLE;
 				$ratio = current($this->ratios[$id]);
-				$blockPrice = $this->calculatePriceBlock(
+				$priceBlock = $this->calculatePriceBlock(
 					$items[$index],
 					$productPrices['SIMPLE'],
 					$ratio['RATIO'],
 					true
 				);
-				if (!empty($blockPrice))
+				if (!empty($priceBlock))
 				{
-					$blockPrice['MIN_QUANTITY'] = $ratio['RATIO'];
-					$result['ITEM_PRICES'][] = $blockPrice;
+					$minimalPrice = ($this->arParams['FILL_ITEM_ALL_PRICES']
+						? $priceBlock['MINIMAL_PRICE']
+						: $priceBlock
+					);
+					$minimalPrice['MIN_QUANTITY'] = $ratio['RATIO'];
+					$result['ITEM_PRICES'][$priceBlockIndex] = $minimalPrice;
+					if (isset($this->storage['PRICES_CAN_BUY'][$minimalPrice['PRICE_TYPE_ID']]))
+						$result['ITEM_PRICES_CAN_BUY'] = true;
+					if ($this->arParams['FILL_ITEM_ALL_PRICES'])
+					{
+						$priceBlock['ALL_PRICES']['MIN_QUANTITY'] = $minimalPrice['MIN_QUANTITY'];
+						$result['ITEM_ALL_PRICES'][$priceBlockIndex] = $priceBlock['ALL_PRICES'];
+					}
+					unset($minimalPrice);
+					$priceBlockIndex++;
 				}
-				unset($blockPrice);
+				unset($priceBlock);
 				unset($ratio);
 			}
 			$this->prices[$id] = $result;
-			$items[$index]['CAN_BUY'] = (!empty($result['ITEM_PRICES']) && $items[$index]['PRODUCT']['AVAILABLE'] === 'Y');
+
+			if (isset($items[$index]['ACTIVE']) && $items[$index]['ACTIVE'] === 'N')
+			{
+				$items[$index]['CAN_BUY'] = false;
+			}
+			else
+			{
+				$items[$index]['CAN_BUY'] = $result['ITEM_PRICES_CAN_BUY'] && $items[$index]['PRODUCT']['AVAILABLE'] === 'Y';
+			}
+
+			unset($priceBlockIndex, $result);
 			unset($productPrices);
+
 			if ($enableCompatible)
 				$this->resortOldPrices($id);
 		}
@@ -2429,6 +2537,15 @@ abstract class Base extends \CBitrixComponent
 		unset($urls, $enableCompatible);
 	}
 
+	/**
+	 * Calculate price block (simple price, quantity range, etc).
+	 *
+	 * @param array $product            Product data.
+	 * @param array $priceBlock         Prices.
+	 * @param int|float $ratio          Measure ratio value.
+	 * @param bool $defaultBlock        Save result to old keys (PRICES, PRICE_MATRIX, MIN_PRICE).
+	 * @return array|null
+	 */
 	protected function calculatePriceBlock(array $product, array $priceBlock, $ratio, $defaultBlock = false)
 	{
 		if (empty($product) || empty($priceBlock))
@@ -2444,6 +2561,9 @@ abstract class Base extends \CBitrixComponent
 		$baseCurrency = Currency\CurrencyManager::getBaseCurrency();
 		/** @var null|array $minimalPrice */
 		$minimalPrice = null;
+		/** @var null|array $minimalBuyerPrice */
+		$minimalBuyerPrice = null;
+		$fullPrices = array();
 
 		$currencyConvert = $this->arParams['CONVERT_CURRENCY'] === 'Y';
 		$resultCurrency = ($currencyConvert ? $this->storage['CONVERT_CURRENCY']['CURRENCY_ID'] : null);
@@ -2501,66 +2621,73 @@ abstract class Base extends \CBitrixComponent
 				$currency,
 				$discounts
 			);
-			unset($discounts);
 			if ($discountPrice !== false)
 			{
-				$priceWithVat = $price;
-				$price /= $percentPriceWithVat;
+				$priceWithVat = array(
+					'UNROUND_BASE_PRICE' => $price,
+					'UNROUND_PRICE' => $discountPrice,
+					'BASE_PRICE' => Catalog\Product\Price::roundPrice(
+						$priceType,
+						$price,
+						$currency
+					),
+					'PRICE' => Catalog\Product\Price::roundPrice(
+						$priceType,
+						$discountPrice,
+						$currency
+					)
+				);
 
-				$discountPriceWithVat = $discountPrice;
+				$price /= $percentPriceWithVat;
 				$discountPrice /= $percentPriceWithVat;
 
-				$roundPriceWithVat = Catalog\Product\Price::roundPrice(
-					$priceType,
-					$discountPriceWithVat,
-					$currency
-				);
-				$roundPrice = Catalog\Product\Price::roundPrice(
-					$priceType,
-					$discountPrice,
-					$currency
+				$priceWithoutVat = array(
+					'UNROUND_BASE_PRICE' => $price,
+					'UNROUND_PRICE' => $discountPrice,
+					'BASE_PRICE' => Catalog\Product\Price::roundPrice(
+						$priceType,
+						$price,
+						$currency
+					),
+					'PRICE' => Catalog\Product\Price::roundPrice(
+						$priceType,
+						$discountPrice,
+						$currency
+					)
 				);
 
-				$priceRow = array(
-					'ID' => $rawPrice['ID'],
-					'PRICE_TYPE_ID' => $rawPrice['CATALOG_GROUP_ID'],
-					'QUANTITY_FROM' => $rawPrice['QUANTITY_FROM'],
-					'QUANTITY_TO' => $rawPrice['QUANTITY_TO'],
-					'QUANTITY_HASH' => $this->getQuantityRangeHash($rawPrice),
-					'CURRENCY' => $currency
-				);
 				if ($this->arParams['PRICE_VAT_INCLUDE'])
-				{
-					$priceRow['BASE_PRICE'] = $priceWithVat;
-					$priceRow['UNROUND_PRICE'] = $discountPriceWithVat;
-					$priceRow['PRICE'] = $roundPriceWithVat;
-				}
+					$priceRow = $priceWithVat;
 				else
-				{
-					$priceRow['BASE_PRICE'] = $price;
-					$priceRow['UNROUND_PRICE'] = $discountPrice;
-					$priceRow['PRICE'] = $roundPrice;
-				}
-				if ($priceRow['BASE_PRICE'] > $priceRow['UNROUND_PRICE'])
-				{
-					$priceRow['DISCOUNT'] = $priceRow['BASE_PRICE'] - $priceRow['PRICE'];
-					$priceRow['PERCENT'] = roundEx(100*$priceRow['DISCOUNT']/$priceRow['BASE_PRICE'], 0);
-					if ($priceRow['DISCOUNT'] < 0)
-					{
-						$priceRow['BASE_PRICE'] = $priceRow['PRICE'];
-						$priceRow['DISCOUNT'] = 0;
-						$priceRow['PERCENT'] = 0;
-					}
-				}
-				else
+					$priceRow = $priceWithoutVat;
+				$priceRow['ID'] = $rawPrice['ID'];
+				$priceRow['PRICE_TYPE_ID'] = $rawPrice['CATALOG_GROUP_ID'];
+				$priceRow['CURRENCY'] = $currency;
+
+				if (
+					empty($discounts)
+					|| ($priceRow['BASE_PRICE'] <= $priceRow['PRICE'])
+				)
 				{
 					$priceRow['BASE_PRICE'] = $priceRow['PRICE'];
 					$priceRow['DISCOUNT'] = 0;
 					$priceRow['PERCENT'] = 0;
 				}
+				else
+				{
+					$priceRow['DISCOUNT'] = $priceRow['BASE_PRICE'] - $priceRow['PRICE'];
+					$priceRow['PERCENT'] = roundEx(100*$priceRow['DISCOUNT']/$priceRow['BASE_PRICE'], 0);
+				}
 				if ($this->arParams['PRICE_VAT_SHOW_VALUE'])
-					$priceRow['VAT'] = ($vatRate > 0 ? $roundPriceWithVat - $roundPrice : 0);
+					$priceRow['VAT'] = ($vatRate > 0 ? $priceWithVat['PRICE'] - $priceWithoutVat['PRICE'] : 0);
 
+				if ($this->arParams['FILL_ITEM_ALL_PRICES'])
+					$fullPrices[$priceType] = $priceRow;
+
+				$priceRow['QUANTITY_FROM'] = $rawPrice['QUANTITY_FROM'];
+				$priceRow['QUANTITY_TO'] = $rawPrice['QUANTITY_TO'];
+				$priceRow['QUANTITY_HASH'] = $this->getQuantityRangeHash($rawPrice);
+				$priceRow['MEASURE_RATIO_ID'] = $rawPrice['MEASURE_RATIO_ID'];
 				$priceRow['PRICE_SCALE'] = \CCurrencyRates::ConvertCurrency(
 					$priceRow['PRICE'],
 					$priceRow['CURRENCY'],
@@ -2569,6 +2696,11 @@ abstract class Base extends \CBitrixComponent
 
 				if ($minimalPrice === null || $minimalPrice['PRICE_SCALE'] > $priceRow['PRICE_SCALE'])
 					$minimalPrice = $priceRow;
+				if (isset($this->storage['PRICES_CAN_BUY'][$priceRow['PRICE_TYPE_ID']]))
+				{
+					if ($minimalBuyerPrice === null || $minimalBuyerPrice['PRICE_SCALE'] > $priceRow['PRICE_SCALE'])
+						$minimalBuyerPrice = $priceRow;
+				}
 
 				if ($enableCompatible)
 				{
@@ -2589,60 +2721,65 @@ abstract class Base extends \CBitrixComponent
 							'PRICE' => $priceRow['BASE_PRICE'],
 							'DISCOUNT_PRICE' => $priceRow['PRICE'],
 							'UNROUND_DISCOUNT_PRICE' => $priceRow['UNROUND_PRICE'],
-							'CURRENCY' => $currency,
+							'CURRENCY' => $priceRow['CURRENCY'],
 							'VAT_RATE' => $percentVat
 						);
 						if ($changeCurrency)
 						{
+							$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_CURRENCY'] = $rawPrice['CURRENCY'];
 							$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_PRICE'] = \CCurrencyRates::ConvertCurrency(
-								$oldMatrix['MATRIX'][$priceType][$rowIndex]['PRICE'],
-								$oldMatrix['MATRIX'][$priceType][$rowIndex]['CURRENCY'],
-								$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_CURRENCY']
+								$priceRow['BASE_PRICE'],
+								$priceRow['CURRENCY'],
+								$rawPrice['CURRENCY']
 							);
 							$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_DISCOUNT_PRICE'] = \CCurrencyRates::ConvertCurrency(
-								$oldMatrix['MATRIX'][$priceType][$rowIndex]['DISCOUNT_PRICE'],
-								$oldMatrix['MATRIX'][$priceType][$rowIndex]['CURRENCY'],
-								$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_CURRENCY']
+								$priceRow['PRICE'],
+								$priceRow['CURRENCY'],
+								$rawPrice['CURRENCY']
 							);
-							$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_CURRENCY'] = $rawPrice['CURRENCY'];
 							$oldMatrix['MATRIX'][$priceType][$rowIndex]['ORIG_VAT_RATE'] = $percentVat; // crazy key, but above all the compatibility
 						}
 					}
 					else
 					{
 						$priceCode = $this->storage['PRICES_MAP'][$priceType];
-						$oldPrices[$priceCode] = array(
+						$oldPriceRow = array(
 							'PRICE_ID' => $priceRow['PRICE_TYPE_ID'],
 							'ID' => $priceRow['ID'],
 							'CAN_ACCESS' => ($this->storage['PRICES'][$priceCode]['CAN_VIEW'] ? 'Y' : 'N'),
 							'CAN_BUY' => ($this->storage['PRICES'][$priceCode]['CAN_BUY'] ? 'Y' : 'N'),
 							'MIN_PRICE' => 'N',
-							'VALUE_NOVAT' => $price,
-							'VALUE_VAT' => $priceWithVat,
-							'VATRATE_VALUE' => $priceWithVat - $price,
-							'DISCOUNT_VALUE_NOVAT' => $discountPrice,
-							'DISCOUNT_VALUE_VAT' => $discountPriceWithVat,
-							'DISCOUNT_VATRATE_VALUE' => $discountPriceWithVat - $discountPrice,
-							'CURRENCY' => $currency,
-							'ROUND_VALUE_VAT' => $roundPriceWithVat,
-							'ROUND_VALUE_NOVAT' => $roundPrice,
-							'ROUND_VATRATE_VALUE' => $roundPriceWithVat - $roundPrice,
+							'CURRENCY' => $priceRow['CURRENCY'],
+							'VALUE_VAT' => $priceWithVat['UNROUND_BASE_PRICE'],
+							'VALUE_NOVAT' => $priceWithoutVat['UNROUND_BASE_PRICE'],
+							'DISCOUNT_VALUE_VAT' => $priceWithVat['UNROUND_PRICE'],
+							'DISCOUNT_VALUE_NOVAT' => $priceWithoutVat['UNROUND_PRICE'],
+							'ROUND_VALUE_VAT' => $priceWithVat['PRICE'],
+							'ROUND_VALUE_NOVAT' => $priceWithoutVat['PRICE'],
 							'VALUE' => $priceRow['BASE_PRICE'],
 							'UNROUND_DISCOUNT_VALUE' => $priceRow['UNROUND_PRICE'],
 							'DISCOUNT_VALUE' => $priceRow['PRICE'],
 							'DISCOUNT_DIFF' => $priceRow['DISCOUNT'],
 							'DISCOUNT_DIFF_PERCENT' => $priceRow['PERCENT']
 						);
+						$oldPriceRow['VATRATE_VALUE'] = $oldPriceRow['VALUE_VAT'] - $oldPriceRow['VALUE_NOVAT'];
+						$oldPriceRow['DISCOUNT_VATRATE_VALUE'] = $oldPriceRow['DISCOUNT_VALUE_VAT'] - $oldPriceRow['DISCOUNT_VALUE_NOVAT'];
+						$oldPriceRow['ROUND_VATRATE_VALUE'] = $oldPriceRow['ROUND_VALUE_VAT'] - $oldPriceRow['ROUND_VALUE_NOVAT'];
 						if ($changeCurrency)
-							$oldPrices[$priceCode]['ORIG_CURRENCY'] = $rawPrice['CURRENCY'];
+							$oldPriceRow['ORIG_CURRENCY'] = $rawPrice['CURRENCY'];
+						$oldPrices[$priceCode] = $oldPriceRow;
+						unset($oldPriceRow);
 					}
 				}
 			}
+			unset($discounts);
 			unset($priceType);
 		}
 		unset($price);
 
 		$minimalPriceId = null;
+		if (is_array($minimalBuyerPrice))
+			$minimalPrice = $minimalBuyerPrice;
 		if (is_array($minimalPrice))
 		{
 			unset($minimalPrice['PRICE_SCALE']);
@@ -2668,6 +2805,30 @@ abstract class Base extends \CBitrixComponent
 				);
 			}
 			unset($fieldName);
+
+			if ($this->arParams['FILL_ITEM_ALL_PRICES'])
+			{
+				foreach (array_keys($fullPrices) as $priceType)
+				{
+					foreach ($prepareFields as $fieldName)
+					{
+						$fullPrices[$priceType]['PRINT_'.$fieldName] = \CCurrencyLang::CurrencyFormat(
+							$fullPrices[$priceType][$fieldName],
+							$fullPrices[$priceType]['CURRENCY'],
+							true
+						);
+						$fullPrices[$priceType]['RATIO_'.$fieldName] = $fullPrices[$priceType][$fieldName]*$ratio;
+						$fullPrices[$priceType]['PRINT_RATIO_'.$fieldName] = \CCurrencyLang::CurrencyFormat(
+							$minimalPrice['RATIO_'.$fieldName],
+							$minimalPrice['CURRENCY'],
+							true
+						);
+					}
+					unset($fieldName);
+				}
+				unset($priceType);
+			}
+
 			unset($prepareFields);
 		}
 
@@ -2675,7 +2836,7 @@ abstract class Base extends \CBitrixComponent
 		{
 			if ($this->arParams['USE_PRICE_COUNT'])
 			{
-				$oldMatrix['CAN_BUY'] = $this->storage['PRICES_CAN_BUY'];
+				$oldMatrix['CAN_BUY'] = array_values($this->storage['PRICES_CAN_BUY']);
 				$this->oldData[$product['ID']]['PRICE_MATRIX'] = $oldMatrix;
 			}
 			else
@@ -2728,7 +2889,19 @@ abstract class Base extends \CBitrixComponent
 		}
 		unset($oldMatrix, $oldMinPrice, $oldPrices);
 
-		return $minimalPrice;
+		if (!$this->arParams['FILL_ITEM_ALL_PRICES'])
+			return $minimalPrice;
+
+		return array(
+			'MINIMAL_PRICE' => $minimalPrice,
+			'ALL_PRICES' => array(
+				'QUANTITY_FROM' => $minimalPrice['QUANTITY_FROM'],
+				'QUANTITY_TO' => $minimalPrice['QUANTITY_TO'],
+				'QUANTITY_HASH' => $minimalPrice['QUANTITY_HASH'],
+				'MEASURE_RATIO_ID' => $minimalPrice['MEASURE_RATIO_ID'],
+				'PRICES' => $fullPrices
+			)
+		);
 	}
 
 	protected function searchItemSelectedRatioId($id)
@@ -2828,21 +3001,26 @@ abstract class Base extends \CBitrixComponent
 		);
 		$currentPath .= (stripos($currentPath, '?') === false ? '?' : '&');
 
-		if ($this->arParams['COMPARE_PATH'] == '')
+		if ($this->arParams['USE_COMPARE_LIST'] == 'Y')
 		{
 			$comparePath = $currentPath;
 		}
 		else
 		{
-			$comparePath = \CHTTP::urlDeleteParams(
-				$this->arParams['COMPARE_PATH'],
-				array($productIdVar, $actionVar, ''),
-				array('delete_system_params' => true)
-			);
-			$comparePath .= (stripos($comparePath, '?') === false ? '?' : '&');
+			if ($this->arParams['COMPARE_PATH'] == '')
+			{
+				$comparePath = $currentPath;
+			}
+			else
+			{
+				$comparePath = \CHTTP::urlDeleteParams(
+					$this->arParams['COMPARE_PATH'],
+					array(''),
+					array('delete_system_params' => true)
+				);
+				$comparePath .= (stripos($comparePath, '?') === false ? '?' : '&');
+			}
 		}
-
-		$this->arParams['COMPARE_PATH'] = $comparePath.$actionVar.'=COMPARE';
 
 		$urls = array();
 		$urls['~BUY_URL_TEMPLATE'] = $currentPath.$actionVar.'='.self::ACTION_BUY.'&'.$productIdVar.'=#ID#';
@@ -2910,6 +3088,7 @@ abstract class Base extends \CBitrixComponent
 				$this->productWithPrices[$id] = $id;
 				$this->calculatePrices[$id] = $id;
 			}
+
 			if (isset($this->productWithPrices[$id]))
 			{
 				if ($element['PRODUCT']['MEASURE'] > 0)
@@ -2949,6 +3128,7 @@ abstract class Base extends \CBitrixComponent
 			{
 				$element['MIN_PRICE'] = \CIBlockPriceTools::getMinPriceFromList($element['PRICES']);
 			}
+
 			$element['CAN_BUY'] = \CIBlockPriceTools::CanBuy($element['IBLOCK_ID'], $this->storage['PRICES'], $element);
 		}
 	}
@@ -3135,7 +3315,8 @@ abstract class Base extends \CBitrixComponent
 					'QUANTITY' => null,
 					'QUANTITY_TRACE' => null,
 					'CAN_BUY_ZERO' => null,
-					'SUBSCRIPTION' => null
+					'SUBSCRIPTION' => null,
+					'BUNDLE' => null
 				);
 
 				if (isset($row['CATALOG_TYPE']))
@@ -3153,19 +3334,16 @@ abstract class Base extends \CBitrixComponent
 				 * CATALOG_*
 				 */
 				if (isset($row['CATALOG_AVAILABLE']))
+				{
 					$row['PRODUCT']['AVAILABLE'] = $row['CATALOG_AVAILABLE'];
-				if (isset($row['CATALOG_VAT']))
 					$row['PRODUCT']['VAT_RATE'] = $row['CATALOG_VAT'];
-				if (isset($row['CATALOG_VAT_INCLUDED']))
 					$row['PRODUCT']['VAT_INCLUDED'] = $row['CATALOG_VAT_INCLUDED'];
-				if (isset($row['CATALOG_QUANTITY']))
 					$row['PRODUCT']['QUANTITY'] = $row['CATALOG_QUANTITY'];
-				if (isset($row['CATALOG_QUANTITY_TRACE']))
 					$row['PRODUCT']['QUANTITY_TRACE'] = $row['CATALOG_QUANTITY_TRACE'];
-				if (isset($row['CATALOG_CAN_BUY_ZERO']))
 					$row['PRODUCT']['CAN_BUY_ZERO'] = $row['CATALOG_CAN_BUY_ZERO'];
-				if (isset($element['CATALOG_SUBSCRIPTION']))
-					$element['PRODUCT']['SUBSCRIPTION'] = $element['CATALOG_SUBSCRIPTION'];
+					$row['PRODUCT']['SUBSCRIPTION'] = $row['CATALOG_SUBSCRIPTION'];
+					$row['PRODUCT']['BUNDLE'] = $row['CATALOG_BUNDLE'];
+				}
 				/* it is not the final version - end*/
 
 				if ($row['PRODUCT']['TYPE'] == Catalog\ProductTable::TYPE_OFFER)
@@ -3179,7 +3357,7 @@ abstract class Base extends \CBitrixComponent
 				$row['ITEM_MEASURE_RATIO_SELECTED'] = null;
 				$row['ITEM_QUANTITY_RANGE_SELECTED'] = null;
 				$row['ITEM_PRICE_SELECTED'] = null;
-				$row['CHECK_QUANTITY'] = $row['PRODUCT']['QUANTITY_TRACE'] === 'Y' && $row['PRODUCT']['CAN_BUY_ZERO'] === 'N';
+				$row['CHECK_QUANTITY'] = $this->isNeedCheckQuantity($row['PRODUCT']);
 
 				if ($row['PRODUCT']['MEASURE'] > 0)
 				{
@@ -3398,6 +3576,7 @@ abstract class Base extends \CBitrixComponent
 			$this->sortElementList();
 			$this->makeElementLinks();
 			$this->prepareData();
+			$this->filterPureOffers();
 			$this->makeOutputResult();
 		}
 	}
@@ -3447,6 +3626,33 @@ abstract class Base extends \CBitrixComponent
 		$this->processOffers();
 		$this->makeOutputResult();
 		$this->clearItems();
+	}
+
+	protected function filterPureOffers()
+	{
+		if (!empty($this->productIds) && is_array($this->productIds))
+		{
+			foreach ($this->productIds as $productId)
+			{
+				// check if it's element
+				if ($this->productIdMap[$productId] == $productId)
+				{
+					continue;
+				}
+
+				if (isset($this->elementLinks[$this->productIdMap[$productId]]) && !empty($this->elementLinks[$this->productIdMap[$productId]]['OFFERS']))
+				{
+					// clear all unwanted offers
+					foreach ($this->elementLinks[$this->productIdMap[$productId]]['OFFERS'] as $key => $offer)
+					{
+						if ($offer['ID'] != $productId)
+						{
+							unset($this->elementLinks[$this->productIdMap[$productId]]['OFFERS'][$key]);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -3532,7 +3738,8 @@ abstract class Base extends \CBitrixComponent
 				}
 
 				$APPLICATION->RestartBuffer();
-				echo \CUtil::PhpToJSObject($addResult);
+				header('Content-Type: application/json');
+				echo Main\Web\Json::encode($addResult);
 				die();
 			}
 			else
@@ -3558,6 +3765,45 @@ abstract class Base extends \CBitrixComponent
 		}
 	}
 
+	protected function checkProductSection($productId, $sectionId = 0, $sectionCode = '')
+	{
+		$successfulAdd = true;
+		$errorMsg = '';
+
+		if (!empty($productId) && ($sectionId > 0 || !empty($sectionCode)))
+		{
+			$productsMap = $this->getProductIdMap([$productId]);
+
+			if (!empty($productsMap[$productId]))
+			{
+				$sectionId = (int)$sectionId;
+				$sectionCode = (string)$sectionCode;
+
+				$filter = ['ID' => $productsMap[$productId]];
+
+				if ($sectionId > 0)
+				{
+					$filter['SECTION_ID'] = $sectionId;
+				}
+				elseif ($sectionCode != '')
+				{
+					$filter['SECTION_CODE'] = $sectionCode;
+				}
+
+				$elementIterator = \CIBlockElement::GetList(array(), $filter, false, false, array('ID'));
+				$element = $elementIterator->Fetch();
+
+				if (empty($element))
+				{
+					$successfulAdd = false;
+					$errorMsg = Loc::getMessage('CATALOG_PRODUCT_NOT_FOUND');
+				}
+			}
+		}
+
+		return [$successfulAdd, $errorMsg];
+	}
+
 	protected function addProductToBasket($productId, $action)
 	{
 		/** @global \CMain $APPLICATION */
@@ -3581,49 +3827,59 @@ abstract class Base extends \CBitrixComponent
 			{
 				if ($this->arParams['ADD_PROPERTIES_TO_BASKET'] === 'Y')
 				{
-					$productIblockId = ($productCatalogInfo['CATALOG_TYPE'] == \CCatalogSku::TYPE_CATALOG
-						? $productCatalogInfo['IBLOCK_ID']
-						: $productCatalogInfo['PRODUCT_IBLOCK_ID']
-					);
-					$iblockParams = $this->storage['IBLOCK_PARAMS'][$productIblockId];
-					if ($productCatalogInfo['CATALOG_TYPE'] !== \CCatalogSku::TYPE_OFFERS)
+					if ($this->arParams['STRICT_SECTION_CHECK'])
 					{
-						if (!empty($iblockParams['CART_PROPERTIES']))
+						list($successfulAdd, $errorMsg) = $this->checkProductSection(
+							$productId, $this->arParams['SECTION_ID'], $this->arParams['SECTION_CODE']
+						);
+					}
+
+					if ($successfulAdd)
+					{
+						$productIblockId = ($productCatalogInfo['CATALOG_TYPE'] == \CCatalogSku::TYPE_CATALOG
+							? $productCatalogInfo['IBLOCK_ID']
+							: $productCatalogInfo['PRODUCT_IBLOCK_ID']
+						);
+						$iblockParams = $this->storage['IBLOCK_PARAMS'][$productIblockId];
+						if ($productCatalogInfo['CATALOG_TYPE'] !== \CCatalogSku::TYPE_OFFERS)
 						{
-							$productPropsVar = $this->request->get($this->arParams['PRODUCT_PROPS_VARIABLE']);
-							if (is_array($productPropsVar))
+							if (!empty($iblockParams['CART_PROPERTIES']))
 							{
-								$productProperties = \CIBlockPriceTools::CheckProductProperties(
-									$productIblockId,
-									$productId,
-									$iblockParams['CART_PROPERTIES'],
-									$productPropsVar,
-									$this->arParams['PARTIAL_PRODUCT_PROPERTIES'] === 'Y'
-								);
-								if (!is_array($productProperties))
+								$productPropsVar = $this->request->get($this->arParams['PRODUCT_PROPS_VARIABLE']);
+								if (is_array($productPropsVar))
 								{
-									$errorMsg = Loc::getMessage('CATALOG_PARTIAL_BASKET_PROPERTIES_ERROR');
+									$productProperties = \CIBlockPriceTools::CheckProductProperties(
+										$productIblockId,
+										$productId,
+										$iblockParams['CART_PROPERTIES'],
+										$productPropsVar,
+										$this->arParams['PARTIAL_PRODUCT_PROPERTIES'] === 'Y'
+									);
+									if (!is_array($productProperties))
+									{
+										$errorMsg = Loc::getMessage('CATALOG_PARTIAL_BASKET_PROPERTIES_ERROR');
+										$successfulAdd = false;
+									}
+								}
+								else
+								{
+									$errorMsg = Loc::getMessage('CATALOG_EMPTY_BASKET_PROPERTIES_ERROR');
 									$successfulAdd = false;
 								}
 							}
-							else
-							{
-								$errorMsg = Loc::getMessage('CATALOG_EMPTY_BASKET_PROPERTIES_ERROR');
-								$successfulAdd = false;
-							}
 						}
-					}
-					else
-					{
-						$skuAddProps = $this->request->get('basket_props') ?: '';
-						if (!empty($iblockParams['OFFERS_CART_PROPERTIES']) || !empty($skuAddProps))
+						else
 						{
-							$productProperties = \CIBlockPriceTools::GetOfferProperties(
-								$productId,
-								$productIblockId,
-								$iblockParams['OFFERS_CART_PROPERTIES'],
-								$skuAddProps
-							);
+							$skuAddProps = $this->request->get('basket_props') ?: '';
+							if (!empty($iblockParams['OFFERS_CART_PROPERTIES']) || !empty($skuAddProps))
+							{
+								$productProperties = \CIBlockPriceTools::GetOfferProperties(
+									$productId,
+									$productIblockId,
+									$iblockParams['OFFERS_CART_PROPERTIES'],
+									$skuAddProps
+								);
+							}
 						}
 					}
 				}
@@ -3712,41 +3968,56 @@ abstract class Base extends \CBitrixComponent
 	 */
 	protected function deferredLoadAction()
 	{
-		$productIds = $this->getDeferredProductIds();
+		$this->productIds = $this->getDeferredProductIds();
 
 		// if no products - show empty response
-		if (empty($productIds))
+		if (empty($this->productIds))
 		{
 			static::sendJsonAnswer();
 		}
 
-		$this->productIdMap = $this->getProductIdMap($productIds);
+		$this->productIdMap = $this->getProductIdMap($this->productIds);
 		$this->loadData();
 	}
 
 	/**
-	 * This method executes when "bigDataLoad" action chosen.
+	 * This method executes when "bigDataLoad" action is chosen.
 	 */
 	protected function bigDataLoadAction()
 	{
-		$productIds = $this->getBigDataProductIds();
+		$this->initBigDataLastUsage();
+		$this->productIds = $this->getBigDataProductIds();
 
 		// if no products - show empty response
-		if (empty($productIds))
+		if (empty($this->productIds))
 		{
 			static::sendJsonAnswer();
 		}
 
-		$this->productIdMap = $this->getProductIdMap($productIds);
+		$this->productIdMap = $this->getProductIdMap($this->productIds);
 		$this->loadData();
 	}
 
 	/**
-	 * This method executes when "initialLoad" action chosen.
+	 * Mark last usage of BigData.
+	 */
+	protected function initBigDataLastUsage()
+	{
+		$lastUsage = Main\Config\Option::get('main', 'rcm_component_usage', 0);
+
+		if ($lastUsage == 0 || (time() - $lastUsage) > 3600)
+		{
+			Main\Config\Option::set('main', 'rcm_component_usage', time());
+		}
+	}
+
+	/**
+	 * This method executes when "initialLoad" action is chosen.
 	 */
 	protected function initialLoadAction()
 	{
-		$this->productIdMap = $this->getProductIdMap($this->getProductIds());
+		$this->productIds = $this->getProductIds();
+		$this->productIdMap = $this->getProductIdMap($this->productIds);
 		$this->loadData();
 	}
 
@@ -4051,10 +4322,16 @@ abstract class Base extends \CBitrixComponent
 				$documentRoot = Main\Application::getDocumentRoot();
 				$templateFolder = $this->getTemplate()->GetFolder();
 
-				$file = new Main\IO\File($documentRoot.$templateFolder.'/themes/'.$theme.'/style.css');
-				if (!$file->isExists())
+				$themesFolder = new Main\IO\Directory($documentRoot.$templateFolder.'/themes/');
+
+				if ($themesFolder->isExists())
 				{
-					$theme = '';
+					$file = new Main\IO\File($documentRoot.$templateFolder.'/themes/'.$theme.'/style.css');
+
+					if (!$file->isExists())
+					{
+						$theme = '';
+					}
 				}
 			}
 		}
@@ -4176,6 +4453,24 @@ abstract class Base extends \CBitrixComponent
 		return $cell;
 	}
 
+	/* product tools */
+
+	/**
+	 * Return true, if enable quantity trace and disable make out-of-stock items available for purchase.
+	 *
+	 * @param array $product        Product data.
+	 * @return bool
+	 */
+	protected function isNeedCheckQuantity(array $product)
+	{
+		return (
+			$product['QUANTITY_TRACE'] === Catalog\ProductTable::STATUS_YES
+			&& $product['CAN_BUY_ZERO'] === Catalog\ProductTable::STATUS_NO
+		);
+	}
+
+	/* product tools end */
+
 	/* user tools */
 
 	/**
@@ -4210,7 +4505,7 @@ abstract class Base extends \CBitrixComponent
 
 	/* compatibility tools */
 
-	/*
+	/**
 	 * Filling deprecated fields of items for compatibility with old templates.
 	 * Strict use only for catalog.element, .section, .top, etc in compatible mode.
 	 *
@@ -4233,6 +4528,7 @@ abstract class Base extends \CBitrixComponent
 			{
 				if (!$value['CAN_VIEW'] && !$value['CAN_BUY'])
 					continue;
+
 				$priceType = $value['ID'];
 				$initFields['CATALOG_GROUP_ID_'.$priceType] = $priceType;
 				$initFields['~CATALOG_GROUP_ID_'.$priceType] = $priceType;
@@ -4362,5 +4658,5 @@ abstract class Base extends \CBitrixComponent
 		unset($priceCode);
 	}
 
-	/* compatibility tools */
+	/* compatibility tools end */
 }

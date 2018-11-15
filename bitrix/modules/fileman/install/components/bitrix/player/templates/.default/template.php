@@ -71,21 +71,24 @@
 
 	</script><noscript><?=GetMessage('ENABLE_JAVASCRIPT')?></noscript>
 
-<?elseif ($arResult["PLAYER_TYPE"] == "videojs"): // Attach video.js?>
+<?elseif($arResult["PLAYER_TYPE"] == "videojs"): // Attach video.js?>
 	<?
-	if ($arResult['AUDIO_FILE'] === true)
+	if($arResult['AUDIO_FILE'] === true)
+	{
 		$tag_name = 'audio';
+	}
 	else
+	{
 		$tag_name = 'video';
+	}
 	?>
 	<<?=$tag_name;?> id="<?=$arResult["ID"];?>" class="video-js <?=$arResult['SKIN_NAME'];?> vjs-big-play-centered" width="<?=$arParams["WIDTH"];?>" height="<?=$arParams["HEIGHT"];?>"<?
-	if ($arParams["MUTE"] === "Y")
+	if($arParams["MUTE"] === "Y")
+	{
 		echo " muted";
-	if ($arParams["SHOW_CONTROLS"] != "N")
-		echo " controls";
+	}
 	?>>
-
-	<?if($arParams["USE_PLAYLIST"] != 'Y' && !$arResult['YOUTUBE'])
+	<?if($arParams["USE_PLAYLIST"] != 'Y' && !$arResult['YOUTUBE'] && !$arResult['LAZYLOAD'])
 	{?>
 		<source src="<?=$arResult['PATH'];?>" type="<?=$arResult['FILE_TYPE'];?>">
 	<?}?>
@@ -93,93 +96,36 @@
 	<script>
 		BX.ready(function()
 		{
-			var init_player_<?=$arResult["ID"];?> = function ()
+			<?='BX.message('.\CUtil::PhpToJSObject(\Bitrix\Main\Localization\Loc::loadLanguageFile(__FILE__)).');'?>
+			var init_player_<?=$arResult["ID"];?> = function()
 			{
-				// delete previous object to allow reinitializing
-				if (videojs.players['<?=$arResult["ID"];?>'])
+				var player = new BX.Fileman.Player('<?=$arResult['ID'];?>', <?=\CUtil::PhpToJSObject($arResult["VIDEOJS_PARAMS"]);?>);
+				if(!player.lazyload)
 				{
-					delete videojs.players['<?=$arResult["ID"];?>'];
+					player.init();
 				}
-				player_<?=$arResult["ID"];?> = videojs("<?=$arResult["ID"];?>", <?=\CUtil::PhpToJSObject($arResult["VIDEOJS_PARAMS"]);?>);
-				player_<?=$arResult["ID"];?>.ready (function()
-				{
-					player_<?=$arResult["ID"];?>.volume (<?=floatval($arResult["VOLUME"]);?>);
-					<?if ($arParams['MUTE'] === 'Y')
-					{?>
-					player_<?=$arResult["ID"];?>.muted (true);
-					<?}?>
-					var volume_set = false;
-					player_<?=$arResult["ID"];?>.on ('play', function()
-					{
-						<?if ($arParams['PLAYBACK_RATE'] != 1)
-						{?>
-						player_<?=$arResult["ID"];?>.playbackRate(<?=$arParams['PLAYBACK_RATE'];?>);
-						<?}?>
-						<?if (isset($arResult["VOLUME"]))
-						{?>
-						if (!volume_set)
-						{
-							player_<?=$arResult["ID"];?>.volume (<?=floatval($arResult["VOLUME"]);?>);
-							<?if ($arParams['MUTE'] === 'Y')
-							{?>
-							player_<?=$arResult["ID"];?>.muted (true);
-							<?}?>
-							volume_set = true;
-						}
-						<?}?>
-					});
-					<?if($arParams["USE_PLAYLIST"] == 'Y' && count ($arResult['TRACKS']) > 1)
-					{?>
-						player_<?=$arResult["ID"];?>.playlist (<?=\CUtil::PhpToJSObject($arResult["VIDEOJS_PLAYLIST_PARAMS"]);?>);
-					<?}
-					else
-					{
-					if ($arParams['START_TIME'] > 0)
-					{?>
-						player_<?=$arResult["ID"];?>.on('loadedmetadata', function()
-						{
-							player_<?=$arResult["ID"];?>.currentTime(<?=intval($arParams['START_TIME']);?>);
-							var spinner = BX.findChild(BX("<?=$arResult["ID"];?>"),
-								{
-									"class" : "vjs-loading-spinner"
-								},
-								false
-							);
-							if (spinner != undefined)
-							{
-								spinner.remove();
-							}
-						});
-					<?}
-					}
-					if ($arResult['WMV'])
-					{?>
-						player_<?=$arResult["ID"];?>.wmvConfig = <?=\CUtil::PhpToJSObject($arResult["WMV_CONFIG"]);?>;
-					<?}
-					?>
-				});
-			}
-			if (typeof videojs == 'undefined')
+			};
+			if(typeof videojs == 'undefined')
 			{
 				window.videojs_player_timout = true;
-				<?if (!empty($arResult['CSS_FILES']))
+				<?if(!empty($arResult['CSS_FILES']))
 				{?>
 				BX.loadCSS(<?=\CUtil::PhpToJSObject($arResult['CSS_FILES']);?>);
 				<?}
-				if (!empty($arResult['JS_FILES']))
+				if(!empty($arResult['JS_FILES']))
 				{?>
 				BX.loadScript(<?=\CUtil::PhpToJSObject($arResult['JS_FILES']);?>, function()
 				{
 					setTimeout(function()
 					{
-						init_player_<?=$arResult["ID"];?>()
+						init_player_<?=$arResult["ID"];?>();
 					}, 100);
 				});
 				<?}?>
 			}
 			else
 			{
-				if (window.videojs_player_timout === true)
+				if(window.videojs_player_timout === true)
 				{
 					setTimeout(function() {
 						init_player_<?=$arResult["ID"];?>();

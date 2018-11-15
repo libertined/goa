@@ -6,10 +6,20 @@ use Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
 
+
+/**
+ * Control change actions
+ * @package Bitrix\Main\Grid\Panel\Snippet
+ */
 class Onchange
 {
 	protected $actions;
 
+
+	/**
+	 * Onchange constructor.
+	 * @param array $actions
+	 */
 	public function __construct($actions = array())
 	{
 		if (!empty($actions) && is_array($actions) && count($actions) > 0)
@@ -39,6 +49,11 @@ class Onchange
 		}
 	}
 
+
+	/**
+	 * Adds action
+	 * @param array $action
+	 */
 	public function addAction($action = array())
 	{
 		if (isset($action["CONFIRM"]) && $action["CONFIRM"] === true)
@@ -62,6 +77,10 @@ class Onchange
 		$this->actions[] = $action;
 	}
 
+
+	/**
+	 * @return array
+	 */
 	public function toArray()
 	{
 		return $this->actions;

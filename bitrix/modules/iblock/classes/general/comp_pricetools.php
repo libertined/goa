@@ -117,15 +117,16 @@ class CIBlockPriceTools
 		return $arResult;
 	}
 
-	public static function SetCatalogDiscountCache($arCatalogGroups, $arUserGroups)
+	public static function SetCatalogDiscountCache($arCatalogGroups, $arUserGroups, $siteId = false)
 	{
 		if(\Bitrix\Main\Config\Option::get('sale', 'use_sale_discount_only') === 'Y')
-		{
 			return true;
-		}
 
 		global $DB;
 		$result = false;
+
+		if ($siteId === false)
+			$siteId = SITE_ID;
 
 		if (self::$catalogIncluded === null)
 			self::$catalogIncluded = Loader::includeModule('catalog');
@@ -172,8 +173,8 @@ class CIBlockPriceTools
 				{
 					$arFilter = array(
 						'@ID' => $row,
-						'SITE_ID' => SITE_ID,
-						'TYPE' => DISCOUNT_TYPE_STANDART,
+						'SITE_ID' => $siteId,
+						'TYPE' => Catalog\DiscountTable::TYPE_DISCOUNT,
 						'RENEWAL' => 'N',
 						'+<=ACTIVE_FROM' => $strDate,
 						'+>=ACTIVE_TO' => $strDate,
@@ -204,7 +205,7 @@ class CIBlockPriceTools
 					}
 					sort($arDiscountList);
 					$arDiscountFilter[$strCacheKey] = $arDiscountList;
-					$strResultCacheKey = CCatalogDiscount::GetDiscountResultCacheKey($arDiscountList, SITE_ID, 'N');
+					$strResultCacheKey = CCatalogDiscount::GetDiscountResultCacheKey($arDiscountList, $siteId, 'N');
 					$arDiscountResult[$strResultCacheKey] = $arDiscountDetailList;
 				}
 				unset($intOneGroupID);
@@ -1933,35 +1934,61 @@ class CIBlockPriceTools
 		$result = array();
 		if (!empty($propList) && is_array($propList))
 		{
+			$useFilterValues = !empty($propNeedValues) && is_array($propNeedValues);
 			foreach ($propList as $oneProperty)
 			{
 				$values = array();
 				$valuesExist = false;
 				$pictMode = ('PICT' == $oneProperty['SHOW_MODE']);
 				$needValuesExist = !empty($propNeedValues[$oneProperty['ID']]) && is_array($propNeedValues[$oneProperty['ID']]);
-				$filterValuesExist = ($needValuesExist && count($propNeedValues[$oneProperty['ID']]) <= 500);
-				$needValues = array();
-				if ($needValuesExist)
-					$needValues = array_fill_keys($propNeedValues[$oneProperty['ID']], true);
+				if ($useFilterValues && !$needValuesExist)
+					continue;
 				switch($oneProperty['PROPERTY_TYPE'])
 				{
 					case Iblock\PropertyTable::TYPE_LIST:
-						$propEnums = CIBlockProperty::GetPropertyEnum(
-							$oneProperty['ID'],
-							array('SORT' => 'ASC', 'VALUE' => 'ASC')
-						);
-						while ($oneEnum = $propEnums->Fetch())
+						if ($needValuesExist)
 						{
-							$oneEnum['ID'] = (int)$oneEnum['ID'];
-							if ($needValuesExist && !isset($needValues[$oneEnum['ID']]))
-								continue;
-							$values[$oneEnum['ID']] = array(
-								'ID' => $oneEnum['ID'],
-								'NAME' => $oneEnum['VALUE'],
-								'SORT' => (int)$oneEnum['SORT'],
-								'PICT' => false
-							);
-							$valuesExist = true;
+							foreach (array_chunk($propNeedValues[$oneProperty['ID']], 500) as $pageIds)
+							{
+								$iterator = Iblock\PropertyEnumerationTable::getList(array(
+									'select' => array('ID', 'VALUE', 'SORT'),
+									'filter' => array('=PROPERTY_ID' => $oneProperty['ID'], '@ID' => $pageIds),
+									'order' => array('SORT' => 'ASC', 'VALUE' => 'ASC')
+								));
+								while ($row = $iterator->fetch())
+								{
+									$row['ID'] = (int)$row['ID'];
+									$values[$row['ID']] = array(
+										'ID' => $row['ID'],
+										'NAME' => $row['VALUE'],
+										'SORT' => (int)$row['SORT'],
+										'PICT' => false
+									);
+									$valuesExist = true;
+								}
+								unset($row, $iterator);
+							}
+							unset($pageIds);
+						}
+						else
+						{
+							$iterator = Iblock\PropertyEnumerationTable::getList(array(
+								'select' => array('ID', 'VALUE', 'SORT'),
+								'filter' => array('=PROPERTY_ID' => $oneProperty['ID']),
+								'order' => array('SORT' => 'ASC', 'VALUE' => 'ASC')
+							));
+							while ($row = $iterator->fetch())
+							{
+								$row['ID'] = (int)$row['ID'];
+								$values[$row['ID']] = array(
+									'ID' => $row['ID'],
+									'NAME' => $row['VALUE'],
+									'SORT' => (int)$row['SORT'],
+									'PICT' => false
+								);
+								$valuesExist = true;
+							}
+							unset($row, $iterator);
 						}
 						$values[0] = array(
 							'ID' => 0,
@@ -1975,53 +2002,90 @@ class CIBlockPriceTools
 						$selectFields = array('ID', 'NAME');
 						if ($pictMode)
 							$selectFields[] = 'PREVIEW_PICTURE';
-						$filterValues = (
-							$filterValuesExist
-							? array('ID' => array_values($propNeedValues[$oneProperty['ID']]), 'IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y')
-							: array('IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y')
-						);
-						$propEnums = CIBlockElement::GetList(
-							array('SORT' => 'ASC', 'NAME' => 'ASC'),
-							$filterValues,
-							false,
-							false,
-							$selectFields
-						);
-						while ($oneEnum = $propEnums->Fetch())
+
+						if ($needValuesExist)
 						{
-							if ($needValuesExist && !$filterValuesExist)
+							foreach (array_chunk($propNeedValues[$oneProperty['ID']], 500) as $pageIds)
 							{
-								if (!isset($needValues[$oneEnum['ID']]))
-									continue;
-							}
-							if ($pictMode)
-							{
-								$oneEnum['PICT'] = false;
-								if (!empty($oneEnum['PREVIEW_PICTURE']))
+								$iterator =  CIBlockElement::GetList(
+									array('SORT' => 'ASC', 'NAME' => 'ASC'),
+									array('ID' => $pageIds, 'IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y'),
+									false,
+									false,
+									$selectFields
+								);
+								while ($row = $iterator->Fetch())
 								{
-									$previewPict = CFile::GetFileArray($oneEnum['PREVIEW_PICTURE']);
-									if (!empty($previewPict))
+									if ($pictMode)
 									{
-										$oneEnum['PICT'] = array(
-											'SRC' => $previewPict['SRC'],
-											'WIDTH' => (int)$previewPict['WIDTH'],
-											'HEIGHT' => (int)$previewPict['HEIGHT']
-										);
+										$row['PICT'] = false;
+										if (!empty($row['PREVIEW_PICTURE']))
+										{
+											$previewPict = CFile::GetFileArray($row['PREVIEW_PICTURE']);
+											if (!empty($previewPict))
+											{
+												$row['PICT'] = array(
+													'SRC' => $previewPict['SRC'],
+													'WIDTH' => (int)$previewPict['WIDTH'],
+													'HEIGHT' => (int)$previewPict['HEIGHT']
+												);
+											}
+										}
+										if (empty($row['PICT']))
+											$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
 									}
+									$row['ID'] = (int)$row['ID'];
+									$values[$row['ID']] = array(
+										'ID' => $row['ID'],
+										'NAME' => $row['NAME'],
+										'SORT' => (int)$row['SORT'],
+										'PICT' => ($pictMode ? $row['PICT'] : false)
+									);
+									$valuesExist = true;
 								}
-								if (empty($oneEnum['PICT']))
-								{
-									$oneEnum['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
-								}
+								unset($row, $iterator);
 							}
-							$oneEnum['ID'] = (int)$oneEnum['ID'];
-							$values[$oneEnum['ID']] = array(
-								'ID' => $oneEnum['ID'],
-								'NAME' => $oneEnum['NAME'],
-								'SORT' => (int)$oneEnum['SORT'],
-								'PICT' => ($pictMode ? $oneEnum['PICT'] : false)
+							unset($pageIds);
+						}
+						else
+						{
+							$iterator =  CIBlockElement::GetList(
+								array('SORT' => 'ASC', 'NAME' => 'ASC'),
+								array('IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y'),
+								false,
+								false,
+								$selectFields
 							);
-							$valuesExist = true;
+							while ($row = $iterator->Fetch())
+							{
+								if ($pictMode)
+								{
+									$row['PICT'] = false;
+									if (!empty($row['PREVIEW_PICTURE']))
+									{
+										$previewPict = CFile::GetFileArray($row['PREVIEW_PICTURE']);
+										if (!empty($previewPict))
+										{
+											$row['PICT'] = array(
+												'SRC' => $previewPict['SRC'],
+												'WIDTH' => (int)$previewPict['WIDTH'],
+												'HEIGHT' => (int)$previewPict['HEIGHT']
+											);
+										}
+									}
+									if (empty($row['PICT']))
+										$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
+								}
+								$row['ID'] = (int)$row['ID'];
+								$values[$row['ID']] = array(
+									'ID' => $row['ID'],
+									'NAME' => $row['NAME'],
+									'SORT' => (int)$row['SORT'],
+									'PICT' => ($pictMode ? $row['PICT'] : false)
+								);
+								$valuesExist = true;
+							}
+							unset($row, $iterator);
 						}
 						$values[0] = array(
 							'ID' => 0,
@@ -2042,9 +2106,7 @@ class CIBlockPriceTools
 						$directorySelect = array('ID', 'UF_NAME', 'UF_XML_ID');
 						$directoryOrder = array();
 						if ($pictMode)
-						{
 							$directorySelect[] = 'UF_FILE';
-						}
 						if ($sortExist)
 						{
 							$directorySelect[] = 'UF_SORT';
@@ -2062,46 +2124,87 @@ class CIBlockPriceTools
 							'select' => $directorySelect,
 							'order' => $directoryOrder
 						);
-						if ($filterValuesExist)
-							$entityGetList['filter'] = array('=UF_XML_ID' => array_values($propNeedValues[$oneProperty['ID']]));
-						$propEnums = $entityDataClass::getList($entityGetList);
-						while ($oneEnum = $propEnums->fetch())
-						{
-							if ($needValuesExist && !$filterValuesExist)
-							{
-								if (!isset($needValues[$oneEnum['UF_XML_ID']]))
-									continue;
-							}
-							$oneEnum['ID'] = (int)$oneEnum['ID'];
-							$oneEnum['UF_SORT'] = ($sortExist ? (int)$oneEnum['UF_SORT'] : $sortValue);
-							$sortValue += 100;
 
-							if ($pictMode)
+						if ($needValuesExist)
+						{
+							foreach (array_chunk($propNeedValues[$oneProperty['ID']], 500) as $pageIds)
 							{
-								if (!empty($oneEnum['UF_FILE']))
+								$entityGetList['filter'] = array('=UF_XML_ID' => $pageIds);
+								$iterator = $entityDataClass::getList($entityGetList);
+								while ($row = $iterator->fetch())
 								{
-									$arFile = CFile::GetFileArray($oneEnum['UF_FILE']);
-									if (!empty($arFile))
+									$row['ID'] = (int)$row['ID'];
+									$row['UF_SORT'] = ($sortExist ? (int)$row['UF_SORT'] : $sortValue);
+									$sortValue += 100;
+
+									if ($pictMode)
 									{
-										$oneEnum['PICT'] = array(
-											'SRC' => $arFile['SRC'],
-											'WIDTH' => (int)$arFile['WIDTH'],
-											'HEIGHT' => (int)$arFile['HEIGHT']
-										);
+										if (!empty($row['UF_FILE']))
+										{
+											$arFile = CFile::GetFileArray($row['UF_FILE']);
+											if (!empty($arFile))
+											{
+												$row['PICT'] = array(
+													'SRC' => $arFile['SRC'],
+													'WIDTH' => (int)$arFile['WIDTH'],
+													'HEIGHT' => (int)$arFile['HEIGHT']
+												);
+											}
+										}
+										if (empty($row['PICT']))
+											$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
 									}
+									$values[$row['ID']] = array(
+										'ID' => $row['ID'],
+										'NAME' => $row['UF_NAME'],
+										'SORT' => (int)$row['UF_SORT'],
+										'XML_ID' => $row['UF_XML_ID'],
+										'PICT' => ($pictMode ? $row['PICT'] : false)
+									);
+									$valuesExist = true;
+									$xmlMap[$row['UF_XML_ID']] = $row['ID'];
 								}
-								if (empty($oneEnum['PICT']))
-									$oneEnum['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
+								unset($row, $iterator);
 							}
-							$values[$oneEnum['ID']] = array(
-								'ID' => $oneEnum['ID'],
-								'NAME' => $oneEnum['UF_NAME'],
-								'SORT' => (int)$oneEnum['UF_SORT'],
-								'XML_ID' => $oneEnum['UF_XML_ID'],
-								'PICT' => ($pictMode ? $oneEnum['PICT'] : false)
-							);
-							$valuesExist = true;
-							$xmlMap[$oneEnum['UF_XML_ID']] = $oneEnum['ID'];
+							unset($pageIds);
+						}
+						else
+						{
+							$iterator = $entityDataClass::getList($entityGetList);
+							while ($row = $iterator->fetch())
+							{
+								$row['ID'] = (int)$row['ID'];
+								$row['UF_SORT'] = ($sortExist ? (int)$row['UF_SORT'] : $sortValue);
+								$sortValue += 100;
+
+								if ($pictMode)
+								{
+									if (!empty($row['UF_FILE']))
+									{
+										$arFile = CFile::GetFileArray($row['UF_FILE']);
+										if (!empty($arFile))
+										{
+											$row['PICT'] = array(
+												'SRC' => $arFile['SRC'],
+												'WIDTH' => (int)$arFile['WIDTH'],
+												'HEIGHT' => (int)$arFile['HEIGHT']
+											);
+										}
+									}
+									if (empty($row['PICT']))
+										$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
+								}
+								$values[$row['ID']] = array(
+									'ID' => $row['ID'],
+									'NAME' => $row['UF_NAME'],
+									'SORT' => (int)$row['UF_SORT'],
+									'XML_ID' => $row['UF_XML_ID'],
+									'PICT' => ($pictMode ? $row['PICT'] : false)
+								);
+								$valuesExist = true;
+								$xmlMap[$row['UF_XML_ID']] = $row['ID'];
+							}
+							unset($row, $iterator);
 						}
 						$values[0] = array(
 							'ID' => 0,

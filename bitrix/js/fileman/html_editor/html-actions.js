@@ -386,16 +386,6 @@
 
 					var applier = getStyler(tagName, arStyle, cssClass);
 
-//					if (false && params.bSelectParentIfCollapsed && range.collapsed)
-//					{
-//						var parents = applier.IsAppliedToRange(range, false);
-//						if (parents && parents[0])
-//						{
-//							//range = applier.SelectNode(range, parents[0]);
-//							range = _this.editor.selection.SelectNode(parents[0]);
-//						}
-//					}
-
 					if (params.bClear)
 					{
 						range = applier.UndoToRange(range, false);
@@ -661,7 +651,7 @@
 						var wholeBlockSelected = range.startContainer == blockElement.firstChild && range.endContainer == blockElement.lastChild;
 
 						// Divs and blockquotes can be inside each other
-						if (BX.util.in_array(nodeName, nestedBlockTags) && params.nestedBlocks !== false)
+						if (nodeName && BX.util.in_array(nodeName, nestedBlockTags) && params.nestedBlocks !== false)
 						{
 							// create new div
 							blockElement = _this.document.createElement(nodeName || DEFAULT_NODE_NAME);
@@ -1355,7 +1345,10 @@
 						});
 					}
 
-					_this.actions.formatBlock.exec('formatBlock', null);
+					if (!_this.editor.iframeView.IsEmpty(true))
+					{
+						_this.actions.formatBlock.exec('formatBlock', null);
+					}
 				},
 				state: BX.DoNothing,
 				value: BX.DoNothing
@@ -1570,7 +1563,7 @@
 
 					for (i = 0; i < nodes.length; i++)
 					{
-						if (nodes[i] && nodes[i].nodeName == "LI")
+						if (nodes[i] && nodes[i].nodeName == "LI" && !_this.editor.bbCode)
 						{
 							// 1. Add color to LI
 							nodes[i].style.color = value;
@@ -4293,7 +4286,7 @@
 							{
 								src: smile.path,
 								title: smile.name || smile.code
-							}});
+							}}, _this.editor.iframeView.document);
 							_this.editor.SetBxTag(smileImg, {tag: "smile", params: smile});
 							if (smile.width)
 								smileImg.style.width = parseInt(smile.width) + 'px';
@@ -4303,11 +4296,10 @@
 
 							var textBefore = _this.editor.iframeView.document.createTextNode(' ');
 							smileImg.parentNode.insertBefore(textBefore, smileImg);
-							var textAfer = _this.editor.iframeView.document.createTextNode(' ');
+							var textAfer = BX.create("SPAN", {html: '&nbsp;'}, _this.editor.iframeView.document);
 							_this.editor.util.InsertAfter(textAfer, smileImg);
-
 							_this.editor.selection.SetAfter(textAfer);
-							setTimeout(function(){_this.editor.selection.SetAfter(smileImg);}, 10);
+							setTimeout(function(){_this.editor.selection.SetAfter(textAfer);}, 10);
 						}
 					}
 				},
@@ -5169,7 +5161,10 @@
 						tag += "=" + value;
 					}
 
-					_this.editor.textareaView.WrapWith("[" + tag + "]", "[/" + tag_end + "]");
+					if(params.singleTag === true)
+						_this.editor.textareaView.WrapWith("[", "]", tag);
+					else
+						_this.editor.textareaView.WrapWith("[" + tag + "]", "[/" + tag_end + "]");
 				},
 				state: BX.DoNothing,
 				value: BX.DoNothing

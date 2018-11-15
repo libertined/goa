@@ -1,10 +1,15 @@
 <?
+use \Bitrix\Main\Config\Option;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 if (!isset($arParams['GOOGLE_VERSION']))
 	$arParams['GOOGLE_VERSION'] = '3';
 
 $arParams['DEV_MODE'] = $arParams['DEV_MODE'] == 'Y' ? 'Y' : 'N';
+
+if(strlen($arParams['API_KEY']) <= 0)
+	$arParams['API_KEY'] =  Option::get('fileman', 'google_map_api_key', '');
 
 if (!defined('BX_GMAP_SCRIPT_LOADED'))
 {

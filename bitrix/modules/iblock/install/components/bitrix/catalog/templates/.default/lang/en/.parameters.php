@@ -203,4 +203,11 @@ $MESS["CP_BC_TPL_MESS_PRICE_RANGES_TITLE"] = "Extended price block name";
 $MESS["CP_BC_TPL_MESS_PRICE_RANGES_TITLE_DEFAULT"] = "Prices";
 $MESS["CPT_BC_FILTER_HIDE_ON_MOBILE"] = "Hide smart filter on mobile devices";
 $MESS["CP_BC_TPL_USE_RATIO_IN_RANGES"] = "Use price range ratio";
+$MESS["CP_BC_TPL_DETAIL_SHOW_POPULAR"] = "Show \"Popular Items\" block";
+$MESS["CP_BC_TPL_DETAIL_SHOW_VIEWED"] = "Show \"Viewed Items\" block";
+$MESS["CP_BC_TPL_SEARCH_PAGE_RESULT_COUNT"] = "Results per page";
+$MESS["CP_BC_TPL_SEARCH_RESTART"] = "Try to search without morphology support (if no search results found)";
+$MESS["CP_BC_TPL_SEARCH_NO_WORD_LOGIC"] = "Disable processing of common words as logical operators";
+$MESS["CP_BC_TPL_SEARCH_USE_LANGUAGE_GUESS"] = "Autodetect Keyboard Layout";
+$MESS["CP_BC_TPL_SEARCH_CHECK_DATES"] = "Search only in documents active on date of search";
 ?>

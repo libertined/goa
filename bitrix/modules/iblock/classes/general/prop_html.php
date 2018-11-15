@@ -1,11 +1,32 @@
 <?
 use Bitrix\Main\Loader,
-	Bitrix\Main\Localization\Loc;
+	Bitrix\Main\Localization\Loc,
+	Bitrix\Iblock;
 
 Loc::loadMessages(__FILE__);
 
 class CIBlockPropertyHTML
 {
+	const USER_TYPE = 'HTML';
+
+	public static function GetUserTypeDescription()
+	{
+		return array(
+			"PROPERTY_TYPE" => Iblock\PropertyTable::TYPE_STRING,
+			"USER_TYPE" => self::USER_TYPE,
+			"DESCRIPTION" => Loc::getMessage("IBLOCK_PROP_HTML_DESC"),
+			"GetPublicViewHTML" => array(__CLASS__, "GetPublicViewHTML"),
+			"GetPublicEditHTML" => array(__CLASS__, "GetPublicEditHTML"),
+			"GetAdminListViewHTML" => array(__CLASS__, "GetAdminListViewHTML"),
+			"GetPropertyFieldHtml" => array(__CLASS__, "GetPropertyFieldHtml"),
+			"ConvertToDB" => array(__CLASS__, "ConvertToDB"),
+			"ConvertFromDB" => array(__CLASS__, "ConvertFromDB"),
+			"GetLength" =>array(__CLASS__, "GetLength"),
+			"PrepareSettings" =>array(__CLASS__, "PrepareSettings"),
+			"GetSettingsHTML" =>array(__CLASS__, "GetSettingsHTML"),
+		);
+	}
+
 	public static function GetPublicViewHTML($arProperty, $value, $strHTMLControlName)
 	{
 		if (!is_array($value["VALUE"]))
@@ -106,8 +127,6 @@ class CIBlockPropertyHTML
 		if (!is_array($value["VALUE"]))
 			$value = static::ConvertFromDB($arProperty, $value);
 		$ar = $value["VALUE"];
-		if (!$ar && isset($arProperty['DEFAULT_VALUE']) && is_array($arProperty['DEFAULT_VALUE']))
-			$ar = $arProperty['DEFAULT_VALUE'];
 		if (strtolower($ar["TYPE"]) != "text")
 			$ar["TYPE"] = "html";
 		else

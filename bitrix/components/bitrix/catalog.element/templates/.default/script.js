@@ -132,6 +132,9 @@
 			controls: []
 		};
 
+		this.quantityDelay = null;
+		this.quantityTimer = null;
+
 		this.obProduct = null;
 		this.obQuantity = null;
 		this.obQuantityUp = null;
@@ -506,13 +509,22 @@
 
 				if (this.config.showQuantity)
 				{
+					var startEventName = this.isTouchDevice ? 'touchstart' : 'mousedown';
+					var endEventName = this.isTouchDevice ? 'touchend' : 'mouseup';
+
 					if (this.obQuantityUp)
 					{
+						BX.bind(this.obQuantityUp, startEventName, BX.proxy(this.startQuantityInterval, this));
+						BX.bind(this.obQuantityUp, endEventName, BX.proxy(this.clearQuantityInterval, this));
+						BX.bind(this.obQuantityUp, 'mouseout', BX.proxy(this.clearQuantityInterval, this));
 						BX.bind(this.obQuantityUp, 'click', BX.delegate(this.quantityUp, this));
 					}
 
 					if (this.obQuantityDown)
 					{
+						BX.bind(this.obQuantityDown, startEventName, BX.proxy(this.startQuantityInterval, this));
+						BX.bind(this.obQuantityDown, endEventName, BX.proxy(this.clearQuantityInterval, this));
+						BX.bind(this.obQuantityDown, 'mouseout', BX.proxy(this.clearQuantityInterval, this));
 						BX.bind(this.obQuantityDown, 'click', BX.delegate(this.quantityDown, this));
 					}
 
@@ -619,7 +631,10 @@
 
 		initConfig: function()
 		{
-			this.productType = parseInt(this.params.PRODUCT_TYPE, 10);
+			if (this.params.PRODUCT_TYPE)
+			{
+				this.productType = parseInt(this.params.PRODUCT_TYPE, 10);
+			}
 
 			if (this.params.CONFIG.USE_CATALOG !== 'undefined' && BX.type.isBoolean(this.params.CONFIG.USE_CATALOG))
 			{
@@ -1403,7 +1418,7 @@
 					BX.unbind(this.currentImg.node, 'mouseover', BX.proxy(this.enableMagnifier, this));
 
 					this.currentImg.node = current;
-					this.currentImg.node.style.backgroundImage = 'url(' + this.currentImg.src + ')';
+					this.currentImg.node.style.backgroundImage = 'url(\'' + this.currentImg.src + '\')';
 					this.currentImg.node.style.backgroundSize = '100% auto';
 
 					BX.bind(this.currentImg.node, 'mouseover', BX.proxy(this.enableMagnifier, this));
@@ -1771,6 +1786,27 @@
 			}
 		},
 
+		startQuantityInterval: function()
+		{
+			var target = BX.proxy_context;
+			var func = target.id === this.visual.QUANTITY_DOWN_ID
+				? BX.proxy(this.quantityDown, this)
+				: BX.proxy(this.quantityUp, this);
+
+			this.quantityDelay = setTimeout(
+				BX.delegate(function() {
+					this.quantityTimer = setInterval(func, 150);
+				}, this),
+				300
+			);
+		},
+
+		clearQuantityInterval: function()
+		{
+			clearTimeout(this.quantityDelay);
+			clearInterval(this.quantityTimer);
+		},
+
 		quantityUp: function()
 		{
 			var curValue = 0,
@@ -1782,12 +1818,12 @@
 				if (!isNaN(curValue))
 				{
 					curValue += this.stepQuantity;
-					if (this.checkQuantity)
+
+					curValue = this.checkQuantityRange(curValue, 'up');
+
+					if (this.checkQuantity && curValue > this.maxQuantity)
 					{
-						if (curValue > this.maxQuantity)
-						{
-							boolSet = false;
-						}
+						boolSet = false;
 					}
 
 					if (boolSet)
@@ -1817,7 +1853,7 @@
 				{
 					curValue -= this.stepQuantity;
 
-					this.checkPriceRange(curValue);
+					curValue = this.checkQuantityRange(curValue, 'down');
 
 					if (curValue < this.minQuantity)
 					{
@@ -1851,6 +1887,8 @@
 					curValue = this.isDblQuantity ? parseFloat(this.obQuantity.value) : Math.round(this.obQuantity.value);
 					if (!isNaN(curValue))
 					{
+						curValue = this.checkQuantityRange(curValue);
+
 						if (this.checkQuantity)
 						{
 							if (curValue > this.maxQuantity)
@@ -2552,7 +2590,7 @@
 				// only for compatible catalog.store.amount custom templates
 				BX.onCustomEvent('onCatalogStoreProductChange', [this.offers[this.offerNum].ID]);
 				// new event
-				BX.onCustomEvent('onCatalogElementChangeOffer', eventData);
+				BX.onCustomEvent('onCatalogElementChangeOffer', [eventData]);
 				eventData = null;
 			}
 		},
@@ -2638,10 +2676,80 @@
 			BX.adjust(sticker, {text: text, attrs: {title: text}});
 		},
 
+		checkQuantityRange: function(quantity, direction)
+		{
+			if (typeof quantity === 'undefined'|| this.currentPriceMode !== 'Q')
+			{
+				return quantity;
+			}
+
+			quantity = parseFloat(quantity);
+
+			var nearestQuantity = quantity;
+			var range, diffFrom, absDiffFrom, diffTo, absDiffTo, shortestDiff;
+
+			for (var i in this.currentQuantityRanges)
+			{
+				if (this.currentQuantityRanges.hasOwnProperty(i))
+				{
+					range = this.currentQuantityRanges[i];
+
+					if (
+						parseFloat(quantity) >= parseFloat(range.SORT_FROM)
+						&& (
+							range.SORT_TO === 'INF'
+							|| parseFloat(quantity) <= parseFloat(range.SORT_TO)
+						)
+					)
+					{
+						nearestQuantity = quantity;
+						break;
+					}
+					else
+					{
+						diffFrom = parseFloat(range.SORT_FROM) - quantity;
+						absDiffFrom = Math.abs(diffFrom);
+						diffTo = parseFloat(range.SORT_TO) - quantity;
+						absDiffTo = Math.abs(diffTo);
+
+						if (shortestDiff === undefined || shortestDiff > absDiffFrom)
+						{
+							if (
+								direction === undefined
+								|| (direction === 'up' && diffFrom > 0)
+								|| (direction === 'down' && diffFrom < 0)
+							)
+							{
+								shortestDiff = absDiffFrom;
+								nearestQuantity = parseFloat(range.SORT_FROM);
+							}
+						}
+
+						if (shortestDiff === undefined || shortestDiff > absDiffTo)
+						{
+							if (
+								direction === undefined
+								|| (direction === 'up' && diffFrom > 0)
+								|| (direction === 'down' && diffFrom < 0)
+							)
+							{
+								shortestDiff = absDiffTo;
+								nearestQuantity = parseFloat(range.SORT_TO);
+							}
+						}
+					}
+				}
+			}
+
+			return nearestQuantity;
+		},
+
 		checkPriceRange: function(quantity)
 		{
-			if (typeof quantity === 'undefined'|| this.currentPriceMode != 'Q')
+			if (typeof quantity === 'undefined'|| this.currentPriceMode !== 'Q')
+			{
 				return;
+			}
 
 			var range, found = false;
 
@@ -2652,10 +2760,10 @@
 					range = this.currentQuantityRanges[i];
 
 					if (
-						parseInt(quantity) >= parseInt(range.SORT_FROM)
+						parseFloat(quantity) >= parseFloat(range.SORT_FROM)
 						&& (
-							range.SORT_TO == 'INF'
-							|| parseInt(quantity) <= parseInt(range.SORT_TO)
+							range.SORT_TO === 'INF'
+							|| parseFloat(quantity) <= parseFloat(range.SORT_TO)
 						)
 					)
 					{

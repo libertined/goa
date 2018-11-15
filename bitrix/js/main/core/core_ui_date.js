@@ -24,8 +24,7 @@
 			if (BX.type.isDomNode(node) && BX.hasClass(node, this.classControl))
 			{
 				this.node = node;
-				var isTime = BX.data(this.getInput(), 'time');
-				this.enableTime = BX.type.isBoolean(isTime) ? isTime : false;
+				this.enableTime = (BX.data(this.getInput(), 'time') == 'true');
 
 				BX.bind(this.getButton(), 'click', BX.delegate(this.calendar, this));
 				BX.bind(this.getInput(), 'input', BX.delegate(this._onInputInput, this));
@@ -110,6 +109,7 @@
 		{
 			var input = this.getInput();
 			var button = this.getButton();
+
 			var params = {node: button, field: input, bTime: this.enableTime, bHideTime: false, callback_after: BX.delegate(this.controlDeleteButton, this)};
 
 			return BX.calendar(params);

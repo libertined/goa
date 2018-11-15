@@ -32,7 +32,6 @@ if ($bSocialNetwork)
 	if(!defined("BXMAINUSERLINK"))
 	{
 		define("BXMAINUSERLINK", true);
-		$APPLICATION->AddHeadScript('/bitrix/js/main/utils.js');
 		if ($bUseTooltip)
 			CJSCore::Init(array("ajax", "tooltip"));
 		else
@@ -45,7 +44,7 @@ else
 }
 
 $arParams['AJAX_CALL'] = $_GET["MUL_MODE"];
-
+$arResult["stylePrefix"] = ($_REQUEST["MODE"] == 'UI' ? 'bx-ui-tooltip' : 'bx-user');
 if ($bSocialNetwork)
 {
 	if (!array_key_exists("SHOW_FIELDS", $arParams) || !$arParams["SHOW_FIELDS"])
@@ -438,6 +437,11 @@ if (strlen($arResult["FatalError"]) <= 0)
 			{
 				$template = &$this->GetTemplate();
 				$arResult["FOLDER_PATH"] = $folderPath = $template->GetFolder();
+				$arResult["VERSION"] = (!empty($_GET["version"]) ? intval($_GET["version"]) : 1);
+				if ($arResult["VERSION"] >= 2)
+				{
+					$arParams['THUMBNAIL_DETAIL_SIZE'] = 57;
+				}
 				include($_SERVER["DOCUMENT_ROOT"].$folderPath."/card.php");
 			}
 
@@ -483,12 +487,12 @@ if (strlen($arResult["FatalError"]) <= 0)
 						&& $arResult["CurrentUserPerms"]["Operations"]["message"]
 					)
 					{
-						$strOnclick = "if (top.BXIM) { top.BXIM.openMessenger(".$arResult["User"]["ID"]."); return false; } else { window.open('".$arResult["Urls"]["SonetMessageChat"]."', '', 'location=yes,status=no,scrollbars=yes,resizable=yes,width=700,height=550,top='+Math.floor((screen.height - 550)/2-14)+',left='+Math.floor((screen.width - 700)/2-5)); return false; }";
+						$strOnclick = "return BX.tooltip.openIM(".$arResult["User"]["ID"].");";
 						$strToolbar2 .= '<li class="bx-icon bx-icon-message"><span onmouseover="'.$strOnmouseover.'" onmouseout="'.$strOnmouseout.'" onclick="'.$strOnclick.'">'.GetMessage("MAIN_UL_TOOLBAR_MESSAGES_CHAT").'</span></li>';
 
-						$strOnclick = "if (top.BXIM) { top.BXIM.callTo(".$arResult["User"]["ID"]."); return false; }";
-						$strToolbar2 .= '<li id="im-video-call-button" class="bx-icon bx-icon-video"><span onmouseover="'.$strOnmouseover.'" onmouseout="'.$strOnmouseout.'" onclick="'.$strOnclick.'">'.GetMessage("MAIN_UL_TOOLBAR_VIDEO_CALL").'</span></li>';
-						$strToolbar2 .= "<script type='text/javascript'>BX.ready(function(){ if (!top.BXIM || !top.BXIM.checkCallSupport()) { BX.remove(BX('im-video-call-button')); } });</script>";
+						$strOnclick = "return BX.tooltip.openCallTo(".$arResult["User"]["ID"].");";
+						$strToolbar2 .= '<li id="im-video-call-button'.$arResult["User"]["ID"].'" class="bx-icon bx-icon-video"><span onmouseover="'.$strOnmouseover.'" onmouseout="'.$strOnmouseout.'" onclick="'.$strOnclick.'">'.GetMessage("MAIN_UL_TOOLBAR_VIDEO_CALL").'</span></li>';
+						$strToolbar2 .= '<script type="text/javascript">BX.ready(function() {BX.tooltip.checkCallTo(\'im-video-call-button'.$arResult["User"]["ID"].'\'); };</script>';
 					}
 				}
 				elseif (
@@ -498,7 +502,7 @@ if (strlen($arResult["FatalError"]) <= 0)
 					&& strlen($arResult["Urls"]["VideoCall"]) > 0
 				)
 				{
-					$strOnclick = "window.open('".$arResult["Urls"]["VideoCall"]."', '', 'location=yes,status=no,scrollbars=yes,resizable=yes,width=1000,height=600,top='+Math.floor((screen.height - 600)/2-14)+',left='+Math.floor((screen.width - 1000)/2-5)); return false;";
+					$strOnclick = "return BX.tooltip.openVideoCall(".$arResult["User"]["ID"].");";
 					$strToolbar2 .= '<li class="bx-icon bx-icon-video"><span onmouseover="'.$strOnmouseover.'" onmouseout="'.$strOnmouseout.'" onclick="'.$strOnclick.'">'.GetMessage("MAIN_UL_TOOLBAR_VIDEO_CALL").'</span></li>';
 				}
 			}
@@ -528,15 +532,18 @@ if (strlen($arResult["FatalError"]) <= 0)
 
 			if (strlen($strToolbar2) > 0)
 			{
-				$strToolbar2 = "<div class='bx-user-info-data-separator'></div><ul>".$strToolbar2."</ul>";
+				$strToolbar2 = "<div class='".$arResult["stylePrefix"]."-info-data-separator'></div><ul>".$strToolbar2."</ul>";
 			}
 
 			$arResult = array(
 				"Toolbar" => $strToolbar,
 				"ToolbarItems" => $intToolbarItems,
 				"Toolbar2" => $strToolbar2,
+				"Name" => $strNameFormatted,
 				"Card" => $strCard,
 				"Photo" => $strPhoto,
+				"Position" => $strPosition,
+				"Scripts" => (!empty($arScripts) ? $arScripts : array())
 			);
 
 			$APPLICATION->RestartBuffer();

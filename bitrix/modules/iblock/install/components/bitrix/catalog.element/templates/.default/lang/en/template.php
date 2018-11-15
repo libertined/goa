@@ -33,4 +33,6 @@ $MESS["CT_BCE_CATALOG_RANGE_FROM"] = "from #FROM#";
 $MESS["CT_BCE_CATALOG_RANGE_TO"] = "to #TO#";
 $MESS["CT_BCE_CATALOG_RANGE_MORE"] = "and more";
 $MESS["CT_BCE_CATALOG_RATIO_PRICE"] = "price for #RATIO#";
+$MESS["CT_BCE_CATALOG_GIFT_BLOCK_TITLE_DEFAULT"] = "Select a gift for this product";
+$MESS["CT_BCE_CATALOG_GIFTS_MAIN_BLOCK_TITLE_DEFAULT"] = "Select a product and receive a gift";
 ?>

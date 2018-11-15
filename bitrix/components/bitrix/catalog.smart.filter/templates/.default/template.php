@@ -39,11 +39,25 @@ $this->addExternalCss("/bitrix/css/main/font-awesome.css");
 						if ($arItem["VALUES"]["MAX"]["VALUE"] - $arItem["VALUES"]["MIN"]["VALUE"] <= 0)
 							continue;
 
-						$precision = 2;
+						$step_num = 4;
+						$step = ($arItem["VALUES"]["MAX"]["VALUE"] - $arItem["VALUES"]["MIN"]["VALUE"]) / $step_num;
+						$prices = array();
 						if (Bitrix\Main\Loader::includeModule("currency"))
 						{
-							$res = CCurrencyLang::GetFormatDescription($arItem["VALUES"]["MIN"]["CURRENCY"]);
-							$precision = $res['DECIMALS'];
+							for ($i = 0; $i < $step_num; $i++)
+							{
+								$prices[$i] = CCurrencyLang::CurrencyFormat($arItem["VALUES"]["MIN"]["VALUE"] + $step*$i, $arItem["VALUES"]["MIN"]["CURRENCY"], false);
+							}
+							$prices[$step_num] = CCurrencyLang::CurrencyFormat($arItem["VALUES"]["MAX"]["VALUE"], $arItem["VALUES"]["MAX"]["CURRENCY"], false);
+						}
+						else
+						{
+							$precision = $arItem["DECIMALS"]? $arItem["DECIMALS"]: 0;
+							for ($i = 0; $i < $step_num; $i++)
+							{
+								$prices[$i] = number_format($arItem["VALUES"]["MIN"]["VALUE"] + $step*$i, $precision, ".", "");
+							}
+							$prices[$step_num] = number_format($arItem["VALUES"]["MAX"]["VALUE"], $precision, ".", "");
 						}
 						?>
 						<div class="<?if ($arParams["FILTER_VIEW_MODE"] == "HORIZONTAL"):?>col-sm-6 col-md-4<?else:?>col-lg-12<?endif?> bx-filter-parameters-box bx-active">
@@ -82,20 +96,9 @@ $this->addExternalCss("/bitrix/css/main/font-awesome.css");
 
 									<div class="col-xs-10 col-xs-offset-1 bx-ui-slider-track-container">
 										<div class="bx-ui-slider-track" id="drag_track_<?=$key?>">
-											<?
-											$precision = $arItem["DECIMALS"]? $arItem["DECIMALS"]: 0;
-											$step = ($arItem["VALUES"]["MAX"]["VALUE"] - $arItem["VALUES"]["MIN"]["VALUE"]) / 4;
-											$price1 = number_format($arItem["VALUES"]["MIN"]["VALUE"], $precision, ".", "");
-											$price2 = number_format($arItem["VALUES"]["MIN"]["VALUE"] + $step, $precision, ".", "");
-											$price3 = number_format($arItem["VALUES"]["MIN"]["VALUE"] + $step * 2, $precision, ".", "");
-											$price4 = number_format($arItem["VALUES"]["MIN"]["VALUE"] + $step * 3, $precision, ".", "");
-											$price5 = number_format($arItem["VALUES"]["MAX"]["VALUE"], $precision, ".", "");
-											?>
-											<div class="bx-ui-slider-part p1"><span><?=$price1?></span></div>
-											<div class="bx-ui-slider-part p2"><span><?=$price2?></span></div>
-											<div class="bx-ui-slider-part p3"><span><?=$price3?></span></div>
-											<div class="bx-ui-slider-part p4"><span><?=$price4?></span></div>
-											<div class="bx-ui-slider-part p5"><span><?=$price5?></span></div>
+											<?for($i = 0; $i <= $step_num; $i++):?>
+											<div class="bx-ui-slider-part p<?=$i+1?>"><span><?=$prices[$i]?></span></div>
+											<?endfor;?>
 
 											<div class="bx-ui-slider-pricebar-vd" style="left: 0;right: 0;" id="colorUnavailableActive_<?=$key?>"></div>
 											<div class="bx-ui-slider-pricebar-vn" style="left: 0;right: 0;" id="colorAvailableInactive_<?=$key?>"></div>

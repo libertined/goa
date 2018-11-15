@@ -326,4 +326,22 @@ class Date
 		$d->value->setTime(0, 0, 0);
 		return $d;
 	}
+
+	/**
+	 * Creates Date object from Text (return array of result object)
+	 * Examples: "end of next week", "tomorrow morning", "friday 25.10"
+	 *
+	 * @param string $text
+	 * @return \Bitrix\Main\Text\DateConverterResult[]
+	 */
+	public static function createFromText($text)
+	{
+		$result = \Bitrix\Main\Text\DateConverter::decode($text);
+		if (empty($result))
+		{
+			return null;
+		}
+		
+		return $result[0]->getDate();
+	}
 }

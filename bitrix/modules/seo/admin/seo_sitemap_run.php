@@ -460,6 +460,7 @@ if($_REQUEST['action'] == 'sitemap_run' && check_bitrix_sessid())
 								'SECTION_ID' => intval($NS['CURRENT_SECTION']),
 								'>ID' => intval($NS['LAST_ELEMENT_ID']),
 								'SITE_ID' => $arSitemap['SITE_ID'],
+								"ACTIVE_DATE" => "Y"
 							),
 							false,
 							array('nTopCount' => 1000),

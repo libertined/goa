@@ -160,7 +160,7 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 					if(preg_match("#^http://(.*?)(|:\d+)(/.*)\$#", $obRequest->headers["X-Storage-Url"], $arStorage))
 					{
 						$result = $obRequest->headers;
-						$result["X-Storage-NoProtoUrl"] = $arStorage[1].$arStorage[2].$arStorage[3];
+						$result["X-Storage-NoProtoUrl"] = $arStorage[1].($arStorage[2] == ':80'? '': $arStorage[2]).$arStorage[3];
 						$result["X-Storage-Host"] = $arStorage[1];
 						$result["X-Storage-Port"] = $arStorage[2]? substr($arStorage[2], 1): 80;
 						$result["X-Storage-Urn"] = $arStorage[3];
@@ -434,6 +434,7 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 				$filePath = "/".$arBucket["PREFIX"]."/".ltrim($filePath, "/");
 		}
 		$filePath = CCloudUtil::URLEncode($filePath, "UTF-8");
+		$filePath = str_replace('+', '%20', $filePath);
 
 		$obRequest = $this->SendRequest(
 			$arBucket["SETTINGS"],
@@ -442,7 +443,28 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 			$filePath
 		);
 
-		return ($obRequest->status == 204 || $obRequest->status == 404);
+		//Try to fix space in the path
+		if ($this->status == 404 && strpos($filePath, '+') !== false)
+		{
+			$filePath = str_replace('+', '%20', $filePath);
+			$obRequest = $this->SendRequest(
+				$arBucket["SETTINGS"],
+				"DELETE",
+				$arBucket["BUCKET"],
+				$filePath
+			);
+		}
+
+		if($this->status == 204 || $this->status == 404)
+		{
+			$APPLICATION->ResetException();
+			return true;
+		}
+		else
+		{
+			$APPLICATION->ResetException();
+			return false;
+		}
 	}
 
 	function SaveFile($arBucket, $filePath, $arFile)
@@ -618,7 +640,7 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 
 		$NS = array(
 			"filePath" => $filePath,
-			"fileTemp" => CCloudStorage::translit("/tmp".$filePath, "/"),
+			"fileTemp" => CCloudStorage::translit("/tmp".str_replace(' ', '_', $filePath), "/"),
 			"partsCount" => 0,
 			"Parts" => array(),
 			"Content-Type" => $ContentType,

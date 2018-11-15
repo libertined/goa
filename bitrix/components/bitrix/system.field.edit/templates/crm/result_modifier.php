@@ -4,7 +4,6 @@ if(!CModule::IncludeModule("crm"))
 	return;
 
 global $USER;
-$CCrmPerms = new CCrmPerms($USER->GetID());
 $userPermissions = CCrmPerms::GetCurrentUserPermissions();
 $arSupportedTypes = array(); // all entity types are defined in settings
 $arParams['ENTITY_TYPE'] = array(); // only entity types are allowed for current user
@@ -47,6 +46,14 @@ if (isset($arSettings['QUOTE']) && $arSettings['QUOTE'] === 'Y')
 	if(CCrmQuote::CheckReadPermission(0, $userPermissions))
 	{
 		$arParams['ENTITY_TYPE'][] = CCrmOwnerType::DealName;
+	}
+}
+if (isset($arSettings['ORDER']) && $arSettings['ORDER'] === 'Y')
+{
+	$arSupportedTypes[] = CCrmOwnerType::OrderName;
+	if(\Bitrix\Crm\Order\Permissions\Order::checkReadPermission(0, $userPermissions))
+	{
+		$arParams['ENTITY_TYPE'][] = CCrmOwnerType::OrderName;
 	}
 }
 if (isset($arSettings['PRODUCT']) && $arSettings['PRODUCT'] === 'Y')
@@ -107,15 +114,38 @@ if (in_array('LEAD', $arParams['ENTITY_TYPE'], true))
 {
 	$hasNameFormatter = method_exists("CCrmLead", "PrepareFormattedName");
 	$arResult['ENTITY_TYPE'][] = 'lead';
-	$obRes = CCrmLead::GetListEx(
-		array('ID' => 'DESC'),
-		array(),
-		false,
-		array('nTopCount' => 50),
-		$hasNameFormatter
-			? array('ID', 'TITLE', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME')
-			: array('ID', 'TITLE', 'FULL_NAME')
-	);
+
+	if (method_exists('CCrmLead', 'GetTopIDs'))
+	{
+		$IDs = CCrmLead::GetTopIDs(50, 'DESC', $userPermissions);
+		if (empty($IDs))
+		{
+			$obRes = new CDBResult();
+			$obRes->InitFromArray(array());
+		}
+		else
+		{
+			$obRes = CCrmLead::GetListEx(
+				array('ID' => 'DESC'),
+				array('@ID' => $IDs, 'CHECK_PERMISSIONS' => 'N'),
+				false,
+				false,
+				array('ID', 'TITLE', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'FULL_NAME')
+			);
+		}
+	}
+	else
+	{
+		$obRes = CCrmLead::GetListEx(
+			array('ID' => 'DESC'),
+			array(),
+			false,
+			array('nTopCount' => 50),
+			$hasNameFormatter
+				? array('ID', 'TITLE', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME')
+				: array('ID', 'TITLE', 'FULL_NAME')
+		);
+	}
 	while ($arRes = $obRes->Fetch())
 	{
 		$arRes['SID'] = $arResult['PREFIX'] == 'Y'? 'L_'.$arRes['ID']: $arRes['ID'];
@@ -171,15 +201,38 @@ if (in_array('CONTACT', $arParams['ENTITY_TYPE'], true))
 {
 	$hasNameFormatter = method_exists("CCrmContact", "PrepareFormattedName");
 	$arResult['ENTITY_TYPE'][] = 'contact';
-	$obRes = CCrmContact::GetListEx(
-		array('ID' => 'DESC'),
-		array(),
-		false,
-		array('nTopCount' => 50),
-		$hasNameFormatter
-			? array('ID', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'COMPANY_TITLE', 'PHOTO')
-			: array('ID', 'FULL_NAME', 'COMPANY_TITLE', 'PHOTO')
-	);
+
+	if (method_exists('CCrmContact', 'GetTopIDs'))
+	{
+		$IDs = CCrmContact::GetTopIDs(50, 'DESC', $userPermissions);
+		if (empty($IDs))
+		{
+			$obRes = new CDBResult();
+			$obRes->InitFromArray(array());
+		}
+		else
+		{
+			$obRes = CCrmContact::GetListEx(
+				array('ID' => 'DESC'),
+				array('@ID' => $IDs, 'CHECK_PERMISSIONS' => 'N'),
+				false,
+				false,
+				array('ID', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'FULL_NAME', 'COMPANY_TITLE', 'PHOTO')
+			);
+		}
+	}
+	else
+	{
+		$obRes = CCrmContact::GetListEx(
+			array('ID' => 'DESC'),
+			array(),
+			false,
+			array('nTopCount' => 50),
+			$hasNameFormatter
+				? array('ID', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'COMPANY_TITLE', 'PHOTO')
+				: array('ID', 'FULL_NAME', 'COMPANY_TITLE', 'PHOTO')
+		);
+	}
 	while ($arRes = $obRes->Fetch())
 	{
 		$imageUrl = '';
@@ -246,10 +299,39 @@ if (in_array('COMPANY', $arParams['ENTITY_TYPE'], true))
 {
 	$arResult['ENTITY_TYPE'][] = 'company';
 
+	if (method_exists('CCrmCompany', 'GetTopIDs'))
+	{
+		$IDs = CCrmCompany::GetTopIDs(50, 'DESC', $userPermissions);
+		if (empty($IDs))
+		{
+			$obRes = new CDBResult();
+			$obRes->InitFromArray(array());
+		}
+		else
+		{
+			$obRes = CCrmCompany::GetListEx(
+				array('ID' => 'DESC'),
+				array('@ID' => $IDs, 'CHECK_PERMISSIONS' => 'N'),
+				false,
+				false,
+				array('ID', 'TITLE', 'COMPANY_TYPE', 'INDUSTRY', 'LOGO')
+			);
+		}
+	}
+	else
+	{
+		$obRes = CCrmCompany::GetListEx(
+			array('ID' => 'DESC'),
+			array(),
+			false,
+			array('nTopCount' => 50),
+			array('ID', 'TITLE', 'COMPANY_TYPE', 'INDUSTRY',  'LOGO')
+		);
+	}
+
 	$arCompanyTypeList = CCrmStatus::GetStatusListEx('COMPANY_TYPE');
 	$arCompanyIndustryList = CCrmStatus::GetStatusListEx('INDUSTRY');
-	$arSelect = array('ID', 'TITLE', 'COMPANY_TYPE', 'INDUSTRY',  'LOGO');
-	$obRes = CCrmCompany::GetList(array('ID' => 'DESC'), Array(), $arSelect, 50);
+
 	while ($arRes = $obRes->Fetch())
 	{
 		$imageUrl = '';
@@ -307,8 +389,36 @@ if (in_array('DEAL', $arParams['ENTITY_TYPE'], true))
 {
 	$arResult['ENTITY_TYPE'][] = 'deal';
 
-	$arSelect = array('ID', 'TITLE', 'STAGE_ID', 'COMPANY_TITLE', 'CONTACT_FULL_NAME');
-	$obRes = CCrmDeal::GetList(array('ID' => 'DESC'), Array(), $arSelect, 50);
+	if (method_exists('CCrmDeal', 'GetTopIDs'))
+	{
+		$IDs = CCrmDeal::GetTopIDs(50, 'DESC', $userPermissions);
+		if (empty($IDs))
+		{
+			$obRes = new CDBResult();
+			$obRes->InitFromArray(array());
+		}
+		else
+		{
+			$obRes = CCrmDeal::GetListEx(
+				array('ID' => 'DESC'),
+				array('@ID' => $IDs, 'CHECK_PERMISSIONS' => 'N'),
+				false,
+				false,
+				array('ID', 'TITLE', 'STAGE_ID', 'COMPANY_TITLE', 'CONTACT_FULL_NAME')
+			);
+		}
+	}
+	else
+	{
+		$obRes = CCrmDeal::GetListEx(
+			array('ID' => 'DESC'),
+			array(),
+			false,
+			array('nTopCount' => 50),
+			array('ID', 'TITLE', 'STAGE_ID', 'COMPANY_TITLE', 'CONTACT_FULL_NAME')
+		);
+	}
+
 	while ($arRes = $obRes->Fetch())
 	{
 		$arRes['SID'] = $arResult['PREFIX'] == 'Y'? 'D_'.$arRes['ID']: $arRes['ID'];
@@ -351,8 +461,36 @@ if (in_array('QUOTE', $arParams['ENTITY_TYPE'], true))
 {
 	$arResult['ENTITY_TYPE'][] = 'quote';
 
-	$arSelect = array('ID', 'TITLE', 'STAGE_ID', 'COMPANY_TITLE', 'CONTACT_FULL_NAME');
-	$obRes = CCrmQuote::GetList(array('ID' => 'DESC'), Array(), false, array('nTopCount' => 50), $arSelect);
+	if (method_exists('CCrmQuote', 'GetTopIDs'))
+	{
+		$IDs = CCrmQuote::GetTopIDs(50, 'DESC', $userPermissions);
+		if (empty($IDs))
+		{
+			$obRes = new CDBResult();
+			$obRes->InitFromArray(array());
+		}
+		else
+		{
+			$obRes = CCrmQuote::GetList(
+				array('ID' => 'DESC'),
+				array('@ID' => $IDs, 'CHECK_PERMISSIONS' => 'N'),
+				false,
+				false,
+				array('ID', 'TITLE', 'STAGE_ID', 'COMPANY_TITLE', 'CONTACT_FULL_NAME')
+			);
+		}
+	}
+	else
+	{
+		$obRes = CCrmQuote::GetList(
+			array('ID' => 'DESC'),
+			array(),
+			false,
+			array('nTopCount' => 50),
+			array('ID', 'TITLE', 'STAGE_ID', 'COMPANY_TITLE', 'CONTACT_FULL_NAME')
+		);
+	}
+
 	while ($arRes = $obRes->Fetch())
 	{
 		$arRes['SID'] = $arResult['PREFIX'] == 'Y'? 'Q_'.$arRes['ID']: $arRes['ID'];
@@ -448,6 +586,50 @@ if (in_array('PRODUCT', $arParams['ENTITY_TYPE'], true))
 		);
 	}
 	unset($arProducts);
+}
+if (in_array('ORDER', $arParams['ENTITY_TYPE'], true))
+{
+	$arResult['ENTITY_TYPE'][] = 'order';
+
+	$resultDB = \Bitrix\Crm\Order\Order::getList(array(
+		'select' =>  array('ID', 'ACCOUNT_NUMBER'),
+		'limit' => 50,
+		'order' => array('ID' => 'DESC')
+	));
+	while ($arRes = $resultDB->fetch())
+	{
+		$arRes['SID'] = $arResult['PREFIX'] == 'Y'? 'O_'.$arRes['ID']: $arRes['ID'];
+		if (isset($arResult['SELECTED'][$arRes['SID']]))
+		{
+			unset($arResult['SELECTED'][$arRes['SID']]);
+			$sSelected = 'Y';
+		}
+		else
+		{
+			if(!empty($arParams['usePrefix']) && isset($arResult['SELECTED'][$arRes['ID']]))
+			{
+				unset($arResult['SELECTED'][$arRes['ID']]);
+				$sSelected = 'Y';
+			}
+			else
+			{
+				$sSelected = 'N';
+			}
+		}
+
+		$arResult['ELEMENT'][] = Array(
+			'title' => $arRes['ACCOUNT_NUMBER'],
+			'desc' => $arRes['ACCOUNT_NUMBER'],
+			'id' => $arRes['SID'],
+			'url' => CComponentEngine::MakePathFromTemplate(COption::GetOptionString('crm', 'path_to_order_details'),
+				array(
+					'order_id' => $arRes['ID']
+				)
+			),
+			'type'  => 'order',
+			'selected' => $sSelected
+		);
+	}
 }
 
 if (!empty($arResult['SELECTED']))
@@ -707,6 +889,51 @@ if (!empty($arResult['SELECTED']))
 					)
 				),
 				'type'  => 'deal',
+				'selected' => $sSelected
+			);
+		}
+		$arResult['ELEMENT'] = array_merge($ar, $arResult['ELEMENT']);
+	}
+	if ($arSettings['ORDER'] == 'Y'
+		&& isset($arSelected['ORDER']) && !empty($arSelected['ORDER']))
+	{
+		$ar = Array();
+		$resultDB = \Bitrix\Crm\Order\Order::getList(array(
+			'filter' => array('=ID' => $arSelected['ORDER']),
+			'select' =>  array('ID', 'ACCOUNT_NUMBER'),
+			'order' => array('ID' => 'DESC')
+		));
+		while ($arRes = $resultDB->fetch())
+		{
+			$arRes['SID'] = $arResult['PREFIX'] == 'Y'? 'O_'.$arRes['ID']: $arRes['ID'];
+			if (isset($arResult['SELECTED'][$arRes['SID']]))
+			{
+				unset($arResult['SELECTED'][$arRes['SID']]);
+				$sSelected = 'Y';
+			}
+			else
+			{
+				if(!empty($arParams['usePrefix']) && isset($arResult['SELECTED'][$arRes['ID']]))
+				{
+					unset($arResult['SELECTED'][$arRes['ID']]);
+					$sSelected = 'Y';
+				}
+				else
+				{
+					$sSelected = 'N';
+				}
+			}
+
+			$ar[] = array(
+				'title' => (str_replace(array(';', ','), ' ', $arRes['ACCOUNT_NUMBER'])),
+				'desc' => $arRes['ACCOUNT_NUMBER'],
+				'id' => $arRes['SID'],
+				'url' => CComponentEngine::MakePathFromTemplate(COption::GetOptionString('crm', 'path_to_order_details'),
+					array(
+						'order_id' => $arRes['ID']
+					)
+				),
+				'type'  => 'order',
 				'selected' => $sSelected
 			);
 		}

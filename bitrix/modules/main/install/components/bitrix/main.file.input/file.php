@@ -7,6 +7,7 @@ use \Bitrix\Main\Web\Json;
 use \Bitrix\Main\Error;
 use \Bitrix\Main\UI\Uploader\Uploader;
 use \Bitrix\Main\UI\FileInputUtility;
+use \Bitrix\Main\UI\Uploader\File;
 
 class MFIController
 {
@@ -183,7 +184,12 @@ class MFIController
 		$response['status'] = self::STATUS_ERRORED;
 		if (($uid = intval($this->request->getPost("uniqueID"))) && $uid > 0) // for custom components
 		{
-			$this->sendJSResponse("<script>parent.FILE_UPLOADER_CALLBACK_{$uid}('".CUtil::JSEscape(implode("", $errorsText))."', {$uid});</script>");
+			$this->sendJSResponse("
+				<script>
+					var target = (parent.frameElement ? parent : window);
+					target.FILE_UPLOADER_CALLBACK_{$uid}('".CUtil::JSEscape(implode("", $errorsText))."', {$uid});
+				</script>
+			");
 		}
 		else
 		{
@@ -198,7 +204,12 @@ class MFIController
 	{
 		if (($uid = intval($this->request->getPost("uniqueID"))) && $uid > 0) // for custom components
 		{
-			$this->sendJSResponse("<script>parent.FILE_UPLOADER_CALLBACK_{$uid}(".CUtil::PhpToJsObject($response).", {$uid});</script>");
+			$this->sendJSResponse("
+				<script>
+					var target = (parent.frameElement ? parent : window);
+					target.FILE_UPLOADER_CALLBACK_{$uid}(".CUtil::PhpToJsObject($response).", {$uid});
+				</script>
+			");
 		}
 		else
 		{
@@ -256,6 +267,7 @@ class MFIController
 		{
 			if ($this->getUploader() === null)
 				throw new \Bitrix\Main\AccessDeniedException("Uploading is forbidden.");
+			$this->getUploader()->setControlId($registeredControlId);
 			$this->executeActionUpload();
 		}
 		else if ($action == "delete")
@@ -276,7 +288,7 @@ class MFIController
 		$max_file_size = $this->getUploader()->getParam("uploadMaxFilesize");
 
 		$result = array();
-		for($i = 0; $i < $count; $i++)
+		for ($i = 0; $i < $count; $i++)
 		{
 			$fileName = \CUtil::ConvertToLangCharset($_FILES["mfi_files"]["name"][$i]);
 			$file = array(
@@ -286,7 +298,9 @@ class MFIController
 				"type" => $_FILES["mfi_files"]["type"][$i]
 			);
 
-			if ($this->getUploader()->getParam("allowUpload") == "I")
+			if ($_FILES["mfi_files"]["error"][$i] != UPLOAD_ERR_OK)
+				$res = File::getUploadErrorMessage($_FILES["mfi_files"]["error"][$i]);
+			elseif ($this->getUploader()->getParam("allowUpload") == "I")
 				$res = \CFile::CheckImageFile($file, $max_file_size, 0, 0);
 			elseif ($this->getUploader()->getParam("allowUpload") == "F")
 				$res = \CFile::CheckFile($file, $max_file_size, false, $this->getUploader()->getParam("allowUploadExt"));
@@ -320,6 +334,10 @@ class MFIController
 		$key = "default";
 		try
 		{
+			if($file["files"][$key]["type"] == 'image/png')
+			{
+				$file["files"][$key]["name"] = preg_replace('/(.*)\.[^.]+$/', '$1.png', $file["files"][$key]["name"]);
+			}
 			$tmp = $this->saveFile($file["files"][$key]);
 
 			$this->getUploader()->deleteFile($hash);

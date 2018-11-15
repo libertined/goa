@@ -1,4 +1,6 @@
 <?
+$MESS["MAIN_MENU_PROFILE_HISTORY"] = "Profile History";
+$MESS["MAIN_MENU_PROFILE_HISTORY_TITLE"] = "User profile update log";
 $MESS["MAIN_MENU_PHP"] = "PHP command line";
 $MESS["MAIN_MENU_PHP_ALT"] = "Run arbitrary PHP commands at server";
 $MESS["MAIN_MENU_MANAG"] = "Manage users";
@@ -126,4 +128,11 @@ $MESS["MAIN_MENU_COMPOSITE"] = "Composite Website";
 $MESS["MAIN_MENU_COMPOSITE_ALT"] = "Manage composite mode";
 $MESS["MAIN_MENU_HTTPS"] = "HTTPS Configuration";
 $MESS["MAIN_MENU_HTTPS_ALT"] = "Website HTTPS Configuration";
+$MESS["MAIN_MENU_GEOIP_HANDLERS"] = "Geolocation";
+$MESS["MAIN_MENU_USER_CONSENT"] = "Consents";
+$MESS["MAIN_MENU_COMPOSITE_SETTINGS"] = "Settings";
+$MESS["MAIN_MENU_COMPOSITE_PAGES"] = "Pages";
+$MESS["MAIN_MENU_COMPOSITE_PAGES_ALT"] = "Composite pages";
+$MESS["MAIN_MENU_COMPOSITE_LOG"] = "Debug Log";
+$MESS["MAIN_MENU_COMPOSITE_LOG_ALT"] = "View debug messages";
 ?>

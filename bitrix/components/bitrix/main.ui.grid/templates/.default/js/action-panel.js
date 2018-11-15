@@ -5,9 +5,31 @@
 
 	/**
 	 * BX.Grid.ActionPanel
+	 *
 	 * @param {BX.Main.grid} parent
-	 * @param {Object} actions
-	 * @param {Object} types
+	 * @param {object} actions List of available actions Bitrix\Main\Grid\Panel\Actions::getList()
+	 * @param {string} actions.CREATE
+	 * @param {string} actions.SEND
+	 * @param {string} actions.ACTIVATE
+	 * @param {string} actions.SHOW
+	 * @param {string} actions.HIDE
+	 * @param {string} actions.REMOVE
+	 * @param {string} actions.CALLBACK
+	 * @param {string} actions.INLINE_EDIT
+	 * @param {string} actions.HIDE_ALL_EXPECT
+	 * @param {string} actions.SHOW_ALL
+	 * @param {string} actions.RESET_CONTROLS
+	 *
+	 * @param {object} types List of available control types
+	 * of the actions panel Bitrix\Main\Grid\Panel\Types::getList()
+	 * @param {string} types.DROPDOWN
+	 * @param {string} types.CHECKBOX
+	 * @param {string} types.TEXT
+	 * @param {string} types.BUTTON
+	 * @param {string} types.LINK
+	 * @param {string} types.CUSTOM
+	 * @param {string} types.HIDDEN
+	 *
 	 * @constructor
 	 */
 	BX.Grid.ActionPanel = function(parent, actions, types)
@@ -24,20 +46,24 @@
 		init: function(parent, actions, types)
 		{
 			this.parent = parent;
+			this.actions = eval(actions);
+			this.types = eval(types);
 
-			try {
-				this.actions = eval(actions);
-				this.types = eval(types);
-			} catch(err) {}
+			BX.addCustomEvent(window, 'Dropdown::change', BX.proxy(function(id, event, item, dataItem) {
+				this.isPanelControl(BX(id))&& this._dropdownChange(id, event, item, dataItem);
+			}, this));
 
-			this.bindOnChange();
+			BX.addCustomEvent(window, 'Dropdown::load', BX.proxy(function(id, event, item, dataItem) {
+				this.isPanelControl(BX(id)) && this._dropdownChange(id, event, item, dataItem);
+			}, this));
+
+			var panel = this.getPanel();
+			BX.bind(panel, 'change', BX.delegate(this._checkboxChange, this));
+			BX.bind(panel, 'click', BX.delegate(this._clickOnButton, this));
+
 			BX.addCustomEvent(window, 'Grid::updated', function() {
 				var cancelButton = BX('grid_cancel_button');
-
-				if (cancelButton)
-				{
-					BX.fireEvent(BX.firstChild(cancelButton), 'click');
-				}
+				cancelButton && BX.fireEvent(BX.firstChild(cancelButton), 'click');
 			});
 		},
 
@@ -66,29 +92,6 @@
 			return BX.Grid.Utils.getByClass(this.getPanel(), this.parent.settings.get('classPanelApplyButton'), true);
 		},
 
-		bindOnChange: function()
-		{
-			var self = this;
-			var panel = this.getPanel();
-
-			BX.addCustomEvent(window, 'Dropdown::change', function(id, event, item, dataItem, value) {
-				if (self.isPanelControl(BX(id)))
-				{
-					self._dropdownChange(id, event, item, dataItem, value);
-				}
-			});
-
-			BX.addCustomEvent(window, 'Dropdown::load', function(id, event, item, dataItem, value) {
-				if (self.isPanelControl(BX(id)))
-				{
-					self._dropdownChange(id, event, item, dataItem, value);
-				}
-			});
-
-			BX.bind(panel, 'change', BX.delegate(this._checkboxChange, this));
-			BX.bind(panel, 'click', BX.delegate(this._clickOnButton, this));
-		},
-
 		isPanelControl: function(node)
 		{
 			return BX.hasClass(node, this.parent.settings.get('classPanelControl'));
@@ -112,6 +115,11 @@
 		getCheckboxes: function()
 		{
 			return BX.Grid.Utils.getByClass(this.getPanel(), this.parent.settings.get('classPanelCheckbox'));
+		},
+
+		getButtons: function()
+		{
+			return BX.Grid.Utils.getByClass(this.getPanel(), this.parent.settings.get('classPanelButton'));
 		},
 
 		isDropdown: function(node)
@@ -148,7 +156,10 @@
 					'data-items': JSON.stringify(data.ITEMS),
 					'data-value': data.ITEMS[0].VALUE
 				},
-				html: data.ITEMS[0].NAME
+				children: [BX.create('span', {
+					props: {className: 'main-dropdown-inner'},
+					html: data.ITEMS[0].NAME
+				})]
 			});
 
 			container.appendChild(dropdown);
@@ -214,6 +225,15 @@
 			return checkbox;
 		},
 
+		/**
+		 * @param {object} data
+		 * @param {object} data.ID
+		 * @param {object} data.TITLE
+		 * @param {object} data.PLACEHOLDER
+		 * @param {object} data.ONCHANGE
+		 * @param {string} relative
+		 * @returns {*}
+		 */
 		createText: function(data, relative)
 		{
 			var container = this.createContainer(data.ID, relative);
@@ -245,6 +265,7 @@
 								title: title,
 								placeholder: data.PLACEHOLDER || '',
 								value: data.VALUE || '',
+								type: 'text',
 								'data-onchange': JSON.stringify(data.ONCHANGE || [])
 							}
 					}
@@ -277,6 +298,7 @@
 
 			return container;
 		},
+
 		createButton: function(data, relative)
 		{
 			var container = this.createContainer(data.ID, relative);
@@ -297,6 +319,17 @@
 			return container;
 		},
 
+		/**
+		 * @param {object} data
+		 * @param {object} data.ID
+		 * @param {object} data.TITLE
+		 * @param {object} data.PLACEHOLDER
+		 * @param {object} data.ONCHANGE
+		 * @param {object} data.CLASS
+		 * @param {object} data.HREF
+		 * @param {string} relative
+		 * @returns {*}
+		 */
 		createLink: function(data, relative)
 		{
 			var container = this.createContainer(data.ID, relative);
@@ -396,32 +429,23 @@
 		showControl: function(id)
 		{
 			var control = BX(id);
-
-			if (BX.type.isDomNode(control))
-			{
-				BX.show(control);
-			}
+			control && BX.show(control);
 		},
 
 		hideControl: function(id)
 		{
 			var control = BX(id);
-
-			if (BX.type.isDomNode(control))
-			{
-				BX.hide(control);
-			}
+			control && BX.hide(control);
 		},
 
 
 		validateActionObject: function(action)
 		{
 			return (
-				BX.type.isPlainObject(action) &&
-				('ACTION' in action) &&
-				BX.type.isNotEmptyString(action.ACTION) &&
-				('DATA' in action) &&
-				BX.type.isArray(action.DATA)
+				BX.type.isPlainObject(action) && ('ACTION' in action) && BX.type.isNotEmptyString(action.ACTION) && (
+					action.ACTION === this.actions.RESET_CONTROLS ||
+					('DATA' in action) && BX.type.isArray(action.DATA)
+				)
 			);
 		},
 
@@ -434,49 +458,61 @@
 			);
 		},
 
+		createDate: function(data, relative)
+		{
+			var container = this.createContainer(data.ID, relative);
+			var date = BX.decl({
+				block: 'main-ui-date',
+				mix: ['main-grid-panel-date'],
+				calendarButton: true,
+				valueDelete: true,
+				placeholder: 'PLACEHOLDER' in data ? data.PLACEHOLDER : '',
+				name: 'NAME' in data ? data.NAME + '_from' : '',
+				tabindex: 'TABINDEX' in data ? data.TABINDEX : '',
+				value: 'VALUE' in data ? data.VALUE : '',
+				enableTime: 'TIME' in data ? (data.TIME ? 'true' : 'false') : 'false'
+			});
+
+			container.appendChild(date);
+			return container;
+		},
+
 		createControl: function(controlObject, relativeId)
 		{
-			var newElement;
-
-			switch (controlObject.TYPE) {
-				case this.types.DROPDOWN : {
+			var newElement = null;
+			switch (controlObject.TYPE)
+			{
+				case this.types.DROPDOWN :
 					newElement = this.createDropdown(controlObject, relativeId);
 					break;
-				}
 
-				case this.types.CHECKBOX : {
+				case this.types.CHECKBOX :
 					newElement = this.createCheckbox(controlObject, relativeId);
 					break;
-				}
 
-				case this.types.TEXT : {
+				case this.types.TEXT :
 					newElement = this.createText(controlObject, relativeId);
 					break;
-				}
 
-				case this.types.HIDDEN : {
+				case this.types.HIDDEN :
 					newElement = this.createHidden(controlObject, relativeId);
 					break;
-				}
 
-				case this.types.BUTTON : {
+				case this.types.BUTTON :
 					newElement = this.createButton(controlObject, relativeId);
 					break;
-				}
 
-				case this.types.LINK : {
+				case this.types.LINK :
 					newElement = this.createLink(controlObject, relativeId);
 					break;
-				}
 
-				case this.types.CUSTOM : {
+				case this.types.CUSTOM :
 					newElement = this.createCustom(controlObject, relativeId);
 					break;
-				}
 
-				default : {
+				case this.types.DATE :
+					newElement = this.createDate(controlObject, relativeId);
 					break;
-				}
 			}
 
 			return newElement;
@@ -620,13 +656,18 @@
 												}
 												catch(err)
 												{
-													console.log(err);
+													throw new Error(err);
 												}
 											}
 										}
 									);
 								}
 							}, this));
+						}
+
+						if (action.ACTION === self.actions.RESET_CONTROLS)
+						{
+							this.removeItemsRelativeCurrent(container);
 						}
 					}
 				}, this);
@@ -649,107 +690,25 @@
 
 		confirmDialog: function(action, then, cancel)
 		{
-			var dialog, popupContainer, applyButton, cancelButton;
-			var self = this;
-
-			if ('CONFIRM' in action && action.CONFIRM)
-			{
-				action.CONFIRM_MESSAGE = action.CONFIRM_MESSAGE || this.parent.arParams.CONFIRM_MESSAGE;
-				action.CONFIRM_APPLY_BUTTON = action.CONFIRM_APPLY_BUTTON || this.parent.arParams.CONFIRM_APPLY;
-				action.CONFIRM_CANCEL_BUTTON = action.CONFIRM_CANCEL_BUTTON || this.parent.arParams.CONFIRM_CANCEL;
-
-				dialog = new BX.PopupWindow(
-					this.parent.getContainerId() + '-confirm-dialog',
-					null,
-					{
-						content: '<div class="main-grid-confirm-content">'+action.CONFIRM_MESSAGE+'</div>',
-						titleBar: 'CONFIRM_TITLE' in action ? action.CONFIRM_TITLE : '',
-						autoHide: false,
-						zIndex: 9999,
-						overlay: 0.4,
-						offsetTop: -100,
-						closeIcon : true,
-						closeByEsc : true,
-						events: {
-							onClose: function()
-							{
-								BX.unbind(window, 'keydown', hotKey);
-							}
-						},
-						buttons: [
-							new BX.PopupWindowButton({
-								text: action.CONFIRM_APPLY_BUTTON,
-								id: this.parent.getContainerId() + '-confirm-dialog-apply-button',
-								events: {
-									click: function()
-									{
-										BX.type.isFunction(then) ? then() : null;
-										this.popupWindow.close();
-										this.popupWindow.destroy();
-										BX.onCustomEvent(window, 'Grid::confirmDialogApply', [this]);
-										BX.unbind(window, 'keydown', hotKey);
-									}
-								}
-							}),
-							new BX.PopupWindowButtonLink({
-								text: action.CONFIRM_CANCEL_BUTTON,
-								id: this.parent.getContainerId() + '-confirm-dialog-cancel-button',
-								events: {
-									click: function()
-									{
-										BX.type.isFunction(cancel) ? cancel() : null;
-										this.popupWindow.close();
-										this.popupWindow.destroy();
-										BX.onCustomEvent(window, 'Grid::confirmDialogCancel', [this]);
-										BX.unbind(window, 'keydown', hotKey);
-									}
-								}
-							})
-						]
-					}
-				);
-
-				if (!dialog.isShown())
-				{
-					dialog.show();
-					popupContainer = dialog.popupContainer;
-					BX.removeClass(popupContainer, this.parent.settings.get('classCloseAnimation'));
-					BX.addClass(popupContainer, this.parent.settings.get('classShowAnimation'));
-					applyButton = BX(this.parent.getContainerId() + '-confirm-dialog-apply-button');
-					cancelButton = BX(this.parent.getContainerId() + '-confirm-dialog-cancel-button');
-
-					BX.bind(window, 'keydown', hotKey);
-				}
-			}
-			else
-			{
-				BX.type.isFunction(then) ? then() : null;
-			}
-
-			function hotKey(event)
-			{
-				if (event.code === 'Enter')
-				{
-					event.preventDefault();
-					event.stopPropagation();
-					BX.fireEvent(applyButton, 'click');
-				}
-
-				if (event.code === 'Escape')
-				{
-					event.preventDefault();
-					event.stopPropagation();
-					BX.fireEvent(cancelButton, 'click');
-				}
-			}
+			this.parent.confirmDialog(action, then, cancel);
 		},
 
+		/**
+		 * Dropdown value change handler
+		 * @param {string} id Dropdown id
+		 * @param {object} event
+		 * @param item
+		 * @param {object} dataItem
+		 * @param {object} dataItem.ONCHANGE
+		 * @param {boolean} dataItem.PSEUDO
+		 * @private
+		 */
 		_dropdownChange: function(id, event, item, dataItem)
 		{
 			var dropdown = BX(id);
 			var container = dropdown.parentNode;
 			var onChange = dataItem && ('ONCHANGE' in dataItem) ? dataItem.ONCHANGE : null;
-			var isPseudo = ('PSEUDO' in dataItem && dataItem.PSEUDO != false);
+			var isPseudo = dataItem && ('PSEUDO' in dataItem && dataItem.PSEUDO !== false);
 
 			this.onChangeHandler(container, onChange, isPseudo);
 		},
@@ -802,19 +761,11 @@
 
 		getSelectedIds: function()
 		{
-			var rows = this.parent.getRows().getSelected();
+			var rows = this.parent.getRows().getSelected().filter(function(row) { return row.isShown(); });
 
 			return rows.map(function(current) {
 				return current.getId();
 			});
-		},
-
-		getRequestData: function()
-		{
-			return {
-				panel: this.getValues(),
-				selectedRows: this.getSelectedIds()
-			};
 		},
 
 		getControls: function()
@@ -832,7 +783,8 @@
 				this.getDropdowns(),
 				this.getTextInputs(),
 				this.getHiddenInputs(),
-				this.getCheckboxes()
+				this.getCheckboxes(),
+				this.getButtons()
 			);
 
 			(controls || []).forEach(function(current) {
@@ -840,7 +792,9 @@
 				{
 					if (self.isDropdown(current))
 					{
-						data[BX.data(current, 'name')] = BX.data(current, 'value');
+						var dropdownValue = BX.data(current, 'value');
+						dropdownValue = (dropdownValue !== null && dropdownValue !== undefined) ? dropdownValue : '';
+						data[BX.data(current, 'name')] = dropdownValue;
 					}
 
 					if (self.isCheckbox(current) && current.checked)
@@ -851,6 +805,18 @@
 					if (self.isTextInput(current) || self.isHiddenInput(current))
 					{
 						data[current.getAttribute('name')] = current.value;
+					}
+
+					if (self.isButton(current))
+					{
+						var name = BX.data(current, 'name');
+						var value = BX.data(current, 'value');
+						value = (value !== null && value !== undefined) ? value : '';
+
+						if (name)
+						{
+							data[name] = value;
+						}
 					}
 				}
 			});

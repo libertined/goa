@@ -15,6 +15,7 @@ use \Bitrix\Main\Localization\Loc;
  * @var bool $showSubscribe
  * @var array $morePhoto
  * @var bool $showSlider
+ * @var bool $itemHasDetailUrl
  * @var string $imgTitle
  * @var string $productTitle
  * @var string $buttonSizeClass
@@ -23,10 +24,14 @@ use \Bitrix\Main\Localization\Loc;
 ?>
 
 <div class="product-item">
+	<? if ($itemHasDetailUrl): ?>
 	<a class="product-item-image-wrapper" href="<?=$item['DETAIL_PAGE_URL']?>" title="<?=$imgTitle?>"
-		data-entity="image-wrapper">
+			data-entity="image-wrapper">
+	<? else: ?>
+	<span class="product-item-image-wrapper" data-entity="image-wrapper">
+	<? endif; ?>
 		<span class="product-item-image-slider-slide-container slide" id="<?=$itemIds['PICT_SLIDER']?>"
-			style="display: <?=($showSlider ? '' : 'none')?>;"
+			<?=($showSlider ? '' : 'style="display: none;"')?>
 			data-slider-interval="<?=$arParams['SLIDER_INTERVAL']?>" data-slider-wrap="true">
 			<?
 			if ($showSlider)
@@ -35,7 +40,7 @@ use \Bitrix\Main\Localization\Loc;
 				{
 					?>
 					<span class="product-item-image-slide item <?=($key == 0 ? 'active' : '')?>"
-						style="background-image: url(<?=$photo['SRC']?>);">
+						style="background-image: url('<?=$photo['SRC']?>');">
 					</span>
 					<?
 				}
@@ -43,7 +48,7 @@ use \Bitrix\Main\Localization\Loc;
 			?>
 		</span>
 		<span class="product-item-image-original" id="<?=$itemIds['PICT']?>"
-			style="background-image: url(<?=$item['PREVIEW_PICTURE']['SRC']?>); display: <?=($showSlider ? 'none' : '')?>;">
+			style="background-image: url('<?=$item['PREVIEW_PICTURE']['SRC']?>'); <?=($showSlider ? 'display: none;' : '')?>">
 		</span>
 		<?
 		if ($item['SECOND_PICT'])
@@ -51,7 +56,7 @@ use \Bitrix\Main\Localization\Loc;
 			$bgImage = !empty($item['PREVIEW_PICTURE_SECOND']) ? $item['PREVIEW_PICTURE_SECOND']['SRC'] : $item['PREVIEW_PICTURE']['SRC'];
 			?>
 			<span class="product-item-image-alternative" id="<?=$itemIds['SECOND_PICT']?>"
-				style="background-image: url(<?=$bgImage?>); display: <?=($showSlider ? 'none' : '')?>;">
+				style="background-image: url('<?=$bgImage?>'); <?=($showSlider ? 'display: none;' : '')?>">
 			</span>
 			<?
 		}
@@ -60,7 +65,7 @@ use \Bitrix\Main\Localization\Loc;
 		{
 			?>
 			<div class="product-item-label-ring <?=$discountPositionClass?>" id="<?=$itemIds['DSC_PERC']?>"
-				style="display: <?=($price['PERCENT'] > 0 ? '' : 'none')?>;">
+				<?=($price['PERCENT'] > 0 ? '' : 'style="display: none;"')?>>
 				<span><?=-$price['PERCENT']?>%</span>
 			</div>
 			<?
@@ -88,7 +93,7 @@ use \Bitrix\Main\Localization\Loc;
 		}
 		?>
 		<div class="product-item-image-slider-control-container" id="<?=$itemIds['PICT_SLIDER']?>_indicator"
-			style="display: <?=($showSlider ? '' : 'none')?>;">
+			<?=($showSlider ? '' : 'style="display: none;"')?>>
 			<?
 			if ($showSlider)
 			{
@@ -111,9 +116,19 @@ use \Bitrix\Main\Localization\Loc;
 			<?
 		}
 		?>
+	<? if ($itemHasDetailUrl): ?>
 	</a>
+	<? else: ?>
+	</span>
+	<? endif; ?>
 	<div class="product-item-title">
-		<a href="<?=$item['DETAIL_PAGE_URL']?>" title="<?=$productTitle?>"><?=$productTitle?></a>
+		<? if ($itemHasDetailUrl): ?>
+		<a href="<?=$item['DETAIL_PAGE_URL']?>" title="<?=$productTitle?>">
+		<? endif; ?>
+		<?=$productTitle?>
+		<? if ($itemHasDetailUrl): ?>
+		</a>
+	<? endif; ?>
 	</div>
 	<?
 	if (!empty($arParams['PRODUCT_BLOCKS_ORDER']))
@@ -125,10 +140,11 @@ use \Bitrix\Main\Localization\Loc;
 				case 'price': ?>
 					<div class="product-item-info-container product-item-price-container" data-entity="price-block">
 						<?
-						if ($arParams['SHOW_OLD_PRICE'] === 'Y' && $price['RATIO_PRICE'] < $price['RATIO_BASE_PRICE'])
+						if ($arParams['SHOW_OLD_PRICE'] === 'Y')
 						{
 							?>
-							<span class="product-item-price-old" id="<?=$itemIds['PRICE_OLD']?>">
+							<span class="product-item-price-old" id="<?=$itemIds['PRICE_OLD']?>"
+								<?=($price['RATIO_PRICE'] >= $price['RATIO_BASE_PRICE'] ? 'style="display: none;"' : '')?>>
 								<?=$price['PRINT_RATIO_BASE_PRICE']?>
 							</span>&nbsp;
 							<?
@@ -228,15 +244,11 @@ use \Bitrix\Main\Localization\Loc;
 							<div class="product-item-info-container product-item-hidden" data-entity="quantity-block">
 								<div class="product-item-amount">
 									<div class="product-item-amount-field-container">
-										<a class="product-item-amount-field-btn-minus" id="<?=$itemIds['QUANTITY_DOWN']?>"
-											href="javascript:void(0)" rel="nofollow">
-										</a>
-										<input class="product-item-amount-field" id="<?=$itemIds['QUANTITY']?>" type="tel"
+										<span class="product-item-amount-field-btn-minus no-select" id="<?=$itemIds['QUANTITY_DOWN']?>"></span>
+										<input class="product-item-amount-field" id="<?=$itemIds['QUANTITY']?>" type="number"
 											name="<?=$arParams['PRODUCT_QUANTITY_VARIABLE']?>"
 											value="<?=$measureRatio?>">
-										<a class="product-item-amount-field-btn-plus" id="<?=$itemIds['QUANTITY_UP']?>"
-											href="javascript:void(0)" rel="nofollow">
-										</a>
+										<span class="product-item-amount-field-btn-plus no-select" id="<?=$itemIds['QUANTITY_UP']?>"></span>
 										<span class="product-item-amount-description-container">
 											<span id="<?=$itemIds['QUANTITY_MEASURE']?>">
 												<?=$actualItem['ITEM_MEASURE']['TITLE']?>
@@ -257,15 +269,11 @@ use \Bitrix\Main\Localization\Loc;
 							<div class="product-item-info-container product-item-hidden" data-entity="quantity-block">
 								<div class="product-item-amount">
 									<div class="product-item-amount-field-container">
-										<a class="product-item-amount-field-btn-minus" id="<?=$itemIds['QUANTITY_DOWN']?>"
-											href="javascript:void(0)" rel="nofollow">
-										</a>
-										<input class="product-item-amount-field" id="<?=$itemIds['QUANTITY']?>" type="tel"
+										<span class="product-item-amount-field-btn-minus no-select" id="<?=$itemIds['QUANTITY_DOWN']?>"></span>
+										<input class="product-item-amount-field" id="<?=$itemIds['QUANTITY']?>" type="number"
 											name="<?=$arParams['PRODUCT_QUANTITY_VARIABLE']?>"
 											value="<?=$measureRatio?>">
-										<a class="product-item-amount-field-btn-plus" id="<?=$itemIds['QUANTITY_UP']?>"
-											href="javascript:void(0)" rel="nofollow">
-										</a>
+										<span class="product-item-amount-field-btn-plus no-select" id="<?=$itemIds['QUANTITY_UP']?>"></span>
 										<span class="product-item-amount-description-container">
 											<span id="<?=$itemIds['QUANTITY_MEASURE']?>"><?=$actualItem['ITEM_MEASURE']['TITLE']?></span>
 											<span id="<?=$itemIds['PRICE_TOTAL']?>"></span>
@@ -311,6 +319,7 @@ use \Bitrix\Main\Localization\Loc;
 												'BUTTON_ID' => $itemIds['SUBSCRIBE_LINK'],
 												'BUTTON_CLASS' => 'btn btn-default '.$buttonSizeClass,
 												'DEFAULT_DISPLAY' => true,
+												'MESS_BTN_SUBSCRIBE' => $arParams['~MESS_BTN_SUBSCRIBE'],
 											),
 											$component,
 											array('HIDE_ICONS' => 'Y')
@@ -342,6 +351,7 @@ use \Bitrix\Main\Localization\Loc;
 												'BUTTON_ID' => $itemIds['SUBSCRIBE_LINK'],
 												'BUTTON_CLASS' => 'btn btn-default '.$buttonSizeClass,
 												'DEFAULT_DISPLAY' => !$actualItem['CAN_BUY'],
+												'MESS_BTN_SUBSCRIBE' => $arParams['~MESS_BTN_SUBSCRIBE'],
 											),
 											$component,
 											array('HIDE_ICONS' => 'Y')
@@ -350,10 +360,10 @@ use \Bitrix\Main\Localization\Loc;
 									?>
 									<a class="btn btn-link <?=$buttonSizeClass?>"
 										id="<?=$itemIds['NOT_AVAILABLE_MESS']?>" href="javascript:void(0)" rel="nofollow"
-										style="display: <?=($actualItem['CAN_BUY'] ? 'none' : '')?>;">
+										<?=($actualItem['CAN_BUY'] ? 'style="display: none;"' : '')?>>
 										<?=$arParams['MESS_NOT_AVAILABLE']?>
 									</a>
-									<div id="<?=$itemIds['BASKET_ACTIONS']?>" style="display: <?=($actualItem['CAN_BUY'] ? '' : 'none')?>;">
+									<div id="<?=$itemIds['BASKET_ACTIONS']?>" <?=($actualItem['CAN_BUY'] ? '' : 'style="display: none;"')?>>
 										<a class="btn btn-default <?=$buttonSizeClass?>" id="<?=$itemIds['BUY_LINK']?>"
 											href="javascript:void(0)" rel="nofollow">
 											<?=($arParams['ADD_TO_BASKET_ACTION'] === 'BUY' ? $arParams['MESS_BTN_BUY'] : $arParams['MESS_BTN_ADD_TO_BASKET'])?>
@@ -562,7 +572,7 @@ use \Bitrix\Main\Localization\Loc;
 																data-treevalue="<?=$propertyId?>_<?=$value['ID']?>" data-onevalue="<?=$value['ID']?>">
 																<div class="product-item-scu-item-color-block">
 																	<div class="product-item-scu-item-color" title="<?=$value['NAME']?>"
-																		style="background-image: url(<?=$value['PICT']['SRC']?>);">
+																		style="background-image: url('<?=$value['PICT']['SRC']?>');">
 																	</div>
 																</div>
 															</li>

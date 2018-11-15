@@ -94,9 +94,16 @@ class CJSPopup
 
 		if ($title == '')
 			$title = $this->title;
-?>
-<script type="text/javascript">top.<?=$this->jsPopup?>.SetTitle('<?echo CUtil::JSEscape($title)?>');</script>
-<?
+		?>
+		<script type="text/javascript">
+			var currentWindow = top.window;
+			if (top.BX.SidePanel.Instance && top.BX.SidePanel.Instance.getTopSlider())
+			{
+				currentWindow = top.BX.SidePanel.Instance.getTopSlider().getWindow();
+			}
+			currentWindow.<?=$this->jsPopup?>.SetTitle('<?echo CUtil::JSEscape($title)?>');
+		</script>
+		<?
 	}
 
 	function StartDescription($icon = false)
@@ -254,6 +261,12 @@ class CJSPopup
 	{
 		if (!$back_url && is_set($_REQUEST, 'back_url'))
 			$back_url = $_REQUEST['back_url'];
+
+		if(substr($back_url, 0, 1) != "/" || substr($back_url, 1, 1) == "/")
+		{
+			//only local /url is allowed
+			$back_url = '';
+		}
 
 		echo '<script>';
 		echo 'top.'.$this->jsPopup.'.Close(); ';

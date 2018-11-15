@@ -22,11 +22,9 @@ BX.message({
 
 	$like = COption::GetOptionString("main", "rating_text_like_y", GetMessage("RATING_COMMENT_LIKE"));
 
-	?><div class="post-comment-likes-text"><?=$like?></div><?
+	?><div class="post-comment-likes-text"><?=htmlspecialcharsEx($like)?></div><?
 	?><div class="post-comment-likes-counter" id="bx-ilike-count-<?=CUtil::JSEscape(htmlspecialcharsbx($arResult['VOTE_ID']))?>"><?
 		?><?=htmlspecialcharsEx($arResult['TOTAL_VOTES'])?><?
-
-
 	?></div><?
 ?></div></span><?
 ?><script type="text/javascript">

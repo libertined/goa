@@ -13,6 +13,8 @@ use \Bitrix\Main;
  * @var string $templateFolder
  */
 
+$this->setFrameMode(true);
+
 if (isset($arResult['ITEM']))
 {
 	$item = $arResult['ITEM'];
@@ -97,6 +99,7 @@ if (isset($arResult['ITEM']))
 	$labelPositionClass .= $arParams['LABEL_POSITION_CLASS'];
 
 	$buttonSizeClass = isset($arResult['BIG_BUTTONS']) && $arResult['BIG_BUTTONS'] === 'Y' ? 'btn-md' : 'btn-sm';
+	$itemHasDetailUrl = isset($item['DETAIL_PAGE_URL']) && $item['DETAIL_PAGE_URL'] != '';
 	?>
 
 	<div class="product-item-container<?=(isset($arResult['SCALABLE']) && $arResult['SCALABLE'] === 'Y' ? ' product-item-scalable-card' : '')?>"
@@ -152,6 +155,7 @@ if (isset($arResult['ITEM']))
 					'QUANTITY' => $arParams['PRODUCT_QUANTITY_VARIABLE'],
 					'PROPS' => $arParams['PRODUCT_PROPS_VARIABLE'],
 					'EMPTY_PROPS' => empty($item['PRODUCT_PROPERTIES']),
+					'BASKET_URL' => $arParams['~BASKET_URL'],
 					'ADD_URL_TEMPLATE' => $arParams['~ADD_URL_TEMPLATE'],
 					'BUY_URL_TEMPLATE' => $arParams['~BUY_URL_TEMPLATE']
 				),
@@ -227,6 +231,7 @@ if (isset($arResult['ITEM']))
 					'QUANTITY' => $arParams['PRODUCT_QUANTITY_VARIABLE'],
 					'PROPS' => $arParams['PRODUCT_PROPS_VARIABLE'],
 					'SKU_PROPS' => $item['OFFERS_PROP_CODES'],
+					'BASKET_URL' => $arParams['~BASKET_URL'],
 					'ADD_URL_TEMPLATE' => $arParams['~ADD_URL_TEMPLATE'],
 					'BUY_URL_TEMPLATE' => $arParams['~BUY_URL_TEMPLATE']
 				),

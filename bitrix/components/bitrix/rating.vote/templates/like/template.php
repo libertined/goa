@@ -24,6 +24,14 @@ BX.ready(function() {
 		if (typeof(RatingLike) == 'undefined')
 			return false;
 
+		if (typeof(RatingLikeInited) == 'undefined')
+		{
+			RatingLikeInited = true;
+			RatingLike.setParams({
+				pathToUserProfile: '<?=CUtil::JSEscape($arResult['PATH_TO_USER_PROFILE'])?>'
+			});
+		}
+
 		RatingLike.Set(
 			'<?=CUtil::JSEscape($arResult['VOTE_ID'])?>',
 			'<?=CUtil::JSEscape($arResult['ENTITY_TYPE_ID'])?>',
@@ -31,7 +39,7 @@ BX.ready(function() {
 			'<?=CUtil::JSEscape($arResult['VOTE_AVAILABLE'])?>',
 			'<?=$USER->GetId()?>',
 			{'LIKE_Y' : '<?=htmlspecialcharsBx(CUtil::JSEscape($arResult['RATING_TEXT_LIKE_Y']))?>', 'LIKE_N' : '<?=htmlspecialcharsBx(CUtil::JSEscape($arResult['RATING_TEXT_LIKE_Y']))?>', 'LIKE_D' : '<?=htmlspecialcharsBx(CUtil::JSEscape($arResult['RATING_TEXT_LIKE_D']))?>'},
-			'light',
+			'<?=CUtil::JSEscape($arResult['LIKE_TEMPLATE'])?>',
 			'<?=CUtil::JSEscape($arResult['PATH_TO_USER_PROFILE'])?>'
 		);
 

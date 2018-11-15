@@ -23,63 +23,85 @@
 			this.parent = parent;
 			this.table = this.parent.getTable();
 			this.container = this.table.parentNode;
+			this.scrollStartEventName = this.parent.isTouch() ? 'touchstart' : 'mouseenter';
+			this.scrollEndEventName = this.parent.isTouch() ? 'touchend' : 'mouseleave';
 
 			if (this.parent.getParam('ALLOW_PIN_HEADER'))
 			{
 				this.fixedTable = this.parent.getPinHeader().getFixedTable();
 			}
 
-			BX.bind(window, 'resize', BX.delegate(this.toggle, this));
-			BX.bind(window, 'scroll', BX.debounce(this._onWindowScroll, 400, this));
-			BX.bind(this.container, 'scroll', BX.delegate(this.toggle, this));
-			BX.addCustomEvent(window, 'Grid::updated', BX.delegate(this.toggle, this));
-			BX.addCustomEvent(window, 'Grid::columnResize', BX.delegate(this.toggle, this));
-			BX.bind(this.getEarLeft(), 'mouseenter', BX.delegate(this._onMouseoverLeft, this));
-			BX.bind(this.getEarRight(), 'mouseenter', BX.delegate(this._onMouseoverRight, this));
-			BX.bind(this.getEarLeft(), 'mouseleave', BX.delegate(this._onMouseleaveLeft, this));
-			BX.bind(this.getEarRight(), 'mouseleave', BX.delegate(this._onMouseleaveRight, this));
+			this.debounceScrollHandler = BX.debounce(this._onWindowScroll, 400, this);
+
+			BX.bind(window, 'resize', BX.proxy(this.toggle, this));
+			document.addEventListener('scroll', this.debounceScrollHandler, BX.Grid.Utils.listenerParams({passive: true}));
+			this.container.addEventListener('scroll', BX.proxy(this.toggle, this), BX.Grid.Utils.listenerParams({passive: true}));
+			BX.addCustomEvent(window, 'Grid::updated', BX.proxy(this.toggle, this));
+			BX.addCustomEvent(window, 'Grid::resize', BX.proxy(this.toggle, this));
+			BX.addCustomEvent(window, 'Grid::headerUpdated', BX.proxy(this._onHeaderUpdated, this));
+			BX.addCustomEvent(window, 'Grid::columnResize', BX.proxy(this.toggle, this));
+			BX.bind(this.getEarLeft(), this.scrollStartEventName, BX.proxy(this._onMouseoverLeft, this));
+			BX.bind(this.getEarRight(), this.scrollStartEventName, BX.proxy(this._onMouseoverRight, this));
+			BX.bind(this.getEarLeft(), this.scrollEndEventName, BX.proxy(this.stopScroll, this));
+			BX.bind(this.getEarRight(), this.scrollEndEventName, BX.proxy(this.stopScroll, this));
 
 			this.toggle();
 			this.adjustEarOffset(true);
 		},
 
-		_onMouseoverLeft: function()
+		destroy: function()
 		{
-			var offset = this.container.scrollLeft;
-
-			this.leftTimer = setTimeout(BX.proxy(function() {
-				this.leftInterval = setInterval(BX.delegate(function() {
-					offset -= 8;
-					BX.Grid.Utils.requestAnimationFrame(BX.proxy(function() {
-						this.container.scrollLeft = offset;
-					}, this));
-				}, this), (1000/60)/2);
-			}, this), 100);
+			BX.unbind(window, 'resize', BX.proxy(this.toggle, this));
+			document.removeEventListener('scroll', this.debounceScrollHandler, BX.Grid.Utils.listenerParams({passive: true}));
+			this.container.removeEventListener('scroll', BX.proxy(this.toggle, this), BX.Grid.Utils.listenerParams({passive: true}));
+			BX.removeCustomEvent(window, 'Grid::updated', BX.proxy(this.toggle, this));
+			BX.removeCustomEvent(window, 'Grid::headerUpdated', BX.proxy(this._onHeaderUpdated, this));
+			BX.removeCustomEvent(window, 'Grid::columnResize', BX.proxy(this.toggle, this));
+			BX.unbind(this.getEarLeft(), this.scrollStartEventName, BX.proxy(this._onMouseoverLeft, this));
+			BX.unbind(this.getEarRight(), this.scrollStartEventName, BX.proxy(this._onMouseoverRight, this));
+			BX.unbind(this.getEarLeft(), this.scrollEndEventName, BX.proxy(this.stopScroll, this));
+			BX.unbind(this.getEarRight(), this.scrollEndEventName, BX.proxy(this.stopScroll, this));
+			this.hideLeftEar();
+			this.hideRightEar();
+			this.stopScroll();
 		},
 
-		_onMouseoverRight: function()
+		_onHeaderUpdated: function()
 		{
-			var offset = this.container.scrollLeft;
-			this.rightTimer = setTimeout(BX.proxy(function() {
-				this.rightInterval = setInterval(BX.delegate(function() {
-					offset += 8;
-					BX.Grid.Utils.requestAnimationFrame(BX.proxy(function() {
-						this.container.scrollLeft = offset;
-					}, this));
-				}, this), (1000/60)/2);
-			}, this), 100);
+			this.fixedTable = this.parent.getPinHeader().getFixedTable();
 		},
 
-		_onMouseleaveLeft: function()
+		_onMouseoverLeft: function(event)
 		{
-			clearTimeout(this.leftTimer);
-			clearInterval(this.leftInterval);
+			this.parent.isTouch() && event.preventDefault();
+			this.startScrollByDirection('left');
 		},
 
-		_onMouseleaveRight: function()
+		_onMouseoverRight: function(event)
 		{
-			clearTimeout(this.rightTimer);
-			clearInterval(this.rightInterval);
+			this.parent.isTouch() && event.preventDefault();
+			this.startScrollByDirection('right');
+		},
+
+		stopScroll: function()
+		{
+			clearTimeout(this.scrollTimer);
+			clearInterval(this.scrollInterval);
+		},
+
+		startScrollByDirection: function(direction)
+		{
+			var container = this.container;
+			var offset = container.scrollLeft;
+			var self = this;
+			var stepLength = 8;
+			var stepTime = ((1000 / 60) / 2);
+
+			this.scrollTimer = setTimeout(function() {
+				self.scrollInterval = setInterval(function() {
+					container.scrollLeft = direction == 'right' ? (offset += stepLength) : (offset -= stepLength);
+				}, stepTime);
+			}, 100);
 		},
 
 		getEarLeft: function()
@@ -102,6 +124,16 @@
 			return this.earRight;
 		},
 
+		getShadowLeft: function()
+		{
+			return this.parent.getContainer().querySelector(".main-grid-fade-shadow-left");
+		},
+
+		getShadowRight: function()
+		{
+			return this.parent.getContainer().querySelector(".main-grid-fade-shadow-right");
+		},
+
 		adjustEarOffset: function(prepare)
 		{
 			if (prepare)
@@ -111,8 +143,15 @@
 				this.headerPos = BX.pos(this.table.tHead);
 			}
 
-			var bottomPos = (window.scrollY + this.windowHeight) - this.tbodyPos.top;
-			var posTop = window.scrollY - this.tbodyPos.top;
+			var scrollY = window.scrollY;
+
+			if (this.parent.isIE())
+			{
+				scrollY = document.documentElement.scrollTop;
+			}
+
+			var bottomPos = (scrollY + this.windowHeight) - this.tbodyPos.top;
+			var posTop = scrollY - this.tbodyPos.top;
 
 			if (bottomPos > (this.tbodyPos.bottom - this.tbodyPos.top))
 			{
@@ -125,7 +164,6 @@
 			}
 			else
 			{
-
 				bottomPos -= posTop;
 				bottomPos += this.headerPos.height;
 			}
@@ -133,8 +171,9 @@
 			BX.Grid.Utils.requestAnimationFrame(BX.proxy(function() {
 				if (posTop !== this.lastPosTop)
 				{
-					this.getEarLeft().style.transform = 'translate3d(0px, ' + posTop + 'px, 0)';
-					this.getEarRight().style.transform = 'translate3d(0px, ' + posTop + 'px, 0)';
+					var translate = 'translate3d(0px, ' + posTop + 'px, 0)';
+					this.getEarLeft().style.transform = translate;
+					this.getEarRight().style.transform = translate;
 				}
 
 				if (bottomPos !== this.lastBottomPos)
@@ -153,70 +192,68 @@
 			this.adjustEarOffset();
 		},
 
+		hasScroll: function()
+		{
+			return this.table.offsetWidth > this.container.clientWidth;
+		},
+
+		hasScrollLeft: function()
+		{
+			return this.container.scrollLeft > 0;
+		},
+
+		hasScrollRight: function()
+		{
+			return this.table.offsetWidth > (this.container.scrollLeft + this.container.clientWidth);
+		},
+
+		showLeftEar: function()
+		{
+			BX.addClass(this.container.parentNode, this.parent.settings.get('classFadeContainerLeft'));
+			BX.addClass(this.getEarLeft(), this.parent.settings.get('classShow'));
+		},
+
+		hideLeftEar: function()
+		{
+			BX.removeClass(this.container.parentNode, this.parent.settings.get('classFadeContainerLeft'));
+			BX.removeClass(this.getEarLeft(), this.parent.settings.get('classShow'));
+		},
+
+		showRightEar: function()
+		{
+			BX.addClass(this.container.parentNode, this.parent.settings.get('classFadeContainerRight'));
+			BX.addClass(this.getEarRight(), this.parent.settings.get('classShow'));
+		},
+
+		hideRightEar: function()
+		{
+			BX.removeClass(this.container.parentNode, this.parent.settings.get('classFadeContainerRight'));
+			BX.removeClass(this.getEarRight(), this.parent.settings.get('classShow'));
+		},
+
+		adjustFixedTablePosition: function()
+		{
+			var left = this.container.scrollLeft;
+
+			BX.Grid.Utils.requestAnimationFrame(BX.delegate(function() {
+				this.fixedTable.style.marginLeft = -left + 'px';
+			}, this));
+		},
+
 		toggle: function()
 		{
 			this.adjustEarOffset(true);
+			this.fixedTable && this.adjustFixedTablePosition();
 
-			if (this.fixedTable)
+			if (this.hasScroll())
 			{
-				BX.Grid.Utils.requestAnimationFrame(BX.proxy(function() {
-					this.fixedTable.style.transform = 'translate3d(-'+this.container.scrollLeft+'px, 0px, 0)';
-				}, this));
-			}
-
-			if (this.table.offsetWidth > this.container.clientWidth)
-			{
-				if (this.container.scrollLeft > 0)
-				{
-					BX.addClass(
-						this.container.parentNode,
-						this.parent.settings.get('classFadeContainerLeft')
-					);
-
-					BX.addClass(this.getEarLeft(), this.parent.settings.get('classShow'));
-				}
-				else
-				{
-					BX.removeClass(
-						this.container.parentNode,
-						this.parent.settings.get('classFadeContainerLeft')
-					);
-
-					BX.removeClass(this.getEarLeft(), this.parent.settings.get('classShow'));
-				}
-
-				if (this.table.offsetWidth > (this.container.scrollLeft + this.container.clientWidth))
-				{
-					BX.addClass(
-						this.container.parentNode,
-						this.parent.settings.get('classFadeContainerRight')
-					);
-
-					BX.addClass(this.getEarRight(), this.parent.settings.get('classShow'));
-				}
-				else
-				{
-					BX.removeClass(
-						this.container.parentNode,
-						this.parent.settings.get('classFadeContainerRight')
-					);
-
-					BX.removeClass(this.getEarRight(), this.parent.settings.get('classShow'));
-				}
+				this.hasScrollLeft() ? this.showLeftEar() : this.hideLeftEar();
+				this.hasScrollRight() ? this.showRightEar() : this.hideRightEar();
 			}
 			else
 			{
-				BX.removeClass(
-					this.container.parentNode,
-					this.parent.settings.get('classFadeContainerLeft')
-				);
-				BX.removeClass(
-					this.container.parentNode,
-					this.parent.settings.get('classFadeContainerRight')
-				);
-
-				BX.removeClass(this.getEarLeft(), this.parent.settings.get('classShow'));
-				BX.removeClass(this.getEarRight(), this.parent.settings.get('classShow'));
+				this.hideLeftEar();
+				this.hideRightEar();
 			}
 		}
 	};

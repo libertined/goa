@@ -22,7 +22,7 @@
 
 			if (id === this.parent.getContainerId() + '_' + this.parent.settings.get('pageSizeId'))
 			{
-				if (value > 0)
+				if (value >= 0)
 				{
 					this.parent.tableFade();
 					this.parent.getUserOptions().setPageSize(value, function() {

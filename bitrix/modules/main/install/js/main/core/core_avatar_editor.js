@@ -221,6 +221,10 @@
 					w = props.destin.width;
 					h = props.destin.height;
 				}
+				if (video["name"])
+					this.params.name = video["name"];
+				else
+					delete this.params["name"];
 
 				k = Math.ceil(Math.max(
 					( w > 0 ? this.params.visibleWidth / w : 1 ),
@@ -452,6 +456,8 @@
 						result = canvasConstructor.pack();
 						result.changed = true;
 					}
+					if (this.params["name"])
+						result.name = this.params["name"];
 				}
 				return result;
 			}
@@ -540,7 +546,7 @@
 		})();
 	BX.AvatarEditor = (function(){
 		var video;
-		var d = function(){
+		var d = function(params){
 			this.id = 'avatarEditor' + (new Date()).valueOf();
 			this.popup = null;
 			this.handlers = {
@@ -552,6 +558,8 @@
 			};
 			if (webRTC === null && BX["webrtc"])
 				webRTC = new BX.webrtc();
+			params = (BX.type.isPlainObject(params) ? params : {});
+			this.params = { enableCamera : params["enableCamera"] !== false };
 			this.limitations = []; // TODO make control to work with file limits
 		};
 		d.prototype = {
@@ -625,7 +633,7 @@
 					'</div>',
 				'</div>'
 				].join(''));
-				if ((window.location.protocol.indexOf("https") === 0) && webRTC && webRTC.enabled)
+				if (this.params.enableCamera && (window.location.protocol.indexOf("https") === 0) && webRTC && webRTC.enabled)
 				{
 					headers.push(
 						'<span class="main-file-input-tab-button-item main-file-input-tab-button-active" data-bx-role="tab-camera">' + BX.message("JS_AVATAR_EDITOR_CAMERA") + '</span>'
@@ -773,13 +781,17 @@
 					files = result;
 				}
 				var file;
+				var loader = BX.findChild(BX(this.id), {
+					tagName : "DIV", className : "main-file-input-user-loader-item"}, true);
 				if ((file = files.pop()) && file && this.canvas && BX.UploaderUtils.isImage(file.name, file.type, file.size))
 				{
 					this.canvas.load(file);
 					this.tabs.show('canvas', 'file');
+					BX.hide(loader);
 				}
 				else
 				{
+					BX.show(loader);
 					// TODO Show some error
 				}
 			},

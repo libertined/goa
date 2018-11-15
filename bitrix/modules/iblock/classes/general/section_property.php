@@ -46,12 +46,13 @@ class CIBlockSectionPropertyLink
 					$arUpdate["DISPLAY_EXPANDED"] = $arLink["DISPLAY_EXPANDED"] === "Y"? "Y": false;
 				}
 
-				if (
-					array_key_exists("FILTER_HINT", $arLink)
-					&& $arLink["FILTER_HINT"] !== $sectionProperty["FILTER_HINT"]
-				)
+				if (array_key_exists("FILTER_HINT", $arLink))
 				{
-					$arUpdate["FILTER_HINT"] = $arLink["FILTER_HINT"];
+					$filterHint = self::cleanFilterHint($arLink["FILTER_HINT"]);
+					if ($filterHint !== $sectionProperty["FILTER_HINT"])
+					{
+						$arUpdate["FILTER_HINT"] = $filterHint;
+					}
 				}
 
 				if (
@@ -119,7 +120,7 @@ class CIBlockSectionPropertyLink
 				if (array_key_exists("DISPLAY_EXPANDED", $arLink))
 					$arUpdate["DISPLAY_EXPANDED"] = $arLink["DISPLAY_EXPANDED"];
 				if (array_key_exists("FILTER_HINT", $arLink))
-					$arUpdate["FILTER_HINT"] = $arLink["FILTER_HINT"];
+					$arUpdate["FILTER_HINT"] = self::cleanFilterHint($arLink["FILTER_HINT"]);
 				if (array_key_exists("IBLOCK_ID", $arLink))
 					$arUpdate["IBLOCK_ID"] = $arLink["IBLOCK_ID"];
 
@@ -522,6 +523,25 @@ class CIBlockSectionPropertyLink
 			return -1;
 		else
 			return 0;
+	}
+	
+	public static function cleanFilterHint($filterHint)
+	{
+		$TextParser = null;
+		if (!$TextParser)
+		{
+			$TextParser = new CBXSanitizer();
+			$TextParser->SetLevel(CBXSanitizer::SECURE_LEVEL_LOW);
+			$TextParser->ApplyHtmlSpecChars(false);
+		}
+		$cleanHint = trim($filterHint);
+		if ($cleanHint)
+		{
+			$cleanHint = $TextParser->SanitizeHtml($cleanHint);
+			if (preg_match('/^(<br>)+$/', $cleanHint))
+				$cleanHint = "";
+		}
+		return $cleanHint;
 	}
 }
 ?>

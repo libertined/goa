@@ -26,4 +26,5 @@ $MESS["MEDIALIB_UPLOADER_DEL"] = "Delete";
 $MESS["MEDIALIB_UPLOADER_TITLE1"] = "HTML5 uploader";
 $MESS["MEDIALIB_UPLOADER_TITLE2"] = "Java uploader";
 $MESS["MEDIALIB_UPLOADER_INTO"] = "Upload to collection";
+$MESS["MEDIALIB_UPLOADER_UPLOAD1"] = "Upload files";
 ?>

@@ -10,7 +10,7 @@ if (!window.GLOBAL_arMapObjects)
 
 function init_<?echo $arParams['MAP_ID']?>()
 {
-	if (!window.google && !window.google.maps)
+	if (!window.google || !window.google.maps)
 		return;
 
 	var opts = {

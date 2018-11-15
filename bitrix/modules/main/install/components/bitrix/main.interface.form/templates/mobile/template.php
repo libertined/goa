@@ -224,9 +224,15 @@ array_unshift($tab["fields"], array(
 							switch($field["type"])
 							{
 								case 'custom':
-									$className = "custom";
+								case 'label':
+									//html allowed
+									$className = $field["type"];
 									$html = $val;
-								break;
+									break;
+								case 'label':
+									$className = "label";
+									$html = $val;
+									break;
 								case 'text':
 									$placeholder = htmlspecialcharsbx($field["placeholder"] ?: $field["name"]);
 									$val = htmlspecialcharsbx($val);
@@ -591,8 +597,8 @@ array_unshift($tab["fields"], array(
 									$jsObjects[] = $field["~id"];
 									break;
 								default:
-									$className = "label";
-									$html = $val;
+									$className = "text";
+									$html = htmlspecialcharsbx($val);
 								break;
 							}
 							if ($html === '')

@@ -2,10 +2,11 @@
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @var array $arCurrentValues */
 /** @global CUserTypeManager $USER_FIELD_MANAGER */
-use Bitrix\Main\Loader;
-use Bitrix\Main\ModuleManager;
-use Bitrix\Iblock;
-use Bitrix\Currency;
+use Bitrix\Main\Loader,
+	Bitrix\Main\ModuleManager,
+	Bitrix\Iblock,
+	Bitrix\Catalog,
+	Bitrix\Currency;
 
 global $USER_FIELD_MANAGER;
 
@@ -18,6 +19,18 @@ $compatibleMode = !(isset($arCurrentValues['COMPATIBLE_MODE']) && $arCurrentValu
 
 $arIBlockType = CIBlockParameters::GetIBlockTypes();
 
+$offersIblock = array();
+if ($catalogIncluded)
+{
+	$iterator = Catalog\CatalogIblockTable::getList(array(
+		'select' => array('IBLOCK_ID'),
+		'filter' => array('!=PRODUCT_IBLOCK_ID' => 0)
+	));
+	while ($row = $iterator->fetch())
+		$offersIblock[$row['IBLOCK_ID']] = true;
+	unset($row, $iterator);
+}
+
 $arIBlock = array();
 $iblockFilter = (
 	!empty($arCurrentValues['IBLOCK_TYPE'])
@@ -26,8 +39,14 @@ $iblockFilter = (
 );
 $rsIBlock = CIBlock::GetList(array('SORT' => 'ASC'), $iblockFilter);
 while ($arr = $rsIBlock->Fetch())
-	$arIBlock[$arr['ID']] = '['.$arr['ID'].'] '.$arr['NAME'];
-unset($arr, $rsIBlock, $iblockFilter);
+{
+	$id = (int)$arr['ID'];
+	if (isset($offersIblock[$id]))
+		continue;
+	$arIBlock[$id] = '['.$id.'] '.$arr['NAME'];
+}
+unset($id, $arr, $rsIBlock, $iblockFilter);
+unset($offersIblock);
 
 $arProperty = array();
 $arProperty_N = array();
@@ -188,6 +207,9 @@ $arComponentParameters = array(
 		"BASKET" => array(
 			"NAME" => GetMessage("IBLOCK_BASKET"),
 		),
+		"SEARCH_SETTINGS" => array(
+			"NAME" => GetMessage("T_IBLOCK_DESC_SEARCH_SETTINGS"),
+		),
 		"TOP_SETTINGS" => array(
 			"NAME" => GetMessage("T_IBLOCK_DESC_TOP_SETTINGS"),
 		),
@@ -218,16 +240,16 @@ $arComponentParameters = array(
 		"BIG_DATA_SETTINGS" => array(
 			"NAME" => GetMessage("CP_BC_GROUP_BIG_DATA_SETTINGS")
 		),
+		'ANALYTICS_SETTINGS' => array(
+			'NAME' => GetMessage('ANALYTICS_SETTINGS')
+		),
 		"EXTENDED_SETTINGS" => array(
 			"NAME" => GetMessage("IBLOCK_EXTENDED_SETTINGS"),
 			"SORT" => 10000
-		),
-		'ANALYTICS_SETTINGS' => array(
-			'NAME' => GetMessage('ANALYTICS_SETTINGS'),
-			'SORT' => 11000
 		)
 	),
 	"PARAMETERS" => array(
+		"USER_CONSENT" => array(),
 		"VARIABLE_ALIASES" => array(
 			"ELEMENT_ID" => array(
 				"NAME" => GetMessage("CP_BC_VARIABLE_ALIASES_ELEMENT_ID"),
@@ -1191,11 +1213,30 @@ if ($catalogIncluded && $arCurrentValues["USE_STORE"]=='Y')
 	);
 }
 
-if(!ModuleManager::isModuleInstalled("sale"))
+if (!ModuleManager::isModuleInstalled("sale") || isset($templateProperties['HIDE_USE_ALSO_BUY']))
 {
+	unset($templateProperties['HIDE_USE_ALSO_BUY']);
 	unset($arComponentParameters["PARAMETERS"]["USE_ALSO_BUY"]);
 	unset($arComponentParameters["GROUPS"]["ALSO_BUY_SETTINGS"]);
+}
+elseif ($arCurrentValues["USE_ALSO_BUY"] == "Y")
+{
+	$arComponentParameters["PARAMETERS"]["ALSO_BUY_ELEMENT_COUNT"] = array(
+		"PARENT" => "ALSO_BUY_SETTINGS",
+		"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_ELEMENT_COUNT"),
+		"TYPE"		=> "STRING",
+		"DEFAULT"	=> 5
+	);
+	$arComponentParameters["PARAMETERS"]["ALSO_BUY_MIN_BUYES"] = array(
+		"PARENT" => "ALSO_BUY_SETTINGS",
+		"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_MIN_BUYES"),
+		"TYPE"		=> "STRING",
+		"DEFAULT"	=> 1
+	);
+}
 
+if (!ModuleManager::isModuleInstalled("sale"))
+{
 	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS_DETAIL"]);
 	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS_SECTION"]);
 	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS_MAIN_PR_SECTION_LIST"]);
@@ -1203,22 +1244,6 @@ if(!ModuleManager::isModuleInstalled("sale"))
 }
 else
 {
-	if($arCurrentValues["USE_ALSO_BUY"] == "Y")
-	{
-		$arComponentParameters["PARAMETERS"]["ALSO_BUY_ELEMENT_COUNT"] = array(
-				"PARENT" => "ALSO_BUY_SETTINGS",
-				"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_ELEMENT_COUNT"),
-				"TYPE"		=> "STRING",
-				"DEFAULT"	=> 5
-			);
-		$arComponentParameters["PARAMETERS"]["ALSO_BUY_MIN_BUYES"] = array(
-				"PARENT" => "ALSO_BUY_SETTINGS",
-				"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_MIN_BUYES"),
-				"TYPE"		=> "STRING",
-				"DEFAULT"	=> 1
-			);
-	}
-
 	$useGiftsDetail = $arCurrentValues["USE_GIFTS_DETAIL"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_DETAIL']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_DETAIL"] == "Y";
 	$useGiftsSection = $arCurrentValues["USE_GIFTS_SECTION"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_SECTION']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_SECTION"] == "Y";
 	$useGiftsMainPrSectionList = $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_MAIN_PR_SECTION_LIST']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] == "Y";
@@ -1230,7 +1255,7 @@ else
 				"PARENT" => "GIFTS_SETTINGS",
 				"NAME" => GetMessage("SGP_PAGE_ELEMENT_COUNT_DETAIL"),
 				"TYPE" => "STRING",
-				"DEFAULT" => "3",
+				"DEFAULT" => "4",
 			);
 			$arComponentParameters["PARAMETERS"]["GIFTS_DETAIL_HIDE_BLOCK_TITLE"] = array(
 				"PARENT" => "GIFTS_SETTINGS",
@@ -1257,7 +1282,7 @@ else
 				"PARENT" => "GIFTS_SETTINGS",
 				"NAME" => GetMessage("SGP_PAGE_ELEMENT_COUNT_SECTION_LIST"),
 				"TYPE" => "STRING",
-				"DEFAULT" => "3",
+				"DEFAULT" => "4",
 			);
 			$arComponentParameters["PARAMETERS"]["GIFTS_SECTION_LIST_HIDE_BLOCK_TITLE"] = array(
 				"PARENT" => "GIFTS_SETTINGS",
@@ -1318,7 +1343,7 @@ else
 				"PARENT" => "GIFTS_SETTINGS",
 				"NAME" => GetMessage("SGP_PAGE_ELEMENT_COUNT_MAIN_PR_DETAIL"),
 				"TYPE" => "STRING",
-				"DEFAULT" => "3",
+				"DEFAULT" => "4",
 			);
 			$arComponentParameters["PARAMETERS"]["GIFTS_MAIN_PRODUCT_DETAIL_HIDE_BLOCK_TITLE"] = array(
 				"PARENT" => "GIFTS_SETTINGS",
@@ -1340,7 +1365,7 @@ if ($catalogIncluded)
 {
 	$arComponentParameters["PARAMETERS"]['HIDE_NOT_AVAILABLE'] = array(
 		'PARENT' => 'DATA_SOURCE',
-		'NAME' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE_EXT2'),
+		'NAME' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE'),
 		'TYPE' => 'LIST',
 		'DEFAULT' => 'N',
 		'VALUES' => array(

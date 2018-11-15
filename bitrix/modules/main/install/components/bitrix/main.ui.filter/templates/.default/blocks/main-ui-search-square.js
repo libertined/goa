@@ -22,7 +22,7 @@
 			content: [
 				{
 					block: 'main-ui-square-item',
-					content: 'name' in data ? data.name : ''
+					content: 'name' in data ? BX.util.htmlspecialcharsback(data.name) : ''
 				},
 				{
 					block: 'main-ui-square-delete',

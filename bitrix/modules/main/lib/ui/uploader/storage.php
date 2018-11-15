@@ -203,11 +203,23 @@ class CloudStorage extends Storage implements Storable
 			$relativePath = substr($path, strpos($path, "/bxu/"));
 		$subdir = explode("/", trim($relativePath, "/"));
 		$filename = array_pop($subdir);
-		$relativePath = \CCloudTempFile::GetDirectoryName($bucket, 12, $subdir).$filename;
+		if (!isset($_SESSION["upload_tmp"]))
+		{
+			$_SESSION["upload_tmp"] = array();
+		}
+
+		if (!isset($_SESSION["upload_tmp"][$path]))
+		{
+			$relativePath = $_SESSION["upload_tmp"][$path] =\CCloudTempFile::GetDirectoryName($bucket, 12).$filename;
+		}
+		else
+		{
+			$relativePath = $_SESSION["upload_tmp"][$path];
+		}
 
 		$upload = new \CCloudStorageUpload($relativePath);
 		$finished = false;
-		if(!$upload->isStarted() && !$upload->start($bucket->ID, $file["size"]))
+		if(!$upload->isStarted() && !$upload->start($bucket->ID, $file["size"], $file["type"]))
 		{
 			$result->addError(new Error("File transfer into Cloud is failed.", "BXU346.2"));
 		}
@@ -282,6 +294,10 @@ class CloudStorage extends Storage implements Storable
 						"height" => $file["height"],
 						"bucketId" => $bucket->ID
 					));
+				}
+				if ($r->getErrors())
+				{
+					$result->addErrors($r->getErrors());
 				}
 				@unlink($path);
 			}
@@ -363,5 +379,21 @@ class CloudStorage extends Storage implements Storable
 			$result = parent::copyChunk($path, $file);
 		}
 		return $result;
+	}
+
+	/**
+	 * Checks storage.
+	 * @param int $id
+	 * @return bool
+	 */
+	public static function checkBucket($id)
+	{
+		$res = false;
+		if(Loader::includeModule("clouds"))
+		{
+			$r = \CCloudStorageBucket::GetAllBuckets();
+			$res = (is_array($r) && array_key_exists($id, $r));
+		}
+		return $res;
 	}
 }

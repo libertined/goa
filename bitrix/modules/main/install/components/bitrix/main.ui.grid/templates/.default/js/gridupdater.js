@@ -3,36 +3,32 @@
 
 	BX.namespace('BX.Grid');
 
+
 	/**
 	 * Updates grid
-	 * @param parent
+	 * @param {BX.Main.grid} parent
 	 * @constructor
 	 */
 	BX.Grid.Updater = function(parent)
 	{
 		this.parent = parent;
-		this.reset();
 	};
 
-	BX.Grid.Updater.prototype.reset = function()
-	{
-		this.head = null;
-		this.body = null;
-		this.foot = null;
-		this.moreButton = null;
-		this.pagination = null;
-		this.counterDisplayed = null;
-		this.counterSelected = null;
-		this.counterTotal = null;
-		this.limit = null;
-		this.actionPanel = null;
-	};
 
+	/**
+	 * Gets parent object
+	 * @return {?BX.Main.grid}
+	 */
 	BX.Grid.Updater.prototype.getParent = function()
 	{
 		return this.parent;
 	};
 
+
+	/**
+	 * Updates head rows
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
 	BX.Grid.Updater.prototype.updateHeadRows = function(rows)
 	{
 		var headers;
@@ -52,6 +48,11 @@
 		}
 	};
 
+
+	/**
+	 * Appends head rows
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
 	BX.Grid.Updater.prototype.appendHeadRows = function(rows)
 	{
 		var headers;
@@ -71,6 +72,11 @@
 		}
 	};
 
+
+	/**
+	 * Prepends head rows
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
 	BX.Grid.Updater.prototype.prependHeadRows = function(rows)
 	{
 		var headers;
@@ -91,22 +97,50 @@
 		}
 	};
 
+
+	/**
+	 * Updates body row by row id
+	 * @param {?string|number} id
+	 * @param {HTMLTableRowElement} row
+	 */
+	BX.Grid.Updater.prototype.updateBodyRowById = function(id, row)
+	{
+		if ((BX.type.isNumber(id) || BX.type.isNotEmptyString(id)) && BX.type.isDomNode(row))
+		{
+			var currentRow = this.getParent().getRows().getById(id);
+
+			if (currentRow)
+			{
+				var currentNode = currentRow.getNode();
+				BX.insertAfter(row, currentNode);
+				BX.remove(currentNode);
+			}
+		}
+	};
+
+
+	/**
+	 * Updates all body rows.
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
 	BX.Grid.Updater.prototype.updateBodyRows = function(rows)
 	{
-		var body;
-
 		if (BX.type.isArray(rows))
 		{
-			body = BX.cleanNode(this.getParent().getBody());
+			var body = this.getParent().getBody();
+			body.innerHTML = '';
+
 			rows.forEach(function(current) {
-				if (BX.type.isDomNode(current))
-				{
-					body.appendChild(current);
-				}
+				!!current && body.appendChild(current);
 			});
 		}
 	};
 
+
+	/**
+	 * Appends body rows.
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
 	BX.Grid.Updater.prototype.appendBodyRows = function(rows)
 	{
 		var body;
@@ -123,13 +157,18 @@
 		}
 	};
 
-	BX.Grid.Updater.prototype.prependHeadRows = function(rows)
+
+	/**
+	 * Prepends body rows
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
+	BX.Grid.Updater.prototype.prependBodyRows = function(rows)
 	{
 		var body;
 
 		if (BX.type.isArray(rows))
 		{
-			body = this.getParent().getHead();
+			body = this.getParent().getBody();
 			rows.forEach(function(current) {
 				if (BX.type.isDomNode(current))
 				{
@@ -139,6 +178,11 @@
 		}
 	};
 
+
+	/**
+	 * Updates table footer rows.
+	 * @param {?HTMLTableRowElement[]} rows
+	 */
 	BX.Grid.Updater.prototype.updateFootRows = function(rows)
 	{
 		var foot;
@@ -155,6 +199,11 @@
 		}
 	};
 
+
+	/**
+	 * Updates total rows counter
+	 * @param {?HTMLElement} counter
+	 */
 	BX.Grid.Updater.prototype.updateCounterTotal = function(counter)
 	{
 		var counterCell;
@@ -166,34 +215,65 @@
 		}
 	};
 
+
+	/**
+	 * Updates grid pagination
+	 * @param {?HTMLElement} pagination
+	 */
 	BX.Grid.Updater.prototype.updatePagination = function(pagination)
 	{
-		var paginationCell;
+		var paginationCell = this.getParent().getPagination().getContainer();
 
-		if (BX.type.isDomNode(pagination))
+		if (!!paginationCell)
 		{
-			paginationCell = BX.cleanNode(this.getParent().getPagination().getContainer());
-			paginationCell.appendChild(pagination);
+			paginationCell.innerHTML = '';
+
+			if (BX.type.isDomNode(pagination))
+			{
+				paginationCell.appendChild(pagination);
+			}
 		}
 	};
 
+
+	/**
+	 * Updates more button
+	 * @param {?HTMLElement} button
+	 */
 	BX.Grid.Updater.prototype.updateMoreButton = function(button)
 	{
-		var buttonParent = BX.Grid.Utils.closestParent(this.getParent().getMoreButton().getNode());
-
 		if (BX.type.isDomNode(button))
 		{
-			if (BX.isNodeHidden(buttonParent))
-			{
-				BX.show(buttonParent);
-			}
-
-			buttonParent = BX.cleanNode(buttonParent);
+			var buttonParent = BX.Grid.Utils.closestParent(this.getParent().getMoreButton().getNode());
+			buttonParent.innerHTML = '';
 			buttonParent.appendChild(button);
 		}
-		else
+	};
+
+
+	/**
+	 * Updates group actions panel
+	 * @param {HTMLElement} panel
+	 */
+	BX.Grid.Updater.prototype.updateGroupActions = function(panel)
+	{
+		var GroupActions = this.parent.getActionsPanel();
+
+		if (!!GroupActions && BX.type.isDomNode(panel))
 		{
-			BX.hide(buttonParent);
+			var panelNode = GroupActions.getPanel();
+
+			if (BX.type.isDomNode(panelNode))
+			{
+				panelNode.innerHTML = '';
+
+				var panelChild = BX.firstChild(panel);
+
+				if (BX.type.isDomNode(panelChild))
+				{
+					panelNode.appendChild(panelChild);
+				}
+			}
 		}
 	};
 })();

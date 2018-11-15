@@ -47,27 +47,19 @@ $currentUser = $engine->getCurrentUser();
 $bNeedAuth = !is_array($currentUser);
 
 //get string of campaign CURRENCY name
-//todo: del debug - after update socialservices to 17.0.0 delete this statement
-$socservissesVersion = Main\ModuleManager::getVersion('socialservices');
-$socservissesVersion = explode('.',$socservissesVersion);
-$socservissesVersion = $socservissesVersion[0];
-$clientCurrency = '';
-if(!$bNeedAuth && $socservissesVersion >= 17)
+try
 {
-	try
-	{
-		$clientsSettings = $engine->getClientsSettings();
-		$clientCurrency = current($clientsSettings);
-		$clientCurrency = Loc::getMessage('SEO_YANDEX_CURRENCY__'.$clientCurrency['Currency']);
-	}
-	catch(Engine\YandexDirectException $e)
-	{
-		$seoproxyAuthError = new CAdminMessage(array(
-			"TYPE" => "ERROR",
-			"MESSAGE" => Loc::getMessage('SEO_YANDEX_SEOPROXY_AUTH_ERROR'),
-			"DETAILS" => $e->getMessage(),
-		));
-	}
+	$clientsSettings = $engine->getClientsSettings();
+	$clientCurrency = current($clientsSettings);
+	$clientCurrency = Loc::getMessage('SEO_YANDEX_CURRENCY__'.$clientCurrency['Currency']);
+}
+catch(Engine\YandexDirectException $e)
+{
+	$seoproxyAuthError = new CAdminMessage(array(
+		"TYPE" => "ERROR",
+		"MESSAGE" => Loc::getMessage('SEO_YANDEX_SEOPROXY_AUTH_ERROR'),
+		"DETAILS" => $e->getMessage(),
+	));
 }
 
 
@@ -258,7 +250,7 @@ if(!$bReadOnly && $request->isPost() && ($request["save"]<>'' || $request["apply
 		);
 	}
 
-	$bannerSettings['MinusKeywords'] = preg_split("/[\\n,;]+\\s*/", $bannerSettings['MinusKeywords']);
+	$bannerSettings['MinusKeywords'] = preg_split("/[\\r\\n,;]+\\s*/", $bannerSettings['MinusKeywords']);
 
 	$bannerFields = array(
 		"CAMPAIGN_ID" => $campaignId,
@@ -972,7 +964,7 @@ echo implode('</div>', $regionsOutput).'</div>';
 
 		var startValue = document.forms.form1['SETTINGS[Geo]'].value;
 
-		BX.bindDelegate(listCont, 'click', {tag: 'INPUT', props: {type: 'checkbox', name: 'regions[]'}}, h)
+		BX.bindDelegate(listCont, 'click', {tag: 'INPUT', props: {type: 'checkbox', name: 'region[]'}}, h)
 
 		if(startValue == '')
 		{
@@ -1279,27 +1271,44 @@ foreach($banner["SETTINGS"]["Phrases"] as $phraseData)
 	}
 
 	BX.ready(function(){
+		var timeOut = null;
+		
+//		phrases hint binds
 		var textInput = BX('phrase_text');
 		var hint = new BX.PopupWindow('phrase_hint_' + Math.random(), textInput, {
 			content: '<div style="max-width: 250px;"><?=Loc::getMessage('SEO_PHRASE_HINT')?></div>',
 			angle: {postion: 'top', offset: 230},
 			bindOptions: {position: 'bottom'}
 		});
-		var timeOut = null;
 
 		BX.bind(textInput, 'focus', function(){
-
 			var pos = BX.pos(textInput);
 			hint.setOffset({
 				offsetLeft: pos.width - 250
 			});
-
 			hint.show();
 			timeOut = setTimeout(BX.proxy(hint.close, hint), 10000)
 		});
 		BX.bind(textInput, 'blur', function(){hint.close(); clearTimeout(timeOut);});
-
 		BX.bind(textInput, 'keyup', parsePhraseList);
+
+//		minus keywords hint binds
+		var minusKWInput = BX('minus_text');
+		var hintMinus = new BX.PopupWindow('minus_keywords_hint_' + Math.random(), minusKWInput, {
+			content: '<div style="max-width: 250px;"><?=Loc::getMessage('SEO_MINUS_KW_HINT')?></div>',
+			angle: {postion: 'top', offset: 230},
+			bindOptions: {position: 'top'}
+		});
+		
+		BX.bind(minusKWInput, 'focus', function(){
+			var pos = BX.pos(minusKWInput);
+			hintMinus.setOffset({
+				offsetLeft: pos.width - 250
+			});
+			hintMinus.show();
+			timeOut = setTimeout(BX.proxy(hintMinus.close, hintMinus), 10000)
+		});
+		BX.bind(minusKWInput, 'blur', function(){hintMinus.close(); clearTimeout(timeOut);});
 
 		BX.bindDelegate(
 			BX('worstat_report'),

@@ -1,8 +1,10 @@
 <?
 class CIBlockResult extends CDBResult
 {
+	/** @var bool|array */
 	var $arIBlockMultProps=false;
 	var $arIBlockConvProps=false;
+	/** @var bool|array */
 	var $arIBlockAllProps =false;
 	var $arIBlockNumProps =false;
 	var $arIBlockLongProps = false;
@@ -19,9 +21,19 @@ class CIBlockResult extends CDBResult
 	var $_LAST_IBLOCK_ID = "";
 	var $_FILTER_IBLOCK_ID = array();
 
+	public function __construct($res = null)
+	{
+		parent::__construct($res);
+	}
+
+	/**
+	 * @deprected
+	 *
+	 * @param $res
+	 */
 	function CIBlockResult($res)
 	{
-		parent::CDBResult($res);
+		self::__construct($res);
 	}
 
 	function SetUrlTemplates($DetailUrl = "", $SectionUrl = "", $ListUrl = "")
@@ -69,8 +81,6 @@ class CIBlockResult extends CDBResult
 
 	function Fetch()
 	{
-		/** @global CCacheManager $CACHE_MANAGER */
-		global $CACHE_MANAGER;
 		/** @global CDatabase $DB */
 		global $DB;
 		$res = parent::Fetch();
@@ -323,7 +333,7 @@ class CIBlockResult extends CDBResult
 							{
 								$rs = CIBlockSection::GetNavChain($this->arSectionContext["IBLOCK_ID"], $this->arSectionContext["ID"], array("ID", "IBLOCK_SECTION_ID", "CODE"));
 								while ($a = $rs->Fetch())
-									$arSectionPathCache[$this->arSectionContext["ID"]] .= urlencode($a["CODE"])."/";
+									$arSectionPathCache[$this->arSectionContext["ID"]] .= rawurlencode($a["CODE"])."/";
 
 							}
 							if(isset($arSectionPathCache[$this->arSectionContext["ID"]]))
@@ -414,8 +424,9 @@ class CIBlockResult extends CDBResult
 		{
 			if ($_REQUEST["mode"] == "excel")
 				return;
-
-			$nSize = CAdminResult::GetNavSize($this->table_id, $nPageSize);
+			$navResult = new CAdminResult(null, '');
+			$nSize = $navResult->GetNavSize($this->table_id, $nPageSize);
+			unset($navResult);
 			if(is_array($nPageSize))
 			{
 				$this->nInitialSize = $nPageSize["nPageSize"];

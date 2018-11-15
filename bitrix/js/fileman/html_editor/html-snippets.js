@@ -818,13 +818,6 @@ function __runsnips()
 			BX.addClass(icon, "bxhtmled-tskbr-sect-icon-" + depth);
 		}
 
-		this.InitDragDrop({
-			group: pGroupTitle
-		});
-//		pGroup.setAttribute('data-bx-type', 'taskbargroup');
-//		pGroup.setAttribute('data-bx-path', key);
-//		pGroup.setAttribute('data-bx-taskbar', this.id);
-
 		parentCont.appendChild(pGroup);
 	};
 
@@ -915,102 +908,9 @@ function __runsnips()
 		BX.unbind(document, 'mouseup', BX.proxy(this.EnableDD, this));
 	};
 
-	SnippetsCategoryDialog.prototype.InitDragDrop = function(params)
-	{
-		// TODO: Do correct drag & drop + sorting of categories
-		return;
-		var
-			_this = this,
-			obj = params.group;
-		jsDD.registerObject(obj);
-
-		obj.style.cursor = 'move';
-		obj.onbxdragstart = function()
-		{
-			_this.dragCat = obj.cloneNode(true);
-			BX.addClass(obj, 'bxhtmled-tskbr-sect-old');
-			BX.addClass(_this.dragCat, 'bxhtmled-tskbr-sect-drag');
-			document.body.appendChild(_this.dragCat);
-			_this.dragCat.style.top = '-1000px';
-			_this.dragCat.style.left = '-1000px';
-		};
-
-		obj.onbxdrag = function(x, y)
-		{
-			if (_this.dragCat)
-			{
-				_this.dragCat.style.left = (x - 20) + 'px';
-				_this.dragCat.style.top = (y - 10) + 'px';
-			}
-		};
-
-		obj.onbxdragstop = function(x, y)
-		{
-			if (_this.dragCat)
-			{
-				setTimeout(function()
-				{
-					BX.remove(_this.dragCat);
-					_this.dragCat = null;
-				}, 100);
-			}
-			_this.OnDragFinish();
-		};
-
-		obj.onbxdragfinish = function(destination, x, y)
-		{
-			_this.OnDragFinish();
-			return true;
-		};
-
-		jsDD.registerDest(obj);
-
-
-		obj.onbxdestdragfinish = function(currentNode, x, y)
-		{
-			var
-				pos = BX.pos(obj),
-				beforeNode = y < pos.top + pos.height / 2;
-
-			if (beforeNode)
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-			}
-			else
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-			}
-
-			return true;
-		};
-
-		obj.onbxdestdraghover = function(currentNode, x, y)
-		{
-			var pos = BX.pos(obj);
-			if (y < pos.top + pos.height / 2)
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-			}
-			else
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-			}
-		};
-		obj.onbxdestdraghout = function(currentNode, x, y)
-		{
-			BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-			BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-		};
-	};
-
 	SnippetsCategoryDialog.prototype.OnDragFinish = function()
 	{
 	};
-
 
 	SnippetsCategoryDialog.prototype.GetCategoryContByPath = function(path)
 	{

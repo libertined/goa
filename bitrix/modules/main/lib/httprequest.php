@@ -43,6 +43,11 @@ class HttpRequest extends Request
 	protected $cookiesRaw;
 
 	/**
+	 * @var Type\ParameterDictionary
+	 */
+	protected $headers;
+
+	/**
 	 * Creates new HttpRequest object
 	 *
 	 * @param Server $server
@@ -61,6 +66,7 @@ class HttpRequest extends Request
 		$this->files = new Type\ParameterDictionary($files);
 		$this->cookiesRaw = new Type\ParameterDictionary($cookies);
 		$this->cookies = new Type\ParameterDictionary($this->prepareCookie($cookies));
+		$this->headers = new Type\ParameterDictionary($this->fetchHeaders($server));
 	}
 
 	/**
@@ -74,8 +80,9 @@ class HttpRequest extends Request
 			"get" => $this->queryString->values,
 			"post" => $this->postData->values,
 			"files" => $this->files->values,
+			"headers" => $this->headers->values,
 			"cookie" => $this->cookiesRaw->values
-			));
+		));
 
 		if (isset($filteredValues['get']))
 			$this->queryString->setValuesNoDemand($filteredValues['get']);
@@ -83,6 +90,8 @@ class HttpRequest extends Request
 			$this->postData->setValuesNoDemand($filteredValues['post']);
 		if (isset($filteredValues['files']))
 			$this->files->setValuesNoDemand($filteredValues['files']);
+		if (isset($filteredValues['headers']))
+			$this->headers->setValuesNoDemand($this->normalizeHeaders($filteredValues['headers']));
 		if (isset($filteredValues['cookie']))
 		{
 			$this->cookiesRaw->setValuesNoDemand($filteredValues['cookie']);
@@ -154,6 +163,28 @@ class HttpRequest extends Request
 	public function getFileList()
 	{
 		return $this->files;
+	}
+
+	/**
+	 * Returns the header of the current request.
+	 *
+	 * @param string $name Name of header.
+	 *
+	 * @return null|string
+	 */
+	public function getHeader($name)
+	{
+		return $this->headers->get(strtolower($name));
+	}
+
+	/**
+	 * Returns the list of headers of the current request.
+	 *
+	 * @return Type\ParameterDictionary
+	 */
+	public function getHeaders()
+	{
+		return $this->headers;
 	}
 
 	/**
@@ -277,7 +308,7 @@ class HttpRequest extends Request
 
 	protected static function decode($url)
 	{
-		return Text\Encoding::convertEncodingToCurrent(urldecode($url));
+		return Text\Encoding::convertEncodingToCurrent(rawurldecode($url));
 	}
 
 	/**
@@ -307,8 +338,10 @@ class HttpRequest extends Request
 		}
 
 		$https = $this->server->get("HTTPS");
-		if($https !== null && strtolower($https) == "on")
+		if($https <> '' && strtolower($https) <> "off")
 		{
+			//From the PHP manual: Set to a non-empty value if the script was queried through the HTTPS protocol.
+			//Note that when using ISAPI with IIS, the value will be off if the request was not made through the HTTPS protocol.
 			return true;
 		}
 
@@ -349,6 +382,33 @@ class HttpRequest extends Request
 		return $cookiesNew;
 	}
 
+	private function fetchHeaders(Server $server)
+	{
+		$headers = [];
+		foreach ($server as $name => $value)
+		{
+			if (substr($name, 0, 5) === 'HTTP_')
+			{
+				$headerName = substr($name, 5);
+				$headers[$headerName] = $value;
+			}
+		}
+
+		return $this->normalizeHeaders($headers);
+	}
+
+	private function normalizeHeaders(array $headers)
+	{
+		$normalizedHeaders = [];
+		foreach ($headers as $name => $value)
+		{
+			$headerName = strtolower(str_replace('_', '-', $name));
+			$normalizedHeaders[$headerName] = $value;
+		}
+
+		return $normalizedHeaders;
+	}
+
 	protected static function normalize($path)
 	{
 		if (substr($path, -1, 1) === "/")
@@ -387,6 +447,7 @@ class HttpRequest extends Request
 	{
 		static $params = array(
 			"login",
+			"login_form",
 			"logout",
 			"register",
 			"forgot_password",
@@ -413,5 +474,14 @@ class HttpRequest extends Request
 	public static function getInput()
 	{
 		return file_get_contents("php://input");
+	}
+
+	/**
+	 * Returns Y if persistant cookies are enabled, N if disabled, or empty if unknown.
+	 * @return null|string
+	 */
+	public function getCookiesMode()
+	{
+		return $this->getCookie(HttpResponse::STORE_COOKIE_NAME);
 	}
 }

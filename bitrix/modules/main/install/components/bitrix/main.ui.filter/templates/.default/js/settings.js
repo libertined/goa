@@ -81,11 +81,11 @@
 		this.classPinButton = 'main-ui-filter-icon-pin';
 		this.classPopupOverlay = 'popup-window-overlay';
 		this.classPinnedPreset = 'main-ui-item-pin';
-		this.classWaitButtonClass = 'webform-small-button-wait';
-		this.classForAllCheckbox = 'main-ui-filter-for-all-checkbox';
-		this.classForAllButton = 'main-ui-filter-save-for-all';
+		this.classWaitButtonClass = 'ui-btn-clock';
+		this.classForAllCheckbox = 'main-ui-filter-save-for-all';
 		this.classShow = 'main-ui-show';
 		this.classFocus = 'main-ui-focus';
+		this.classPresetField = 'main-ui-filter-preset-field';
 		this.numberPostfix = '_numsel';
 		this.datePostfix = '_datesel';
 		this.toPostfix = '_to';
@@ -105,21 +105,21 @@
 			this.mergeSettings(options);
 		},
 
+		get: function(name, defaultValue)
+		{
+			return (name && name in this && !BX.type.isFunction(this[name])) ? this[name] : defaultValue;
+		},
+
 		mergeSettings: function(options)
 		{
-			var keys;
-			var self = this;
-
 			if (BX.type.isPlainObject(options))
 			{
-				keys = Object.keys(options);
-
-				keys.forEach(function(key) {
-					if (!BX.type.isFunction(self[key]))
+				Object.keys(options).forEach(function(key) {
+					if (!BX.type.isFunction(this[key]))
 					{
-						self[key] = options[key];
+						this[key] = options[key];
 					}
-				});
+				}, this);
 			}
 		}
 	};

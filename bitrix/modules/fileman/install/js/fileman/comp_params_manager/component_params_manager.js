@@ -88,7 +88,6 @@
 						}
 					}
 				}
-
 				var
 					url = this.config.requestUrl,
 					reqId = Math.round(Math.random() * 1000000),
@@ -96,6 +95,7 @@
 						component_params_manager: reqId,
 						sessid: BX.bitrix_sessid(),
 						site_template: params.siteTemplate || '',
+						site: params.siteId || BX.message('SITE_ID'),
 						component_name: params.name,
 						component_template: params.template,
 						current_values: curValues

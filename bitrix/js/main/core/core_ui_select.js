@@ -21,6 +21,7 @@
 		this.classClose = 'main-ui-popup-fast-close-animation';
 		this.classInput = 'main-ui-square-search-item';
 		this.classMenuItem = 'main-ui-select-inner-item';
+		this.classLegend = 'main-ui-select-inner-item-legend';
 		this.classMenuItemText = 'main-ui-select-inner-item-element';
 		this.classMenuMultiItemText = 'main-ui-select-inner-label';
 		this.classMenuItemChecked = 'main-ui-checked';
@@ -37,6 +38,7 @@
 		this.classFocus = 'main-ui-focus';
 		this.classDisableScroll = 'main-ui-disable-scroll';
 		this.classScroll = 'main-ui-mac-scroll';
+		this.marginForEachLevel = 10;
 		this.popup = null;
 		this.popupItems = null;
 		this.isShown = false;
@@ -364,38 +366,41 @@
 			var target = event.currentTarget;
 			var data, square;
 
-			try {
-				data = JSON.parse(BX.data(target, 'item'));
-			} catch (err) {}
-
-			if (this.isMulti)
+			if (!this.isLegend(target))
 			{
-				square = this.getSquare(data);
+				try {
+					data = JSON.parse(BX.data(target, 'item'));
+				} catch (err) {}
 
-				if (!BX.type.isDomNode(square))
+				if (this.isMulti)
 				{
-					this.selectItem(data);
+					square = this.getSquare(data);
+
+					if (!BX.type.isDomNode(square))
+					{
+						this.selectItem(data);
+					}
+					else
+					{
+						this.unselectItem(data);
+					}
+
+					this.adjustPopupPosition();
+					this.inputFocus();
 				}
 				else
 				{
-					this.unselectItem(data);
+					this.uncheckAllItems();
+					this.checkItem(target);
+					this.updateDataValue(data);
+					this.updateValue(data);
+					this.closePopup();
+					this.inputBlur();
 				}
 
-				this.adjustPopupPosition();
-				this.inputFocus();
+				BX.onCustomEvent(window, 'UI::Select::change', [this, data]);
+				this.controlValueDeleteButton();
 			}
-			else
-			{
-				this.uncheckAllItems();
-				this.checkItem(target);
-				this.updateDataValue(data);
-				this.updateValue(data);
-				this.closePopup();
-				this.inputBlur();
-			}
-
-			BX.onCustomEvent(window, 'UI::Select::change', [this, data]);
-			this.controlValueDeleteButton();
 		},
 
 		selectItem: function(data)
@@ -555,13 +560,16 @@
 				}
 				else
 				{
-					if (!this.getPopup().isShown())
+					if (event && event.type === "click")
 					{
-						this.inputFocus();
-					}
-					else
-					{
-						this.inputBlur();
+						if (!this.getPopup().isShown())
+						{
+							this.inputFocus();
+						}
+						else
+						{
+							this.inputBlur();
+						}
 					}
 				}
 			}
@@ -698,6 +706,18 @@
 				}
 			});
 
+			if ('LEGEND' in itemData && itemData.LEGEND === true)
+			{
+				BX.addClass(itemContainer, this.classLegend);
+			}
+
+			if ('DEPTH' in itemData)
+			{
+				var depth = parseInt(itemData.DEPTH);
+				depth = BX.type.isNumber(depth) ? depth * this.marginForEachLevel : 0;
+				BX.style(itemContainer, 'margin-left', depth + 'px');
+			}
+
 			if (!this.isMulti)
 			{
 				itemText = BX.create('div', {props: {
@@ -714,6 +734,11 @@
 			BX.append(itemText, itemContainer);
 
 			return itemContainer;
+		},
+
+		isLegend: function(item)
+		{
+			return BX.hasClass(item, this.classLegend);
 		},
 
 		createSquare: function(data)
@@ -793,7 +818,9 @@
 			}
 			else
 			{
-				popup.close();
+				setTimeout(function() {
+					popup.close();
+				});
 			}
 
 			BX.removeClass(this.getNode(), this.classFocus);
@@ -815,8 +842,11 @@
 
 			if (!popup.isShown())
 			{
-				this.adjustPopupPosition();
-				popup.show();
+				setTimeout(function() {
+					this.adjustPopupPosition();
+					popup.show();
+				}.bind(this));
+
 
 				if (!BX.hasClass(document.documentElement, 'bx-ie'))
 				{
@@ -948,7 +978,7 @@
 					}
 				);
 
-				BX.style(this.popup.popupContainer, 'min-width', nodeRect.width + 'px');
+				BX.style(this.popup.popupContainer, 'width', nodeRect.width + 'px');
 				BX.addClass(this.popup.popupContainer, this.classPopup);
 
 				popupItems = this.createPopupItems(items);
@@ -1014,6 +1044,15 @@
 		var control, square, squareContainer, valueDelete, search;
 		var squares = [];
 
+		var attrs = BX.type.isPlainObject(data.attrs) ? data.attrs : {};
+
+		attrs = BX.util.objectMerge({}, attrs, {
+			'data-name': data.name,
+			'data-params': JSON.stringify(data.params),
+			'data-items': JSON.stringify(data.items),
+			'data-value': JSON.stringify(data.value)
+		});
+
 		if ('value' in data && BX.type.isArray(data.value))
 		{
 			squares = data.value.map(function(current) {
@@ -1028,12 +1067,7 @@
 		control = {
 			block: 'main-ui-multi-select',
 			mix: ['main-ui-control'],
-			attrs: {
-				'data-name': data.name,
-				'data-params': JSON.stringify(data.params),
-				'data-items': JSON.stringify(data.items),
-				'data-value': JSON.stringify(data.value)
-			},
+			attrs: attrs,
 			content: []
 		};
 
@@ -1085,16 +1119,19 @@
 	BX.Main.ui.block['main-ui-select'] = function(data)
 	{
 		var control, name, search, valueDelete;
+		var attrs = BX.type.isPlainObject(data.attrs) ? data.attrs : {};
+
+		attrs = BX.util.objectMerge({}, attrs, {
+			'data-name': data.name,
+			'data-params': JSON.stringify(data.params),
+			'data-items': JSON.stringify(data.items),
+			'data-value': JSON.stringify(data.value)
+		});
 
 		control = {
 			block: 'main-ui-select',
 			mix: ['main-ui-control'],
-			attrs: {
-				'data-name': data.name,
-				'data-params': JSON.stringify(data.params),
-				'data-items': JSON.stringify(data.items),
-				'data-value': JSON.stringify(data.value)
-			},
+			attrs: attrs,
 			content: []
 		};
 

@@ -76,7 +76,7 @@
 		/**
 		 * Gets closest parent element of node
 		 * @param {Node} item
-		 * @param {string} className
+		 * @param {string} [className]
 		 * @returns {*|null|Node}
 		 */
 		closestParent: function(item, className)
@@ -91,7 +91,7 @@
 				{
 					return BX.findParent(
 						item,
-						{class: className}
+						{className: className}
 					);
 				}
 			}
@@ -163,7 +163,7 @@
 
 		/**
 		 * Sets style properties and values for each item in collection
-		 * @param {array|HTMLCollection} collection
+		 * @param {HTMLElement[]|HTMLCollection} collection
 		 * @param {object} properties
 		 */
 		styleForEach: function(collection, properties)
@@ -260,6 +260,17 @@
 			}
 
 			return result;
+		},
+
+		listenerParams: function(params)
+		{
+			try {
+				window.addEventListener('test', null, params);
+			} catch (e) {
+				params = false;
+			}
+
+			return params;
 		}
 	};
 })();

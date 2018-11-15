@@ -210,6 +210,8 @@ class CAllIBlockProperty
 		$seq = new CIBlockSequence($arProperty["IBLOCK_ID"], $ID);
 		$seq->Drop();
 
+		CIBlock::clearIblockTagCache($arProperty["IBLOCK_ID"]);
+
 		$res = $DB->Query("DELETE FROM b_iblock_property WHERE ID=".$ID, true);
 
 		foreach (GetModuleEvents("iblock", "OnAfterIBlockPropertyDelete", true) as $arEvent)
@@ -335,8 +337,11 @@ class CAllIBlockProperty
 		}
 
 		global $BX_IBLOCK_PROP_CACHE;
-		if(array_key_exists("IBLOCK_ID", $arFields))
+		if (isset($arFields["IBLOCK_ID"]))
+		{
 			unset($BX_IBLOCK_PROP_CACHE[$arFields["IBLOCK_ID"]]);
+			CIBlock::clearIblockTagCache($arFields["IBLOCK_ID"]);
+		}
 
 		$arFields["RESULT"] = &$Result;
 
@@ -558,8 +563,11 @@ class CAllIBlockProperty
 			}
 
 			global $BX_IBLOCK_PROP_CACHE;
-			if(array_key_exists("IBLOCK_ID", $arFields))
+			if (isset($arFields["IBLOCK_ID"]))
+			{
 				unset($BX_IBLOCK_PROP_CACHE[$arFields["IBLOCK_ID"]]);
+				CIBlock::clearIblockTagCache($arFields["IBLOCK_ID"]);
+			}
 
 			$Result = true;
 		}
@@ -867,10 +875,10 @@ class CAllIBlockProperty
 
 				if($XML_ID)
 				{
-					unset($ar_XML_ID[rtrim($res["XML_ID"], " ")]);
-					if(array_key_exists($XML_ID, $ar_XML_ID))
+					unset($ar_XML_ID[strtolower(rtrim($res["XML_ID"], " "))]);
+					if (isset($ar_XML_ID[strtolower($XML_ID)]))
 						$XML_ID = md5(uniqid(""));
-					$ar_XML_ID[$XML_ID] = $res["ID"];
+					$ar_XML_ID[strtolower($XML_ID)] = $res["ID"];
 				}
 
 				$strSql = "
@@ -914,15 +922,14 @@ class CAllIBlockProperty
 
 				if($XML_ID)
 				{
-					if(array_key_exists($XML_ID, $ar_XML_ID))
+					if (isset($ar_XML_ID[strtolower($XML_ID)]))
 						$XML_ID = md5(uniqid("", true));
-					$ar_XML_ID[$XML_ID] = 0;
 				}
 				else
 				{
 					$XML_ID = md5(uniqid("", true));
-					$ar_XML_ID[$XML_ID] = 0;
 				}
+				$ar_XML_ID[strtolower($XML_ID)] = 0;
 
 				$strSql = "
 					INSERT INTO b_iblock_property_enum
@@ -993,179 +1000,114 @@ class CAllIBlockProperty
 		return GetMessage("IBLOCK_PROPERTY_NOT_FOUND",array("#ID#"=>$ID));
 	}
 
-	function _DateTime_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyDateTime::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _DateTime_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "S",
-			"USER_TYPE" => "DateTime",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_DATETIME_DESC"),
-			//optional handlers
-			"GetPublicViewHTML" => array("CIBlockPropertyDateTime","GetPublicViewHTML"),
-			"GetPublicEditHTML" => array("CIBlockPropertyDateTime","GetPublicEditHTML"),
-			"GetAdminListViewHTML" => array("CIBlockPropertyDateTime","GetAdminListViewHTML"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyDateTime","GetPropertyFieldHtml"),
-			"CheckFields" => array("CIBlockPropertyDateTime","CheckFields"),
-			"ConvertToDB" => array("CIBlockPropertyDateTime","ConvertToDB"),
-			"ConvertFromDB" => array("CIBlockPropertyDateTime","ConvertFromDB"),
-			"GetSettingsHTML" => array("CIBlockPropertyDateTime","GetSettingsHTML"),
-			"GetAdminFilterHTML" => array("CIBlockPropertyDateTime","GetAdminFilterHTML"),
-			"GetPublicFilterHTML" => array("CIBlockPropertyDateTime","GetPublicFilterHTML"),
-			"AddFilterFields" => array("CIBlockPropertyDateTime","AddFilterFields"),
-		);
+		return CIBlockPropertyDateTime::GetUserTypeDescription();
 	}
 
-	function _Date_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyDate::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _Date_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "S",
-			"USER_TYPE" => "Date",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_DATE_DESC"),
-			//optional handlers
-			"GetPublicViewHTML" => array("CIBlockPropertyDate","GetPublicViewHTML"),
-			"GetPublicEditHTML" => array("CIBlockPropertyDate","GetPublicEditHTML"),
-			"GetAdminListViewHTML" => array("CIBlockPropertyDate","GetAdminListViewHTML"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyDate","GetPropertyFieldHtml"),
-			"CheckFields" => array("CIBlockPropertyDate","CheckFields"),
-			"ConvertToDB" => array("CIBlockPropertyDate","ConvertToDB"),
-			"ConvertFromDB" => array("CIBlockPropertyDate","ConvertFromDB"),
-			"GetSettingsHTML" => array("CIBlockPropertyDate","GetSettingsHTML"),
-			"GetAdminFilterHTML" => array("CIBlockPropertyDate","GetAdminFilterHTML"),
-			"GetPublicFilterHTML" => array("CIBlockPropertyDate","GetPublicFilterHTML"),
-			"AddFilterFields" => array("CIBlockPropertyDate","AddFilterFields"),
-		);
+		return CIBlockPropertyDate::GetUserTypeDescription();
 	}
 
-	function _XmlID_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyXmlID::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _XmlID_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE"		=>"S",
-			"USER_TYPE"		=>"ElementXmlID",
-			"DESCRIPTION"		=>GetMessage("IBLOCK_PROP_XMLID_DESC"),
-			"GetPublicViewHTML"	=>array("CIBlockPropertyXmlID","GetPublicViewHTML"),
-			"GetAdminListViewHTML"	=>array("CIBlockPropertyXmlID","GetAdminListViewHTML"),
-			"GetPropertyFieldHtml"	=>array("CIBlockPropertyXmlID","GetPropertyFieldHtml"),
-			"GetSettingsHTML"	=>array("CIBlockPropertyXmlID","GetSettingsHTML"),
-		);
+		return CIBlockPropertyXmlID::GetUserTypeDescription();
 	}
 
-	function _FileMan_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyFileMan::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _FileMan_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE"		=>"S",
-			"USER_TYPE"		=>"FileMan",
-			"DESCRIPTION"		=>GetMessage("IBLOCK_PROP_FILEMAN_DESC"),
-			"GetPropertyFieldHtml"	=>array("CIBlockPropertyFileMan","GetPropertyFieldHtml"),
-			"GetPropertyFieldHtmlMulty" => array('CIBlockPropertyFileMan','GetPropertyFieldHtmlMulty'),
-			"ConvertToDB"		=>array("CIBlockPropertyFileMan","ConvertToDB"),
-			"ConvertFromDB"		=>array("CIBlockPropertyFileMan","ConvertFromDB"),
-			"GetSettingsHTML" => array("CIBlockPropertyFileMan","GetSettingsHTML"),
-		);
+		return CIBlockPropertyFileMan::GetUserTypeDescription();
 	}
 
-	function _HTML_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyHTML::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _HTML_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "S",
-			"USER_TYPE" => "HTML",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_HTML_DESC"),
-			"GetPublicViewHTML" => array("CIBlockPropertyHTML","GetPublicViewHTML"),
-			"GetPublicEditHTML" => array("CIBlockPropertyHTML","GetPublicEditHTML"),
-			"GetAdminListViewHTML" => array("CIBlockPropertyHTML","GetAdminListViewHTML"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyHTML","GetPropertyFieldHtml"),
-			"ConvertToDB" => array("CIBlockPropertyHTML","ConvertToDB"),
-			"ConvertFromDB" => array("CIBlockPropertyHTML","ConvertFromDB"),
-			"GetLength" =>array("CIBlockPropertyHTML","GetLength"),
-			"PrepareSettings" =>array("CIBlockPropertyHTML","PrepareSettings"),
-			"GetSettingsHTML" =>array("CIBlockPropertyHTML","GetSettingsHTML"),
-		);
+		return CIBlockPropertyHTML::GetUserTypeDescription();
 	}
 
-	function _ElementList_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyElementList::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _ElementList_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "E",
-			"USER_TYPE" => "EList",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_ELIST_DESC"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyElementList","GetPropertyFieldHtml"),
-			"GetPropertyFieldHtmlMulty" => array("CIBlockPropertyElementList","GetPropertyFieldHtmlMulty"),
-			"GetPublicEditHTML" => array("CIBlockPropertyElementList","GetPropertyFieldHtml"),
-			"GetPublicEditHTMLMulty" => array("CIBlockPropertyElementList","GetPropertyFieldHtmlMulty"),
-			"GetPublicViewHTML" => array("CIBlockPropertyElementList", "GetPublicViewHTML"),
-			"GetAdminFilterHTML" => array("CIBlockPropertyElementList","GetAdminFilterHTML"),
-			"PrepareSettings" =>array("CIBlockPropertyElementList","PrepareSettings"),
-			"GetSettingsHTML" =>array("CIBlockPropertyElementList","GetSettingsHTML"),
-			"GetExtendedValue" => array("CIBlockPropertyElementList", "GetExtendedValue"),
-		);
+		return CIBlockPropertyElementList::GetUserTypeDescription();
 	}
 
-	function _Sequence_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertySequence::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _Sequence_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "N",
-			"USER_TYPE" => "Sequence",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_SEQUENCE_DESC"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertySequence","GetPropertyFieldHtml"),
-			"GetPublicEditHTML" => array("CIBlockPropertySequence","GetPropertyFieldHtml"),
-			"PrepareSettings" =>array("CIBlockPropertySequence","PrepareSettings"),
-			"GetSettingsHTML" =>array("CIBlockPropertySequence","GetSettingsHTML"),
-			"GetAdminFilterHTML" => array("CIBlockPropertySequence","GetPublicFilterHTML"),
-			"GetPublicFilterHTML" => array("CIBlockPropertySequence","GetPublicFilterHTML"),
-			"AddFilterFields" => array("CIBlockPropertySequence","AddFilterFields"),
-		);
+		return CIBlockPropertySequence::GetUserTypeDescription();
 	}
 
-	function _ElementAutoComplete_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertyElementAutoComplete::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _ElementAutoComplete_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "E",
-			"USER_TYPE" => "EAutocomplete",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_EAUTOCOMPLETE_DESC"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyElementAutoComplete", "GetPropertyFieldHtml"),
-			"GetPropertyFieldHtmlMulty" => array('CIBlockPropertyElementAutoComplete','GetPropertyFieldHtmlMulty'),
-			"GetAdminListViewHTML" => array("CIBlockPropertyElementAutoComplete","GetAdminListViewHTML"),
-			"GetPublicViewHTML" => array("CIBlockPropertyElementAutoComplete", "GetPublicViewHTML"),
-			"GetPublicEditHTML" => array("CIBlockPropertyElementAutoComplete", "GetPublicEditHTML"),
-			"GetAdminFilterHTML" => array('CIBlockPropertyElementAutoComplete','GetAdminFilterHTML'),
-			"GetSettingsHTML" => array('CIBlockPropertyElementAutoComplete','GetSettingsHTML'),
-			"PrepareSettings" => array('CIBlockPropertyElementAutoComplete','PrepareSettings'),
-			"AddFilterFields" => array('CIBlockPropertyElementAutoComplete','AddFilterFields'),
-		);
+		return CIBlockPropertyElementAutoComplete::GetUserTypeDescription();
 	}
 
-	function _SKU_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertySKU::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _SKU_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "E",
-			"USER_TYPE" =>"SKU",
-			"DESCRIPTION" => GetMessage('IBLOCK_PROP_SKU_DESC'),
-			"GetPropertyFieldHtml" => array("CIBlockPropertySKU", "GetPropertyFieldHtml"),
-			"GetPropertyFieldHtmlMulty" => array("CIBlockPropertySKU", "GetPropertyFieldHtml"),
-			"GetPublicViewHTML" => array("CIBlockPropertySKU", "GetPublicViewHTML"),
-			"GetPublicEditHTML" => array("CIBlockPropertySKU", "GetPublicEditHTML"),
-			"GetAdminListViewHTML" => array("CIBlockPropertySKU","GetAdminListViewHTML"),
-			"GetAdminFilterHTML" => array('CIBlockPropertySKU','GetAdminFilterHTML'),
-			"GetSettingsHTML" => array('CIBlockPropertySKU','GetSettingsHTML'),
-			"PrepareSettings" => array('CIBlockPropertySKU','PrepareSettings'),
-			"AddFilterFields" => array('CIBlockPropertySKU','AddFilterFields'),
-		);
+		return CIBlockPropertySKU::GetUserTypeDescription();
 	}
 
-	function _SectionAutoComplete_GetUserTypeDescription()
+	/**
+	 * @deprecated deprecated since iblock 17.0.9
+	 * @see \CIBlockPropertySectionAutoComplete::GetUserTypeDescription()
+	 *
+	 * @return array
+	 */
+	public static function _SectionAutoComplete_GetUserTypeDescription()
 	{
-		return array(
-			"PROPERTY_TYPE" => "G",
-			"USER_TYPE" => "SectionAuto",
-			"DESCRIPTION" => GetMessage("IBLOCK_PROP_SAUTOCOMPLETE_DESC"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertySectionAutoComplete", "GetPropertyFieldHtml"),
-			"GetPropertyFieldHtmlMulty" => array('CIBlockPropertySectionAutoComplete','GetPropertyFieldHtmlMulty'),
-			"GetAdminListViewHTML" => array("CIBlockPropertySectionAutoComplete","GetAdminListViewHTML"),
-			"GetPublicViewHTML" => array("CIBlockPropertySectionAutoComplete", "GetPublicViewHTML"),
-			"GetPublicEditHTML" => array("CIBlockPropertySectionAutoComplete", "GetPublicEditHTML"),
-			"GetAdminFilterHTML" => array('CIBlockPropertySectionAutoComplete','GetAdminFilterHTML'),
-			"GetSettingsHTML" => array('CIBlockPropertySectionAutoComplete','GetSettingsHTML'),
-			"PrepareSettings" => array('CIBlockPropertySectionAutoComplete','PrepareSettings'),
-			"AddFilterFields" => array('CIBlockPropertySectionAutoComplete','AddFilterFields'),
-		);
+		return CIBlockPropertySectionAutoComplete::GetUserTypeDescription();
 	}
 
 	function _Update($ID, $arFields, $bCheckDescription = false)

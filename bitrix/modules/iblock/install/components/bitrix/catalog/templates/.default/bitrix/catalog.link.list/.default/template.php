@@ -39,7 +39,7 @@ $APPLICATION->IncludeComponent(
 		"PAGE_ELEMENT_COUNT" => $arParams["PAGE_ELEMENT_COUNT"],
 		"LINE_ELEMENT_COUNT" => $arParams["LINE_ELEMENT_COUNT"],
 		"PROPERTY_CODE" => $arParams["PROPERTY_CODE"],
-		"PRICE_CODE" => $arParams["PRICE_CODE"],
+		"PRICE_CODE" => $arParams["~PRICE_CODE"],
 		"USE_PRICE_COUNT" => $arParams["USE_PRICE_COUNT"],
 		"SHOW_PRICE_COUNT" => $arParams["SHOW_PRICE_COUNT"],
 		"BY_LINK" => "Y",
@@ -55,6 +55,7 @@ $APPLICATION->IncludeComponent(
 		"CONVERT_CURRENCY" => $arParams["CONVERT_CURRENCY"],
 		"CURRENCY_ID" => $arParams["CURRENCY_ID"],
 		"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+		"HIDE_NOT_AVAILABLE_OFFERS" => $arParams["HIDE_NOT_AVAILABLE_OFFERS"],
 		"TEMPLATE_THEME" => (isset($arParams["TEMPLATE_THEME"]) ? $arParams["TEMPLATE_THEME"] : ""),
 		"PRODUCT_DISPLAY_MODE" => (isset($arParams["PRODUCT_DISPLAY_MODE"]) ? $arParams["PRODUCT_DISPLAY_MODE"] : ""),
 		"ADD_PICT_PROP" => (isset($arParams["ADD_PICT_PROP"]) ? $arParams["ADD_PICT_PROP"] : ""),
@@ -75,4 +76,3 @@ $APPLICATION->IncludeComponent(
 	$component,
 	array('HIDE_ICONS' => 'Y')
 );
-?>

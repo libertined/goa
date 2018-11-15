@@ -5,6 +5,8 @@ $type = $arCurrentValues["PLAYER_TYPE"] ? $arCurrentValues["PLAYER_TYPE"] : 'aut
 $adv_mode = ($arCurrentValues["ADVANCED_MODE_SETTINGS"] == 'Y');
 $hidden = ($adv_mode) ? "N" : "Y";
 
+$defaultVideoJsSkinPath = '/bitrix/js/fileman/player/videojs/skins';
+
 if (!function_exists('getSkinsFromDir'))
 {
 	function getSkinsFromDir($path) //http://jabber.bx/view.php?id=28856
@@ -27,6 +29,9 @@ if (!function_exists('getSkinsFromDir'))
 			{
 				$name = substr($f, 0, - strlen($ext) - 1); // name of the skin
 				if (strlen($name) <= 0)
+					continue;
+
+				if (strpos($name, '.min') !== false)
 					continue;
 
 				$Skin = array('filename' => $f);
@@ -201,6 +206,14 @@ if ($arCurrentValues["USE_PLAYLIST"] == 'Y')
 		"DEFAULT" => "",
 		"HIDDEN" => $hidden,
 	);
+
+	$arParams["USE_PLAYLIST_AS_SOURCES"] = Array(
+		"PARENT" => "BASE_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_USE_PLAYLIST_AS_SOURCES"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N",
+		"HIDDEN" => $hidden,
+	);
 }
 
 if ($type == 'flv')
@@ -285,6 +298,12 @@ else
 
 if ($adv_mode)
 {
+	$arParams["TYPE"] = array(
+		"PARENT" => "ADDITIONAL_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_FILE_TYPE"),
+		"DEFAULT" => "",
+		"HIDDEN" => $hidden,
+	);
 	$arParams["PREVIEW"] = Array(
 		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_PREVIEW_IMAGE"),
@@ -372,7 +391,7 @@ if ($type == 'flv')
 		"HIDDEN" => $hidden,
 	);
 
-	if ($arCurrentValues['SKIN_PATH'] == "/bitrix/components/bitrix/player/videojs/skins")
+	if ($arCurrentValues['SKIN_PATH'] == $defaultVideoJsSkinPath)
 		$arCurrentValues['SKIN_PATH'] = "/bitrix/components/bitrix/player/mediaplayer/skins";
 	$arSkins = getSkinsEx($arCurrentValues['SKIN_PATH'] ? $arCurrentValues['SKIN_PATH'] : "/bitrix/components/bitrix/player/mediaplayer/skins");
 
@@ -748,15 +767,15 @@ if ($type == 'videojs' || $type == 'auto')
 		"TYPE" => "FILE",
 		"FD_TARGET" => "D",
 		"FD_UPLOAD" => false,
-		"DEFAULT" => "/bitrix/components/bitrix/player/videojs/skins",
+		"DEFAULT" => $defaultVideoJsSkinPath,
 		"REFRESH" => "Y",
 		"HIDDEN" => $hidden,
 	);
 
 	if ($arCurrentValues['SKIN_PATH'] == "/bitrix/components/bitrix/player/mediaplayer/skins")
-		$arCurrentValues['SKIN_PATH'] = "/bitrix/components/bitrix/player/videojs/skins";
+		$arCurrentValues['SKIN_PATH'] = $defaultVideoJsSkinPath;
 
-	$arSkins = getSkinsEx($arCurrentValues['SKIN_PATH'] ? $arCurrentValues['SKIN_PATH'] : "/bitrix/components/bitrix/player/videojs/skins");
+	$arSkins = getSkinsEx($arCurrentValues['SKIN_PATH'] ? $arCurrentValues['SKIN_PATH'] : $defaultVideoJsSkinPath);
 
 	$arParams["SKIN"] = Array(
 		"PARENT" => "APPEARANCE",
@@ -782,6 +801,16 @@ $arParams["AUTOSTART"] = Array(
 	"TYPE" => "CHECKBOX",
 	"DEFAULT" => "N"
 );
+
+if ($arCurrentValues['AUTOSTART'] != 'Y')
+{
+	$arParams["AUTOSTART_ON_SCROLL"] = Array(
+		"PARENT" => $playback_parent,
+		"NAME" => GetMessage("PC_PAR_AUTOSTART_ON_SCROLL"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N"
+	);
+}
 
 $arParams["REPEAT"] = Array(
 	"PARENT" => $playback_parent,

@@ -90,24 +90,26 @@ if (!empty($arParams['LABEL_PROP_POSITION']))
 	}
 }
 
-$arParams['MESS_BTN_BUY'] = $arParams['MESS_BTN_BUY'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_BUY');
-$arParams['MESS_BTN_DETAIL'] = $arParams['MESS_BTN_DETAIL'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_DETAIL');
-$arParams['MESS_BTN_COMPARE'] = $arParams['MESS_BTN_COMPARE'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_COMPARE');
-$arParams['MESS_BTN_SUBSCRIBE'] = $arParams['MESS_BTN_SUBSCRIBE'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_SUBSCRIBE');
-$arParams['MESS_BTN_ADD_TO_BASKET'] = $arParams['MESS_BTN_ADD_TO_BASKET'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_ADD_TO_BASKET');
-$arParams['MESS_NOT_AVAILABLE'] = $arParams['MESS_NOT_AVAILABLE'] ?: Loc::getMessage('CT_BCS_TPL_MESS_PRODUCT_NOT_AVAILABLE');
-$arParams['MESS_SHOW_MAX_QUANTITY'] = $arParams['MESS_SHOW_MAX_QUANTITY'] ?: Loc::getMessage('CT_BCS_CATALOG_SHOW_MAX_QUANTITY');
-$arParams['MESS_RELATIVE_QUANTITY_MANY'] = $arParams['MESS_RELATIVE_QUANTITY_MANY'] ?: Loc::getMessage('CT_BCS_CATALOG_RELATIVE_QUANTITY_MANY');
-$arParams['MESS_RELATIVE_QUANTITY_FEW'] = $arParams['MESS_RELATIVE_QUANTITY_FEW'] ?: Loc::getMessage('CT_BCS_CATALOG_RELATIVE_QUANTITY_FEW');
+$arParams['~MESS_BTN_BUY'] = $arParams['~MESS_BTN_BUY'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_BUY');
+$arParams['~MESS_BTN_DETAIL'] = $arParams['~MESS_BTN_DETAIL'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_DETAIL');
+$arParams['~MESS_BTN_COMPARE'] = $arParams['~MESS_BTN_COMPARE'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_COMPARE');
+$arParams['~MESS_BTN_SUBSCRIBE'] = $arParams['~MESS_BTN_SUBSCRIBE'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_SUBSCRIBE');
+$arParams['~MESS_BTN_ADD_TO_BASKET'] = $arParams['~MESS_BTN_ADD_TO_BASKET'] ?: Loc::getMessage('CT_BCS_TPL_MESS_BTN_ADD_TO_BASKET');
+$arParams['~MESS_NOT_AVAILABLE'] = $arParams['~MESS_NOT_AVAILABLE'] ?: Loc::getMessage('CT_BCS_TPL_MESS_PRODUCT_NOT_AVAILABLE');
+$arParams['~MESS_SHOW_MAX_QUANTITY'] = $arParams['~MESS_SHOW_MAX_QUANTITY'] ?: Loc::getMessage('CT_BCS_CATALOG_SHOW_MAX_QUANTITY');
+$arParams['~MESS_RELATIVE_QUANTITY_MANY'] = $arParams['~MESS_RELATIVE_QUANTITY_MANY'] ?: Loc::getMessage('CT_BCS_CATALOG_RELATIVE_QUANTITY_MANY');
+$arParams['~MESS_RELATIVE_QUANTITY_FEW'] = $arParams['~MESS_RELATIVE_QUANTITY_FEW'] ?: Loc::getMessage('CT_BCS_CATALOG_RELATIVE_QUANTITY_FEW');
+
+$arParams['MESS_BTN_LAZY_LOAD'] = $arParams['MESS_BTN_LAZY_LOAD'] ?: Loc::getMessage('CT_BCS_CATALOG_MESS_BTN_LAZY_LOAD');
 
 $generalParams = array(
 	'SHOW_DISCOUNT_PERCENT' => $arParams['SHOW_DISCOUNT_PERCENT'],
 	'PRODUCT_DISPLAY_MODE' => $arParams['PRODUCT_DISPLAY_MODE'],
 	'SHOW_MAX_QUANTITY' => $arParams['SHOW_MAX_QUANTITY'],
 	'RELATIVE_QUANTITY_FACTOR' => $arParams['RELATIVE_QUANTITY_FACTOR'],
-	'MESS_SHOW_MAX_QUANTITY' => $arParams['MESS_SHOW_MAX_QUANTITY'],
-	'MESS_RELATIVE_QUANTITY_MANY' => $arParams['MESS_RELATIVE_QUANTITY_MANY'],
-	'MESS_RELATIVE_QUANTITY_FEW' => $arParams['MESS_RELATIVE_QUANTITY_FEW'],
+	'MESS_SHOW_MAX_QUANTITY' => $arParams['~MESS_SHOW_MAX_QUANTITY'],
+	'MESS_RELATIVE_QUANTITY_MANY' => $arParams['~MESS_RELATIVE_QUANTITY_MANY'],
+	'MESS_RELATIVE_QUANTITY_FEW' => $arParams['~MESS_RELATIVE_QUANTITY_FEW'],
 	'SHOW_OLD_PRICE' => $arParams['SHOW_OLD_PRICE'],
 	'USE_PRODUCT_QUANTITY' => $arParams['USE_PRODUCT_QUANTITY'],
 	'PRODUCT_QUANTITY_VARIABLE' => $arParams['PRODUCT_QUANTITY_VARIABLE'],
@@ -124,6 +126,7 @@ $generalParams = array(
 	'DISCOUNT_POSITION_CLASS' => $discountPositionClass,
 	'SLIDER_INTERVAL' => $arParams['SLIDER_INTERVAL'],
 	'SLIDER_PROGRESS' => $arParams['SLIDER_PROGRESS'],
+	'~BASKET_URL' => $arParams['~BASKET_URL'],
 	'~ADD_URL_TEMPLATE' => $arResult['~ADD_URL_TEMPLATE'],
 	'~BUY_URL_TEMPLATE' => $arResult['~BUY_URL_TEMPLATE'],
 	'~COMPARE_URL_TEMPLATE' => $arResult['~COMPARE_URL_TEMPLATE'],
@@ -132,13 +135,16 @@ $generalParams = array(
 	'USE_ENHANCED_ECOMMERCE' => $arParams['USE_ENHANCED_ECOMMERCE'],
 	'DATA_LAYER_NAME' => $arParams['DATA_LAYER_NAME'],
 	'BRAND_PROPERTY' => $arParams['BRAND_PROPERTY'],
-	'MESS_BTN_BUY' => $arParams['MESS_BTN_BUY'],
-	'MESS_BTN_DETAIL' => $arParams['MESS_BTN_DETAIL'],
-	'MESS_BTN_COMPARE' => $arParams['MESS_BTN_COMPARE'],
-	'MESS_BTN_SUBSCRIBE' => $arParams['MESS_BTN_SUBSCRIBE'],
-	'MESS_BTN_ADD_TO_BASKET' => $arParams['MESS_BTN_ADD_TO_BASKET'],
-	'MESS_NOT_AVAILABLE' => $arParams['MESS_NOT_AVAILABLE']
+	'MESS_BTN_BUY' => $arParams['~MESS_BTN_BUY'],
+	'MESS_BTN_DETAIL' => $arParams['~MESS_BTN_DETAIL'],
+	'MESS_BTN_COMPARE' => $arParams['~MESS_BTN_COMPARE'],
+	'MESS_BTN_SUBSCRIBE' => $arParams['~MESS_BTN_SUBSCRIBE'],
+	'MESS_BTN_ADD_TO_BASKET' => $arParams['~MESS_BTN_ADD_TO_BASKET'],
+	'MESS_NOT_AVAILABLE' => $arParams['~MESS_NOT_AVAILABLE']
 );
+
+$obName = 'ob'.preg_replace('/[^a-zA-Z0-9_]/', 'x', $this->GetEditAreaId($navParams['NavNum']));
+$containerName = 'container-'.$navParams['NavNum'];
 
 if ($showTopPager)
 {
@@ -161,7 +167,7 @@ if ($arParams['HIDE_SECTION_DESCRIPTION'] !== 'Y')
 }
 ?>
 
-<div class="catalog-section bx-<?=$arParams['TEMPLATE_THEME']?>" data-entity="container-<?=$navParams['NavNum']?>">
+<div class="catalog-section bx-<?=$arParams['TEMPLATE_THEME']?>" data-entity="<?=$containerName?>">
 	<?
 	if (!empty($arResult['ITEMS']) && !empty($arResult['ITEM_ROWS']))
 	{
@@ -750,8 +756,6 @@ if ($showBottomPager)
 $signer = new \Bitrix\Main\Security\Sign\Signer;
 $signedTemplate = $signer->sign($templateName, 'catalog.section');
 $signedParams = $signer->sign(base64_encode(serialize($arResult['ORIGINAL_PARAMETERS'])), 'catalog.section');
-$mainId = $this->GetEditAreaId($navParams['NavNum']);
-$obName = 'ob'.preg_replace('/[^a-zA-Z0-9_]/', 'x', $mainId);
 ?>
 <script>
 	BX.message({
@@ -772,20 +776,22 @@ $obName = 'ob'.preg_replace('/[^a-zA-Z0-9_]/', 'x', $mainId);
 		RELATIVE_QUANTITY_MANY: '<?=CUtil::JSEscape($arParams['MESS_RELATIVE_QUANTITY_MANY'])?>',
 		RELATIVE_QUANTITY_FEW: '<?=CUtil::JSEscape($arParams['MESS_RELATIVE_QUANTITY_FEW'])?>',
 		BTN_MESSAGE_COMPARE_REDIRECT: '<?=GetMessageJS('CT_BCS_CATALOG_BTN_MESSAGE_COMPARE_REDIRECT')?>',
-		BTN_MESSAGE_LAZY_LOAD: '<?=$arParams['MESS_BTN_LAZY_LOAD']?>',
+		BTN_MESSAGE_LAZY_LOAD: '<?=CUtil::JSEscape($arParams['MESS_BTN_LAZY_LOAD'])?>',
 		BTN_MESSAGE_LAZY_LOAD_WAITER: '<?=GetMessageJS('CT_BCS_CATALOG_BTN_MESSAGE_LAZY_LOAD_WAITER')?>',
-		SITE_ID: '<?=SITE_ID?>'
+		SITE_ID: '<?=CUtil::JSEscape($component->getSiteId())?>'
 	});
 	var <?=$obName?> = new JCCatalogSectionComponent({
-		siteId: '<?=CUtil::JSEscape(SITE_ID)?>',
+		siteId: '<?=CUtil::JSEscape($component->getSiteId())?>',
 		componentPath: '<?=CUtil::JSEscape($componentPath)?>',
 		navParams: <?=CUtil::PhpToJSObject($navParams)?>,
 		deferredLoad: false, // enable it for deferred load
+		initiallyShowHeader: '<?=!empty($arResult['ITEM_ROWS'])?>',
 		bigData: <?=CUtil::PhpToJSObject($arResult['BIG_DATA'])?>,
 		lazyLoad: !!'<?=$showLazyLoad?>',
 		loadOnScroll: !!'<?=($arParams['LOAD_ON_SCROLL'] === 'Y')?>',
 		template: '<?=CUtil::JSEscape($signedTemplate)?>',
 		ajaxId: '<?=CUtil::JSEscape($arParams['AJAX_ID'])?>',
-		parameters: '<?=CUtil::JSEscape($signedParams)?>'
+		parameters: '<?=CUtil::JSEscape($signedParams)?>',
+		container: '<?=$containerName?>'
 	});
 </script>

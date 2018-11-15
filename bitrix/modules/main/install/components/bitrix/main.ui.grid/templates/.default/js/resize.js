@@ -15,10 +15,19 @@
 		{
 			this.parent = parent;
 
-			BX.addCustomEvent(window, 'Grid::headerPinned', BX.delegate(this.registerPinnedTableButtons, this));
-			BX.addCustomEvent(window, 'Grid::updated', BX.delegate(this.registerTableButtons, this));
+			BX.addCustomEvent(window, 'Grid::updated', BX.proxy(this.registerTableButtons, this));
+			BX.addCustomEvent(window, 'Grid::headerUpdated', BX.proxy(this.registerPinnedTableButtons, this));
 
 			this.registerTableButtons();
+			this.registerPinnedTableButtons();
+		},
+
+		destroy: function()
+		{
+			BX.removeCustomEvent(window, 'Grid::updated', BX.proxy(this.registerTableButtons, this));
+			BX.removeCustomEvent(window, 'Grid::headerUpdated', BX.proxy(this.registerPinnedTableButtons, this));
+			BX.type.isArray(this.lastRegisterButtons) && this.lastRegisterButtons.forEach(jsDD.unregisterObject);
+			(this.getButtons() || []).forEach(jsDD.unregisterObject);
 		},
 
 		registerTableButtons: function()
@@ -98,7 +107,6 @@
 			var fixedCell, fixedCellContainer;
 
 			var cpos = BX.pos(cell);
-			var cellContainer = BX.firstChild(cell);
 			var cellAttrWidth = parseFloat(cell.style.width);
 			var sX;
 
@@ -112,17 +120,44 @@
 
 			x = sX > x ? sX : x;
 
+			x = Math.max(x, 80);
+
 			if (x !== cpos.width)
 			{
-				cell.style.width = x+'px';
-				cellContainer.style.width = x+'px';
+				var fixedCells = this.parent.getAllRows()[0]
+					.querySelectorAll('.main-grid-fixed-column').length;
+				var column = this.parent.getColumnByIndex(this.__resizeCell - fixedCells);
+
+				// Resize current column
+				column.forEach(function(item) {
+					item.style.width = x+'px';
+					item.style.minWidth = x+'px';
+					item.style.maxWidth = x+'px';
+				});
+
+				// Resize false columns
+				if (column[0].classList.contains('main-grid-fixed-column'))
+				{
+					column = this.parent.getColumnByIndex(this.__resizeCell - fixedCells + 1);
+
+					column.forEach(function(item) {
+						item.style.width = x+'px';
+						item.style.minWidth = x+'px';
+						item.style.maxWidth = x+'px';
+					});
+				}
+
+				this.parent.adjustFixedColumnsPosition();
+				this.parent.adjustFadePosition(this.parent.getFadeOffset());
 
 				if (BX.type.isDomNode(fixedTable) && BX.type.isDomNode(fixedTable.rows[0]))
 				{
 					fixedCell = fixedTable.rows[0].cells[this.__resizeCell];
 					fixedCellContainer = BX.firstChild(fixedCell);
 					fixedCellContainer.style.width = x+'px';
+					fixedCellContainer.style.minWidth = x+'px';
 					fixedCell.style.width = x+'px';
+					fixedCell.style.minWidth = x+'px';
 				}
 			}
 

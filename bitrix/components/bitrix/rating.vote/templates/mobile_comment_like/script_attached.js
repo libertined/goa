@@ -20,7 +20,7 @@
 			if (!this.box)
 				return false;
 
-			BX.addCustomEvent("onPull-main", BX.proxy(function(data) {
+			BXMobileApp.addCustomEvent("onPull-main", BX.proxy(function(data) {
 				if (data.command == 'rating_vote')
 				{
 					var p = data.params;
@@ -159,9 +159,16 @@
 		},
 		list : function(e) {
 			if (window["app"])
+			{
+				var pathToUserProfile = (
+					BX.message('RVPathToUserProfile')
+						? BX.message('RVPathToUserProfile')
+						: BX.message('RVCPathToUserProfile')
+				);
+
 				window.app.openTable({
 					callback: function() {},
-					url: (BX.message('MobileSiteDir') ? BX.message('MobileSiteDir') : '/') + 'mobile/index.php?mobile_action=get_likes&RATING_VOTE_TYPE_ID=' + this.entityTypeId + '&RATING_VOTE_ENTITY_ID=' + this.entityId + '&URL=' + BX.message('RVCPathToUserProfile'),
+					url: (BX.message('MobileSiteDir') ? BX.message('MobileSiteDir') : '/') + 'mobile/index.php?mobile_action=get_likes&RATING_VOTE_TYPE_ID=' + this.entityTypeId + '&RATING_VOTE_ENTITY_ID=' + this.entityId + '&URL=' + pathToUserProfile,
 					markmode: false,
 					showtitle: false,
 					modal: false,
@@ -169,6 +176,7 @@
 					outsection: false,
 					cancelname: BX.message('RVCListBack')
 				});
+			}
 			return BX.PreventDefault(e);
 		}
 	};

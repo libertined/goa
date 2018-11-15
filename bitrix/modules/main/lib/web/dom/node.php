@@ -106,6 +106,11 @@ abstract class Node
 		return $this->nodeName;
 	}
 
+	public function setNodeName($a)
+	{
+		$this->nodeName = $a;
+	}
+
 	public function getNodeValue()
 	{
 		return $this->nodeValue;
@@ -259,7 +264,7 @@ abstract class Node
 		$this->insertBefore($newChild);
 	}
 
-	public function insertBefore(Node $newChild, Node $refChild = null)
+	public function insertBefore(Node $newChild, Node $refChild = null, $removeExist = true)
 	{
 		if($newChild->getOwnerDocument() !== $this->getOwnerDocument())
 		{
@@ -271,7 +276,7 @@ abstract class Node
 			throw new DomException('Node refChild not found in childList', DomException::NOT_FOUND_ERR);
 		}
 
-		if($this->haveChild($newChild))
+		if ($removeExist && $this->haveChild($newChild))
 		{
 			$this->removeChild($newChild);
 		}

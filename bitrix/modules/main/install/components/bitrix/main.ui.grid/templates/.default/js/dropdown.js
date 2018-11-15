@@ -148,7 +148,7 @@
 			var subItem = this.getSubItem(item);
 			var value = BX.data(subItem, this.dataValue);
 
-			this.dropdown.innerText = subItem.innerText;
+			BX.firstChild(this.dropdown).innerText = subItem.innerText;
 			this.dropdown.dataset[this.dataValue] = value;
 		},
 

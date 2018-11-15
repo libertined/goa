@@ -30,6 +30,37 @@
 			return BX.hasClass(node, this.parent.settings.classFieldDelete);
 		},
 
+		isFieldValueDelete: function(node)
+		{
+			return (
+				BX.hasClass(node, this.parent.settings.classValueDelete) ||
+				BX.hasClass(node.parentNode, this.parent.settings.classValueDelete)
+			);
+		},
+
+		isDragButton: function(node)
+		{
+			return node && BX.hasClass(node, this.parent.settings.classPresetDragButton);
+		},
+
+		/**
+		 * Clears values of filter field node
+		 * @param {HTMLElement} field
+		 */
+		clearFieldValue: function(field)
+		{
+			if (field)
+			{
+				var controls = BX.Filter.Utils.getByClass(field, this.parent.settings.classControl, true);
+				var squares = BX.Filter.Utils.getByClass(field, this.parent.settings.classSquare, true);
+
+				(squares || []).forEach(BX.remove);
+				(controls || []).forEach(function(control) {
+					control && 'value' in control && (control.value = '');
+				}, this);
+			}
+		},
+
 		getField: function(node)
 		{
 			var field;
@@ -95,7 +126,8 @@
 						block: 'main-ui-control-string',
 						name: fieldData.NAME,
 						placeholder: fieldData.PLACEHOLDER || '',
-						value: fieldData.VALUE,
+						value: (BX.type.isNotEmptyString(fieldData.VALUE) ||
+								BX.type.isNumber(fieldData.VALUE) ? fieldData.VALUE : ''),
 						tabindex: fieldData.TABINDEX
 					}
 				]
@@ -119,27 +151,76 @@
 				deleteTitle: this.parent.getParam('MAIN_UI_FILTER__REMOVE_FIELD'),
 				content: {
 					block: 'main-ui-control-entity',
+					mix: 'main-ui-control',
+					attrs: {
+						'data-multiple': JSON.stringify(fieldData.MULTIPLE)
+					},
 					content: []
 				}
 			};
 
-			if ('_label' in fieldData.VALUES && BX.type.isNotEmptyString(fieldData.VALUES['_label']))
+			if ('_label' in fieldData.VALUES && !!fieldData.VALUES._label)
 			{
-				field.content.content.push({
-					block: 'main-ui-square',
-					tag: 'span',
-					name: '_label' in fieldData.VALUES ? fieldData.VALUES['_label'] : '',
-					item: fieldData.VALUES
-				});
+				if (fieldData.MULTIPLE)
+				{
+					var label = !!fieldData.VALUES._label ? fieldData.VALUES._label : [];
+
+					if (BX.type.isPlainObject(label))
+					{
+						label = Object.keys(label).map(function(key) {
+							return label[key];
+						});
+					}
+
+					if (!BX.type.isArray(label))
+					{
+						label = [ label ];
+					}
+
+					var value = !!fieldData.VALUES._value ? fieldData.VALUES._value : [];
+					if (BX.type.isPlainObject(value))
+					{
+						value = Object.keys(value).map(function(key) {
+							return value[key];
+						});
+					}
+
+					if (!BX.type.isArray(value))
+					{
+						value = [ value ];
+					}
+
+					label.forEach(function(currentLabel, index) {
+						field.content.content.push({
+							block: 'main-ui-square',
+							tag: 'span',
+							name: currentLabel,
+							item: {_label: currentLabel, _value: value[index]}
+						});
+					});
+				}
+				else
+				{
+					field.content.content.push({
+						block: 'main-ui-square',
+						tag: 'span',
+						name: '_label' in fieldData.VALUES ? fieldData.VALUES['_label'] : '',
+						item: fieldData.VALUES
+					});
+				}
 			}
 
 			field.content.content.push(
 				{
-					block: 'main-ui-control-string',
-					name: fieldData.NAME + '_label',
-					placeholder: fieldData.PLACEHOLDER || '',
-					value: '',
-					tabindex: fieldData.TABINDEX
+					block: 'main-ui-square-search',
+					tag: 'span',
+					content: {
+						block: 'main-ui-control-string',
+						name: fieldData.NAME + '_label',
+						tabindex: fieldData.TABINDEX,
+						type: 'text',
+						placeholder: fieldData.PLACEHOLDER || ''
+					}
 				},
 				{
 					block: 'main-ui-control-string',
@@ -154,19 +235,20 @@
 
 			field = BX.decl(field);
 			input = BX.Filter.Utils.getBySelector(field, '.main-ui-control-string[type="text"]');
+			BX.addClass(input, 'main-ui-square-search-item')
 
-			BX.bind(input, 'focus', BX.delegate(this._onCustomEntityInputFocus, this));
-			BX.bind(input, 'click', BX.delegate(this._onCustomEntityInputClick, this));
+			BX.bind(input, 'focus', BX.proxy(this._onCustomEntityInputFocus, this));
+			BX.bind(input, 'click', BX.proxy(this._onCustomEntityInputClick, this));
 
 			if (!this.bindDocument)
 			{
-				BX.bind(document, 'click', BX.delegate(this._onCustomEntityBlur, this));
-				document.addEventListener('focus', BX.delegate(this._onDocumentFocus, this), true);
+				BX.bind(document, 'click', BX.proxy(this._onCustomEntityBlur, this));
+				document.addEventListener('focus', BX.proxy(this._onDocumentFocus, this), true);
 				this.bindDocument = true;
 			}
 
-			BX.bind(input, 'keydown', BX.delegate(this._onCustomEntityKeydown, this));
-			BX.bind(field, 'click', BX.delegate(this._onCustomEntityFieldClick, this));
+			BX.bind(input, 'keydown', BX.proxy(this._onCustomEntityKeydown, this));
+			BX.bind(field, 'click', BX.proxy(this._onCustomEntityFieldClick, this));
 
 			return field;
 		},
@@ -206,36 +288,36 @@
 
 		_onDocumentFocus: function(event)
 		{
-			var inPopupEvent = false;
-			if (this.lastLabelInput && event.target !== this.lastLabelInput)
-			{
-				if (BX.type.isArray(this.popupInputs) && this.popupInputs.length)
-				{
-					inPopupEvent = this.popupInputs.some(function(current) {
-						return current === event.target;
-					});
-				}
+			var CustomEntity = this.getCustomEntityInstance();
+			var popupContainer = CustomEntity.getPopupContainer();
+			var isOnInputField = CustomEntity.getLabelNode() === event.target;
+			var isInsidePopup = !!popupContainer && popupContainer.contains(event.target);
 
-				if (!inPopupEvent)
-				{
-					this._onCustomEntityBlur(event);
-				}
+			if (!isOnInputField && !isInsidePopup)
+			{
+				this._onCustomEntityBlur(event);
 			}
+
 		},
 
 		_onCustomEntityKeydown: function(event)
 		{
-			var square = BX.Filter.Utils.getByClass(event.target.parentNode, this.parent.settings.classSquare);
-			var input;
+			var squares = BX.Filter.Utils.getByClass(event.target.parentNode.parentNode, this.parent.settings.classSquare, true);
+			var square = null;
 
-			if (event.code === 'Backspace' && event.currentTarget.selectionStart === 0)
+			if (squares.length)
+			{
+				square = squares[squares.length-1];
+			}
+
+			if (BX.Filter.Utils.isKey(event, 'backspace') && event.currentTarget.selectionStart === 0)
 			{
 				if (BX.type.isDomNode(square))
 				{
 					if (BX.hasClass(square, this.parent.settings.classSquareSelected))
 					{
 						BX.remove(square);
-						input = BX.Filter.Utils.getBySelector(event.target.parentNode, 'input[type="hidden"]');
+						var input = BX.Filter.Utils.getBySelector(event.target.parentNode.parentNode, 'input[type="hidden"]');
 						input.value = '';
 						BX.fireEvent(input, 'input');
 					}
@@ -259,20 +341,36 @@
 
 				if (BX.type.isDomNode(square))
 				{
+					var CustomEntity = this.getCustomEntityInstance();
+					BX.onCustomEvent(window, 'BX.Main.Filter:customEntityRemove', [CustomEntity]);
 					BX.remove(square);
 				}
 			}
+			else
+			{
+				var input = BX.Filter.Utils.getBySelector(event.target, 'input[type="text"]');
+				BX.fireEvent(input, 'focus');
+			}
 		},
 
-		_onCustomEntityBlur: function()
+		_onCustomEntityBlur: function(event)
 		{
-			var CustomEntity = this.getCustomEntityInstance();
+			var obResult = {
+				stopBlur: false
+			};
+			BX.onCustomEvent(window, 'BX.Main.Filter:onGetStopBlur', [event, obResult]);
 
-			this.lastLabelInput = null;
-			BX.onCustomEvent(window, 'BX.Main.Filter:customEntityBlur', [CustomEntity]);
-			BX.unbind(CustomEntity.getPopupContainer(), 'click', this._stopPropagation);
-			this.popupInputs = null;
-			BX.removeClass(CustomEntity.getField(), this.parent.settings.classFocus);
+			if (
+				typeof obResult.stopBlur == 'undefined'
+				|| !obResult.stopBlur
+			)
+			{
+				var CustomEntity = this.getCustomEntityInstance();
+
+				BX.onCustomEvent(window, 'BX.Main.Filter:customEntityBlur', [CustomEntity]);
+				BX.unbind(CustomEntity.getPopupContainer(), 'click', this._stopPropagation);
+				BX.removeClass(CustomEntity.getField(), this.parent.settings.classFocus);
+			}
 		},
 
 		_stopPropagation: function(event)
@@ -300,17 +398,12 @@
 
 			CustomEntity.setField(field);
 
-			this.lastLabelInput = CustomEntity.getLabelNode();
 			BX.onCustomEvent(window, 'BX.Main.Filter:customEntityFocus', [CustomEntity]);
 
-			//BX.bind(CustomEntity.getPopupContainer(), 'click', this._stopPropagation);
-			//this.popupInputs = BX.findChild(CustomEntity.getPopupContainer(), {tag: 'input'}, true, true);
 			var popupContainer = CustomEntity.getPopupContainer();
 			if(BX.type.isElementNode(popupContainer))
 			{
 				BX.bind(popupContainer, 'click', this._stopPropagation);
-				this.popupInputs = popupContainer.querySelectorAll('input,a,div');
-				this.popupInputs = Array.prototype.slice.call(this.popupInputs);
 			}
 
 			BX.addClass(field, this.parent.settings.classFocus);
@@ -402,92 +495,211 @@
 			});
 		},
 
+
+		createCustomDate: function(fieldData)
+		{
+			var group = {
+				block: 'main-ui-control-field-group',
+				type: fieldData.TYPE,
+				mix: this.parent.getParam('ENABLE_LABEL') ? [this.parent.settings.classFieldWithLabel, 'main-ui-filter-date-group'] : ['main-ui-filter-date-group'],
+				label: this.parent.getParam('ENABLE_LABEL') ? fieldData.LABEL : '',
+				dragTitle: this.parent.getParam('MAIN_UI_FILTER__DRAG_FIELD_TITLE'),
+				deleteTitle: this.parent.getParam('MAIN_UI_FILTER__REMOVE_FIELD'),
+				tabindex: 'TABINDEX' in fieldData ? fieldData.TABINDEX : '',
+				name: 'NAME' in fieldData ? fieldData.NAME : '',
+				deleteButton: true,
+				content: []
+			};
+
+			if (BX.type.isPlainObject(fieldData.VALUE.days))
+			{
+				fieldData.VALUE.days = Object.keys(fieldData.VALUE.days).map(function(index) {
+					return fieldData.VALUE.days[index];
+				});
+			}
+
+			var daysValue = fieldData.DAYS.filter(function(item) {
+				return fieldData.VALUE.days.some(function(value) {
+					return value === item.VALUE;
+				});
+			});
+
+			var days = {
+				block: 'main-ui-control-field',
+				mix: ['main-ui-control-custom-date'],
+				placeholder: fieldData.DAYS_PLACEHOLDER,
+				dragButton: false,
+				content: {
+					block: 'main-ui-multi-select',
+					name: fieldData.NAME + "_days",
+					tabindex: 'TABINDEX' in fieldData ? fieldData.TABINDEX : '',
+					items: fieldData.DAYS,
+					value: daysValue,
+					params: 'PARAMS' in fieldData ? fieldData.PARAMS : {isMulti: true},
+					valueDelete: true,
+					attrs: {"data-placeholder": fieldData.DAYS_PLACEHOLDER}
+				}
+			};
+
+
+			if (BX.type.isPlainObject(fieldData.VALUE.months))
+			{
+				fieldData.VALUE.months = Object.keys(fieldData.VALUE.months).map(function(index) {
+					return fieldData.VALUE.months[index];
+				});
+			}
+
+			var monthsValue = fieldData.MONTHS.filter(function(item) {
+				return fieldData.VALUE.months.some(function(value) {
+					return value === item.VALUE;
+				});
+			});
+
+			var months = {
+				block: 'main-ui-control-field',
+				mix: ['main-ui-control-custom-date'],
+				dragButton: false,
+				content: {
+					block: 'main-ui-multi-select',
+					name: fieldData.NAME + "_months",
+					tabindex: 'TABINDEX' in fieldData ? fieldData.TABINDEX : '',
+					items: fieldData.MONTHS,
+					value: monthsValue,
+					params: 'PARAMS' in fieldData ? fieldData.PARAMS : {isMulti: true},
+					valueDelete: true,
+					attrs: {"data-placeholder": fieldData.MONTHS_PLACEHOLDER}
+				}
+			};
+
+
+			if (BX.type.isPlainObject(fieldData.VALUE.years))
+			{
+				fieldData.VALUE.years = Object.keys(fieldData.VALUE.years).map(function(index) {
+					return fieldData.VALUE.years[index];
+				});
+			}
+
+			var yearsValue = fieldData.YEARS.filter(function(item) {
+				return fieldData.VALUE.years.some(function(value) {
+					return value === item.VALUE;
+				});
+			});
+
+			var years = {
+				block: 'main-ui-control-field',
+				mix: ['main-ui-control-custom-date'],
+				dragButton: false,
+				content: {
+					block: 'main-ui-multi-select',
+					name: fieldData.NAME + "_years",
+					tabindex: 'TABINDEX' in fieldData ? fieldData.TABINDEX : '',
+					items: fieldData.YEARS,
+					value: yearsValue,
+					params: 'PARAMS' in fieldData ? fieldData.PARAMS : {isMulti: true},
+					valueDelete: true,
+					attrs: {"data-placeholder": fieldData.YEARS_PLACEHOLDER}
+				}
+			};
+
+			group.content.push(days);
+			group.content.push(months);
+			group.content.push(years);
+
+			return BX.decl(group);
+		},
+
+
 		_onDateTypeChange: function(instance, data)
 		{
-			var fieldData = {};
-			var dateGroup = null;
-			var group, params, label, fullName, controls, presetData, presetField, index;
-
-			if (BX.type.isPlainObject(data) && 'VALUE' in data)
+			if (this.parent.getPopup().contentContainer.contains(instance.node))
 			{
-				fullName = BX.data(instance.getNode(), 'name');
-				params = instance.getParams();
+				var fieldData = {};
+				var dateGroup = null;
+				var group, params, label, fullName, controls, presetData, presetField, index;
 
-				if (!BX.type.isPlainObject(params) && (fullName.indexOf('_datesel') !== -1 || fullName.indexOf('_numsel') !== -1))
+				if (BX.type.isPlainObject(data) && 'VALUE' in data)
 				{
-					group = instance.getNode().parentNode.parentNode;
-					fieldData.TABINDEX = instance.getInput().getAttribute('tabindex');
-					fieldData.SUB_TYPES = instance.getItems();
-					fieldData.SUB_TYPE = data;
-					fieldData.NAME = BX.data(group, 'name');
-					fieldData.TYPE = BX.data(group, 'type');
+					fullName = BX.data(instance.getNode(), 'name');
+					params = instance.getParams();
 
-					presetData = this.parent.getPreset().getCurrentPresetData();
-
-					if ('FIELDS' in presetData && presetData.FIELDS.length)
+					if (!BX.type.isPlainObject(params) && (fullName.indexOf('_datesel') !== -1 || fullName.indexOf('_numsel') !== -1))
 					{
-						presetField = presetData.FIELDS.filter(function(current) {
-							return current.NAME === fieldData.NAME;
-						}, this);
+						group = instance.getNode().parentNode.parentNode;
+						fieldData.TABINDEX = instance.getInput().getAttribute('tabindex');
+						fieldData.SUB_TYPES = instance.getItems();
+						fieldData.SUB_TYPE = data;
+						fieldData.NAME = BX.data(group, 'name');
+						fieldData.TYPE = BX.data(group, 'type');
 
-						if (presetField.length)
+						presetData = this.parent.getPreset().getCurrentPresetData();
+
+						if ('FIELDS' in presetData && presetData.FIELDS.length)
 						{
-							presetField = presetField[0];
+							presetField = presetData.FIELDS.filter(function(current) {
+								return current.NAME === fieldData.NAME;
+							}, this);
 
-							if (fullName.indexOf('_datesel') !== -1)
+							if (presetField.length)
 							{
-								fieldData.MONTHS = presetField.MONTHS;
-								fieldData.MONTH = presetField.MONTH;
-								fieldData.YEARS = presetField.YEARS;
-								fieldData.YEAR = presetField.YEAR;
-								fieldData.QUARTERS = presetField.QUARTERS;
-								fieldData.QUARTER = presetField.QUARTER;
+								presetField = presetField[0];
+
+								if (fullName.indexOf('_datesel') !== -1)
+								{
+									fieldData.MONTHS = presetField.MONTHS;
+									fieldData.MONTH = presetField.MONTH;
+									fieldData.YEARS = presetField.YEARS;
+									fieldData.YEAR = presetField.YEAR;
+									fieldData.QUARTERS = presetField.QUARTERS;
+									fieldData.QUARTER = presetField.QUARTER;
+									fieldData.ENABLE_TIME = presetField.ENABLE_TIME;
+									fieldData.YEARS_SWITCHER = presetField.YEARS_SWITCHER;
+								}
+
+								fieldData.VALUES = presetField.VALUES;
 							}
-
-							fieldData.VALUES = presetField.VALUES;
 						}
-					}
 
-					if (this.parent.getParam('ENABLE_LABEL'))
-					{
-						label = BX.Filter.Utils.getByClass(group, this.parent.settings.classFieldLabel);
-						fieldData.LABEL = label.innerText;
-					}
-
-					if (fullName.indexOf('_datesel') !== -1)
-					{
-						dateGroup = this.createDate(fieldData);
-					}
-					else
-					{
-						dateGroup = this.createNumber(fieldData);
-					}
-
-
-					if (BX.type.isArray(this.parent.fieldsList))
-					{
-						index = this.parent.fieldsList.indexOf(group);
-
-						if (index !== -1)
+						if (this.parent.getParam('ENABLE_LABEL'))
 						{
-							this.parent.fieldsList[index] = dateGroup;
-							this.parent.registerDragItem(dateGroup);
+							label = BX.Filter.Utils.getByClass(group, this.parent.settings.classFieldLabel);
+							fieldData.LABEL = label.innerText;
 						}
+
+						if (fullName.indexOf('_datesel') !== -1)
+						{
+							dateGroup = this.createDate(fieldData);
+						}
+						else
+						{
+							dateGroup = this.createNumber(fieldData);
+						}
+
+
+						if (BX.type.isArray(this.parent.fieldsList))
+						{
+							index = this.parent.fieldsList.indexOf(group);
+
+							if (index !== -1)
+							{
+								this.parent.fieldsList[index] = dateGroup;
+								this.parent.registerDragItem(dateGroup);
+							}
+						}
+
+						this.parent.unregisterDragItem(group);
+
+						controls = BX.Filter.Utils.getByClass(dateGroup, this.parent.settings.classField, true);
+
+						if (BX.type.isArray(controls) && controls.length)
+						{
+							controls.forEach(function(control) {
+								control.FieldController = new BX.Filter.FieldController(control, this.parent);
+							}, this);
+						}
+
+						BX.insertAfter(dateGroup, group);
+						BX.remove(group);
 					}
-
-					this.parent.unregisterDragItem(group);
-
-					controls = BX.Filter.Utils.getByClass(dateGroup, this.parent.settings.classField, true);
-
-					if (BX.type.isArray(controls) && controls.length)
-					{
-						controls.forEach(function(control) {
-							control.FieldController = new BX.Filter.FieldController(control, this.parent);
-						}, this);
-					}
-
-					BX.insertAfter(dateGroup, group);
-					BX.remove(group);
 				}
 			}
 		},
@@ -581,6 +793,7 @@
 		{
 			var group, dateFrom, dateTo, singleDate, line, placeholder, select, quarter, month;
 			var subTypes = this.parent.dateTypes;
+			var additionalTypes = this.parent.additionalDateTypes;
 			var subType = subTypes.NONE;
 
 			if ('SUB_TYPE' in fieldData && BX.type.isPlainObject(fieldData.SUB_TYPE))
@@ -643,8 +856,40 @@
 				group.content.push(singleDate);
 			}
 
+			if (subType === subTypes.NEXT_DAYS ||
+				subType === subTypes.PREV_DAYS ||
+				subType === additionalTypes.PREV_DAY ||
+				subType === additionalTypes.NEXT_DAY ||
+				subType === additionalTypes.MORE_THAN_DAYS_AGO ||
+				subType === additionalTypes.AFTER_DAYS)
+			{
+				singleDate = {
+					block: 'main-ui-control-field',
+					type: fieldData.TYPE,
+					dragButton: false,
+					content: {
+						block: 'main-ui-number',
+						mix: ['filter-type-single'],
+						calendarButton: true,
+						valueDelete: true,
+						placeholder: placeholder,
+						name: 'NAME' in fieldData ? fieldData.NAME + '_days' : '',
+						tabindex: 'TABINDEX' in fieldData ? fieldData.TABINDEX : '',
+						value: 'VALUES' in fieldData ? fieldData.VALUES._days : ''
+					}
+				};
+
+				group.content.push(singleDate);
+			}
+
+
 			if (subType === subTypes.RANGE)
 			{
+				var rangeGroup = {
+					block: "main-ui-filter-range-group",
+					content: []
+				};
+
 				dateFrom = {
 					block: 'main-ui-control-field',
 					type: fieldData.TYPE,
@@ -685,9 +930,10 @@
 					}
 				};
 
-				group.content.push(dateFrom);
-				group.content.push(line);
-				group.content.push(dateTo);
+				rangeGroup.content.push(dateFrom);
+				rangeGroup.content.push(line);
+				rangeGroup.content.push(dateTo);
+				group.content.push(rangeGroup);
 			}
 
 			if (subType === subTypes.MONTH)
@@ -845,6 +1091,111 @@
 				};
 
 				group.content.push(select);
+			}
+
+			if (subType === "CUSTOM_DATE")
+			{
+				var customDateDecl = fieldData.SUB_TYPES.filter(function(item) {
+					return item.VALUE === "CUSTOM_DATE";
+				});
+
+				if (customDateDecl[0])
+				{
+					customDateDecl = BX.clone(customDateDecl[0].DECL);
+
+					if (BX.type.isArray(fieldData.VALUES._days))
+					{
+						customDateDecl.VALUE.days = fieldData.VALUES._days;
+					}
+
+					if (BX.type.isArray(fieldData.VALUES._month))
+					{
+						customDateDecl.VALUE.months = fieldData.VALUES._month;
+					}
+
+					if (BX.type.isArray(fieldData.VALUES._year))
+					{
+						customDateDecl.VALUE.years = fieldData.VALUES._year;
+					}
+
+					var customDateField = this.createCustomDate(customDateDecl);
+
+					customDateField.classList.remove("main-ui-filter-wield-with-label");
+					var removeButton = customDateField.querySelector(".main-ui-item-icon-container");
+
+					if (removeButton)
+					{
+						BX.remove(removeButton);
+					}
+
+					var dragButton = customDateField.querySelector(".main-ui-filter-icon-grab");
+
+					if (dragButton)
+					{
+						BX.remove(dragButton);
+					}
+
+					group.content.push(customDateField);
+					group.mix.push("main-ui-filter-custom-date-group");
+				}
+			}
+
+			if (subType !== subTypes.NONE && subType !== additionalTypes.CUSTOM_DATE && fieldData["YEARS_SWITCHER"])
+			{
+				if ('_allow_year' in fieldData.VALUES && fieldData.VALUES._allow_year)
+				{
+					var allowYear = fieldData.YEARS_SWITCHER.ITEMS.filter(function(curr) {
+						return curr.VALUE === fieldData.VALUES._allow_year;
+					});
+					allowYear = allowYear.length ? allowYear[0] : null;
+					if (allowYear)
+					{
+						fieldData.YEARS_SWITCHER.VALUE = allowYear;
+					}
+				}
+				var yearsSwitcher = this.createSelect(fieldData["YEARS_SWITCHER"]);
+
+				yearsSwitcher.classList.add("main-ui-filter-year-switcher");
+				yearsSwitcher.classList.add("main-ui-filter-with-padding");
+				yearsSwitcher.classList.remove("main-ui-filter-wield-with-label");
+				removeButton = yearsSwitcher.querySelector(".main-ui-item-icon-container");
+
+				if (removeButton)
+				{
+					BX.remove(removeButton);
+				}
+
+				dragButton = yearsSwitcher.querySelector(".main-ui-filter-icon-grab");
+
+				if (dragButton)
+				{
+					BX.remove(dragButton);
+				}
+
+				if (group.content[group.content.length-1])
+				{
+					if (BX.type.isPlainObject(group.content[group.content.length-1]))
+					{
+						if (!BX.type.isArray(group.content[group.content.length-1].mix))
+						{
+							group.content[group.content.length-1].mix = [];
+						}
+
+						group.content[group.content.length-1].mix.push("main-ui-filter-remove-margin-right")
+					}
+
+					if (BX.type.isDomNode(group.content[group.content.length-1]))
+					{
+						group.content[group.content.length-1].classList.add("main-ui-filter-remove-margin-right");
+					}
+				}
+
+				requestAnimationFrame(function() {
+					yearsSwitcher.previousElementSibling.classList.add("main-ui-filter-remove-margin-right");
+				});
+
+				group.content.push(yearsSwitcher);
+				group.mix.push("main-ui-filter-date-with-years-switcher");
 			}
 
 			return BX.decl(group);

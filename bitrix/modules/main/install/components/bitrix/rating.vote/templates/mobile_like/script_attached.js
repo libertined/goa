@@ -2,7 +2,7 @@ if (!BXRL)
 {
 	var BXRL = {};
 
-	BX.addCustomEvent("onPull-main", function(data) {
+	BXMobileApp.addCustomEvent("onPull-main", function(data) {
 		if (data.command == 'rating_vote')
 		{
 			RatingLike.LiveUpdate(data.params);
@@ -54,6 +54,8 @@ RatingLike.Init = function(likeId)
 		BX.unbindAll(BXRL[likeId].button);
 		BX.bind(BXRL[likeId].button, 'click', function(e)
 		{
+			app.exec("callVibration");
+
 			clearTimeout(BXRL[likeId].likeTimeout);
 			var newValue = null;
 			var action = null;

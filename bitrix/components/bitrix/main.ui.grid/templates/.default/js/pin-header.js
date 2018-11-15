@@ -12,8 +12,10 @@
 	BX.Grid.PinHeader = function(parent)
 	{
 		this.parent = null;
-		this.fixedTable = null;
+		this.table = null;
 		this.header = null;
+		this.container = null;
+		this.parentNodeResizeObserver = null;
 		this.init(parent);
 	};
 
@@ -21,124 +23,164 @@
 		init: function(parent)
 		{
 			this.parent = parent;
-			this.fixedTable = this.getFixedTable();
-			this.header = this.getHeader();
-			this.headerTop = BX.pos(this.header).top;
+			this.rect = BX.pos(this.parent.getHead());
+			this.gridRect = BX.pos(this.parent.getTable());
 
-			BX.bind(window, 'resize', BX.delegate(this.adjustFixedTablePosition, this));
+			var workArea = BX.Grid.Utils.getBySelector(document, '#workarea-content', true);
 
-			this.bindOnScroll();
+			if (!workArea)
+			{
+				workArea = this.parent.getContainer().parentNode;
+				workArea = !!workArea ? workArea.parentNode : workArea;
+			}
+
+			if (!!workArea)
+			{
+				this.parentNodeResizeObserver = new BX.ResizeObserver(BX.proxy(this.refreshRect, this));
+				this.parentNodeResizeObserver.observe(workArea);
+			}
+
+			this.create();
+
+			document.addEventListener('scroll', BX.proxy(this._onScroll, this), BX.Grid.Utils.listenerParams({passive: true}));
+			document.addEventListener('resize', BX.proxy(this._onResize, this), BX.Grid.Utils.listenerParams({passive: true}));
+			BX.addCustomEvent('Grid::updated', BX.proxy(this._onGridUpdate, this));
+			BX.addCustomEvent('Grid::resize', BX.proxy(this._onGridUpdate, this));
+			BX.bind(window, 'resize', BX.proxy(this._onGridUpdate, this));
 		},
 
-		bindOnScroll: function()
+		refreshRect: function()
 		{
-			BX.bind(window, 'scroll', BX.delegate(this._onScroll, this));
+			this.gridRect = BX.pos(this.parent.getTable());
+			this.rect = BX.pos(this.parent.getHead());
+		},
+
+		_onGridUpdate: function()
+		{
+			var isPinned = this.isPinned();
+
+			BX.remove(this.getContainer());
+			this.create();
+
+			isPinned && this.pin();
+
+			this.table = null;
+			this.refreshRect();
+
+			BX.onCustomEvent(window, 'Grid::headerUpdated', []);
+		},
+
+		create: function()
+		{
+			var cells = BX.Grid.Utils.getByTag(this.parent.getHead(), 'th');
+			var cellsLength = cells.length-1;
+			var cloneThead = BX.clone(this.parent.getHead());
+			var cloneCells = BX.Grid.Utils.getByTag(cloneThead, 'th');
+
+			cells.forEach(function(cell, index) {
+				var width = BX.width(cell);
+				cloneCells[index].firstElementChild && (cloneCells[index].firstElementChild.style.width = width + 'px');
+
+				if (cellsLength !== index)
+				{
+					cloneCells[index].style.width = width + 'px';
+				}
+				else
+				{
+					if (this.parent.getRows().getCountDisplayed() > 0)
+					{
+						cloneCells[index].style.width = '100%';
+					}
+				}
+			}, this);
+
+			this.container = BX.decl({
+				block: 'main-grid-fixed-bar',
+				mix: 'main-grid-fixed-top',
+				attrs: {
+					style: 'width: ' + BX.width(this.parent.getContainer()) + 'px'
+				},
+				content: {
+					block: 'main-grid-table',
+					tag: 'table',
+					content: cloneThead
+				}
+			});
+
+			this.container.hidden = true;
+
+			this.parent.getWrapper().appendChild(this.container);
+		},
+
+		getContainer: function()
+		{
+			return this.container;
 		},
 
 		getFixedTable: function()
 		{
-			var container;
-
-			if (!this.fixedTable)
-			{
-				container = BX.create('div', {
-					props: {className: 'main-grid-fixed-bar main-grid-fixed-top'}
-				});
-
-				this.fixedTable = BX.create('table', {props: {className: 'main-grid-table'}});
-				container.appendChild(this.fixedTable);
-				this.parent.getScrollContainer().parentNode.appendChild(container);
-			}
-
-			return this.fixedTable;
+			return this.table || (this.table = BX.Grid.Utils.getByTag(this.getContainer(), 'table', true));
 		},
 
-		checkHeaderPosition: function()
+		pin: function()
 		{
-			return this.headerTop <= window.scrollY;
+			!!this.getContainer() && (this.getContainer().hidden = false);
+			BX.onCustomEvent(window, 'Grid::headerPinned', []);
 		},
 
-		getHeader: function()
+		unpin: function()
 		{
-			this.header = this.header || this.parent.getHead();
-			return this.header;
+			!!this.getContainer() && (this.getContainer().hidden = true);
+			BX.onCustomEvent(window, 'Grid::headerUnpinned', []);
 		},
 
-		pinHeader: function()
+		stopPin: function()
 		{
-			if (!this.isPinned())
-			{
-				var fixedTable = this.getFixedTable();
-				var cells = this.parent.getRows().getHeadFirstChild().getCells();
-				var cellsKeys = Object.keys(cells);
-
-				cellsKeys.forEach(function(key) {
-					var cellContainer = BX.firstChild(cells[key]);
-					if (cellContainer)
-					{
-						var cellRect = cells[key].getBoundingClientRect();
-						cellContainer.style.width = cellRect.width + 'px';
-					}
-				});
-
-				var clone = BX.clone(this.header);
-				fixedTable.appendChild(clone);
-				var tableRect = fixedTable.parentNode.parentNode.getBoundingClientRect();
-				fixedTable.parentNode.style.width = tableRect.width + 'px';
-				BX.onCustomEvent(window, 'Grid::headerPinned', []);
-			}
+			BX.Grid.Utils.styleForEach([this.getContainer()], {
+				'position': 'absolute',
+				'top': ((this.gridRect.bottom - this.rect.height - this.gridRect.top) + 'px'),
+				'box-shadow': 'none'
+			});
 		},
 
-		unpinHeader: function()
+		startPin: function()
 		{
-			if (this.isPinned())
-			{
-				BX.html(this.getFixedTable(), '');
-				BX.onCustomEvent(window, 'Grid::headerUnpinned', []);
-			}
+			BX.Grid.Utils.styleForEach([this.getContainer()], {
+				'position': 'fixed',
+				'top': 0,
+				'box-shadow': ''
+			});
 		},
 
 		isPinned: function()
 		{
-			return this.getFixedTable().children.length;
-		},
-
-		adjustFixedTablePosition: function()
-		{
-			if (this.getFixedTable())
-			{
-				var containerRect = this.parent.getContainer().getBoundingClientRect();
-				var leftPos = containerRect.left;
-				var containerWidth = containerRect.width;
-
-				if (leftPos !== this.lastLeftPos)
-				{
-					this.getFixedTable().parentNode.style.left = leftPos + 'px';
-				}
-
-				if (containerWidth !== this.lastContainerWidth)
-				{
-					this.getFixedTable().parentNode.style.width = containerWidth + 'px';
-				}
-
-				this.lastLeftPos = leftPos;
-				this.lastContainerWidth = containerWidth;
-			}
+			return !this.getContainer().hidden;
 		},
 
 		_onScroll: function()
 		{
-			this.adjustFixedTablePosition();
-
-			if (this.checkHeaderPosition())
+			if (this.gridRect.bottom > (window.scrollY + this.rect.height))
 			{
-				this.pinHeader();
+				this.startPin();
+
+				if (this.rect.top <= window.scrollY)
+				{
+					!this.isPinned() && this.pin();
+				}
+				else
+				{
+					this.isPinned() && this.unpin();
+				}
 			}
 			else
 			{
-				this.unpinHeader();
+				this.stopPin();
 			}
-		}
-	};
+		},
 
+		_onResize: function()
+		{
+			this.rect = BX.pos(this.parent.getHead());
+		}
+	}
 })();

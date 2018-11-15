@@ -24,11 +24,15 @@ switch($_REQUEST['mode'])
 		CUtil::JSPostUnescape();
 		$APPLICATION->RestartBuffer();
 
-		$searchString = $_REQUEST['string'];
-		$filter = array('IBLOCK_ID' => intval($_REQUEST['iblockId']));
-		if(intval($searchString))
+		$searchString = trim($_REQUEST['string']);
+		$filter = array(
+			'IBLOCK_ID' => intval($_REQUEST['iblockId']),
+			'CHECK_PERMISSIONS' => 'Y',
+			'MIN_PERMISSION' => 'R'
+		);
+		if(is_numeric($searchString))
 		{
-			$filter['=ID'] = $searchString;
+			$filter['=ID'] = intval($searchString);
 		}
 		else
 		{

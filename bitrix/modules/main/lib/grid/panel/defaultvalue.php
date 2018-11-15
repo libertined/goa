@@ -2,6 +2,11 @@
 
 namespace Bitrix\Main\Grid\Panel;
 
+
+/**
+ * Class DefaultValue
+ * @package Bitrix\Main\Grid\Panel
+ */
 class DefaultValue
 {
 	const EDIT_BUTTON_ID = "grid_edit_button";

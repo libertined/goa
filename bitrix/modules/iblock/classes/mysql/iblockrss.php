@@ -1,7 +1,7 @@
 <?
 class CIBlockRSS extends CAllIBlockRSS
 {
-	function GetCache($cacheKey)
+	public static function GetCache($cacheKey)
 	{
 		global $DB;
 
@@ -60,7 +60,9 @@ class CIBlockRSS extends CAllIBlockRSS
 
 		if (strlen($serverName) <=0 && !isset($arIBLOCK["SERVER_NAME"]))
 		{
-			$dbSite = CSite::GetList(($b="sort"), ($o="asc"), array("LID" => $arIBLOCK["LID"]));
+			$b="sort";
+			$o="asc";
+			$dbSite = CSite::GetList($b, $o, array("LID" => $arIBLOCK["LID"]));
 			if ($arSite = $dbSite->Fetch())
 				$serverName = $arSite["SERVER_NAME"];
 		}
@@ -75,7 +77,7 @@ class CIBlockRSS extends CAllIBlockRSS
 
 		$strRes .= "<channel>\n";
 		$strRes .= "<title>".htmlspecialcharsbx($arIBLOCK["NAME"])."</title>\n";
-		$strRes .= "<link>http://".$serverName."</link>\n";
+		$strRes .= "<link>http://".htmlspecialcharsbx($serverName)."</link>\n";
 		$strRes .= "<description>".htmlspecialcharsbx($arIBLOCK["DESCRIPTION"])."</description>\n";
 		$strRes .= "<lastBuildDate>".date("r")."</lastBuildDate>\n";
 		$strRes .= "<ttl>".$arIBLOCK["RSS_TTL"]."</ttl>\n";
@@ -90,7 +92,7 @@ class CIBlockRSS extends CAllIBlockRSS
 
 			if ($yandex)
 			{
-				$strRes .= "<yandex:logo>".$strImage."</yandex:logo>\n";
+				$strRes .= "<yandex:logo>".htmlspecialcharsbx($strImage)."</yandex:logo>\n";
 				$squareSize = min($db_img_arr["WIDTH"], $db_img_arr["HEIGHT"]);
 				if ($squareSize > 0)
 				{
@@ -105,7 +107,7 @@ class CIBlockRSS extends CAllIBlockRSS
 							$squareImage = "http://".$serverName.$squarePicture["src"];
 						else
 							$squareImage = $squarePicture["src"];
-						$strRes .= "<yandex:logo type=\"square\">".$squareImage."</yandex:logo>\n";
+						$strRes .= "<yandex:logo type=\"square\">".htmlspecialcharsbx($squareImage)."</yandex:logo>\n";
 					}
 				}
 			}
@@ -113,8 +115,8 @@ class CIBlockRSS extends CAllIBlockRSS
 			{
 				$strRes .= "<image>\n";
 				$strRes .= "<title>".htmlspecialcharsbx($arIBLOCK["NAME"])."</title>\n";
-				$strRes .= "<url>".$strImage."</url>\n";
-				$strRes .= "<link>http://".$serverName."</link>\n";
+				$strRes .= "<url>".htmlspecialcharsbx($strImage)."</url>\n";
+				$strRes .= "<link>http://".htmlspecialcharsbx($serverName)."</link>\n";
 				$strRes .= "<width>".$db_img_arr["WIDTH"]."</width>\n";
 				$strRes .= "<height>".$db_img_arr["HEIGHT"]."</height>\n";
 				$strRes .= "</image>\n";
@@ -128,9 +130,7 @@ class CIBlockRSS extends CAllIBlockRSS
 			$arNodes[$db_res_arr["NODE"]] = $db_res_arr["NODE_VALUE"];
 		}
 
-		$formatActiveDates = CPageOption::GetOptionString("iblock", "FORMAT_ACTIVE_DATES", "-") != "-";
-		$shortFormatActiveDates = CPageOption::GetOptionString("iblock", "FORMAT_ACTIVE_DATES", "SHORT");
-		CPageOption::SetOptionString("iblock", "FORMAT_ACTIVE_DATES", "Y");
+		$formatActiveDates = CPageOption::GetOptionString("iblock", "FORMAT_ACTIVE_DATES", "-");
 		CPageOption::SetOptionString("iblock", "FORMAT_ACTIVE_DATES", "FULL");
 
 		$nav = $LIMIT_NUM > 0? array("nTopCount" => $LIMIT_NUM): false;
@@ -152,7 +152,6 @@ class CIBlockRSS extends CAllIBlockRSS
 		CTimeZone::Enable();
 
 		CPageOption::SetOptionString("iblock", "FORMAT_ACTIVE_DATES", $formatActiveDates);
-		CPageOption::SetOptionString("iblock", "FORMAT_ACTIVE_DATES", $shortFormatActiveDates);
 
 		while ($arItem = $items->GetNext())
 		{
@@ -183,7 +182,7 @@ class CIBlockRSS extends CAllIBlockRSS
 			}
 			else
 			{
-				$strRes .= "<link>http://".$serverName.(($arLinkProp["VALUE"]) ? $arLinkProp["VALUE"] : $arItem["DETAIL_PAGE_URL"])."</link>\n";
+				$strRes .= "<link>http://".htmlspecialcharsbx($serverName).(($arLinkProp["VALUE"]) ? $arLinkProp["VALUE"] : $arItem["DETAIL_PAGE_URL"])."</link>\n";
 			}
 			if (strlen($arNodes["description"])>0)
 			{
@@ -207,7 +206,7 @@ class CIBlockRSS extends CAllIBlockRSS
 					else
 						$strImage = $db_img_arr["SRC"];
 
-					$strRes .= "<enclosure url=\"".$strImage."\" length=\"".$db_img_arr["FILE_SIZE"]."\" type=\"".$db_img_arr["CONTENT_TYPE"]."\" width=\"".$db_img_arr["WIDTH"]."\" height=\"".$db_img_arr["HEIGHT"]."\"/>\n";
+					$strRes .= "<enclosure url=\"".htmlspecialcharsbx($strImage)."\" length=\"".$db_img_arr["FILE_SIZE"]."\" type=\"".$db_img_arr["CONTENT_TYPE"]."\" width=\"".$db_img_arr["WIDTH"]."\" height=\"".$db_img_arr["HEIGHT"]."\"/>\n";
 				}
 			}
 			if (strlen($arNodes["category"])>0)
@@ -253,7 +252,7 @@ class CIBlockRSS extends CAllIBlockRSS
 	}
 
 	// Agent
-	function PreGenerateRSS($IBLOCK_ID, $yandex = true)
+	public static function PreGenerateRSS($IBLOCK_ID, $yandex = true)
 	{
 		global $DB;
 

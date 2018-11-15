@@ -523,11 +523,15 @@ if (!empty($arCompare) && is_array($arCompare))
 	$arResult['PRICES_ALLOW'] = CIBlockPriceTools::GetAllowCatalogPrices($arResult['PRICES']);
 
 	$arConvertParams = array();
+	$basePrice = '';
 	if ($arParams['CONVERT_CURRENCY'] == 'Y')
 	{
 		$correct = false;
 		if (Loader::includeModule('currency'))
+		{
 			$correct = Currency\CurrencyManager::isCurrencyExist($arParams['CURRENCY_ID']);
+			$basePrice = Currency\CurrencyManager::getBaseCurrency();
+		}
 
 		if ($correct)
 		{
@@ -652,7 +656,6 @@ if (!empty($arCompare) && is_array($arCompare))
 	$arResult['EMPTY_OFFER_PROPERTIES'] = array();
 
 	//EXECUTE
-	$basePrice = Currency\CurrencyManager::getBaseCurrency();
 	$arResult['ITEMS'] = array();
 	$rsElements = CIBlockElement::GetList($arSort, $arFilter, false, false, $arSelect);
 	$rsElements->SetUrlTemplates($arParams['DETAIL_URL']);
@@ -1208,7 +1211,10 @@ if (!empty($arCompare) && is_array($arCompare))
 }
 else
 {
-	$actionByAjax = (isset($_REQUEST['ajax_action']) && $_REQUEST['ajax_action'] == 'Y');
+	$actionByAjax = (
+		(isset($_REQUEST['ajax_action']) && $_REQUEST['ajax_action'] == 'Y')
+		|| (isset($_REQUEST['compare_result_reload']) && $_REQUEST['compare_result_reload'] == 'Y')
+	);
 	if ($actionByAjax)
 	{
 		$APPLICATION->RestartBuffer();

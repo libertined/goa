@@ -87,19 +87,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 1 день
 	</td>
 	<td class="summary__text">
-		45$<br>
+		50$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		50$<br>
+		60$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		25$<br>
+		30$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>
@@ -112,19 +112,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 1 день
 	</td>
 	<td class="summary__text">
-		30$<br>
+		40$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		35$<br>
+		45$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		20$<br>
+		25$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>
@@ -218,7 +218,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 </tr>
 <tr class="summary__row">
 	<td class="summary__text">
-		<a href="/excursion/mumbai-elephant-island">Мумбай (Бомбей) переезд на автобусе</a>
+		<a href="/excursion/mumbai">Мумбай (Бомбей) переезд на автобусе</a>
 	</td>
 	<td class="summary__text">
 		1 день / 2 ночи
@@ -236,19 +236,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 1 день
 	</td>
 	<td class="summary__text">
-		90$<br>
+		110$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		100$<br>
+		120$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		50$<br>
+		70$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>
@@ -360,7 +360,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 2 дня / 1 ночь
 	</td>
 	<td class="summary__text">
-		135$<br>
+		150$<br>
 		<span class="summary__text--smaller">взрослые и дети старше 12 лет</span>
 	</td>
 </tr>
@@ -386,7 +386,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 2 дня / 1 ночь
 	</td>
 	<td class="summary__text">
-		от 195$<br>
+		от 200$<br>
 		<span class="summary__text--smaller">за коттедж на двоих</span>
 	</td>
 </tr>
@@ -417,7 +417,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 </tr>
 <tr class="summary__row">
 	<td class="summary__text">
-		<a href="/excursion/mumbai">Мумбай (Бомбей) c авиа&shy;перелетом</a>
+		<a href="/excursion/mumbai-elephant-island">Мумбай (Бомбей) c авиа&shy;перелетом</a>
 	</td>
 	<td class="summary__text">
 		кроме понедельника<br>
@@ -437,13 +437,13 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 2 дня
 	</td>
 	<td class="summary__text">
-		120$<br>
+		110$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		130$<br>
+		120$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
@@ -462,13 +462,13 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 2 дня
 	</td>
 	<td class="summary__text">
-		130$<br>
+		120$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		140$<br>
+		130$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
@@ -512,19 +512,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 2 дня
 	</td>
 	<td class="summary__text">
-		160$<br>
+		180$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		180$<br>
+		200$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		90$<br>
+		100$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>
@@ -634,7 +634,7 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		3 дня / 2 ночи
 	</td>
 	<td class="summary__text">
-		от 550$
+		от 270$
 	</td>
 </tr>
 <tr class="summary__row">

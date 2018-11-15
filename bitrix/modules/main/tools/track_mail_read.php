@@ -7,11 +7,8 @@ define("NO_AGENT_CHECK", true);
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
 header('Content-Type: image/gif');
-echo base64_decode("R0lGODdhAQABAIAAAPxqbAAAACwAAAAAAQABAAACAkQBADs=");
+echo base64_decode("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==");
 
-$tag = $_GET['tag'];
-$arTag = \Bitrix\Main\Mail\Tracking::parseTag($_GET['tag']);
-$arTag['FIELDS']['IP'] = $_SERVER['REMOTE_ADDR'];
-\Bitrix\Main\Mail\Tracking::read($arTag);
+\Bitrix\Main\Mail\Tracking::readFromRequest();
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_after.php");

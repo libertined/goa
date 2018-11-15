@@ -2795,7 +2795,7 @@ BXMLSearch.prototype = {
 		this.Query = Query;
 		this.pResultContPar.style.display = 'block';
 		this.OpenResultCont();
-		this.pResultTitle.innerHTML = ML_MESS.SearchResultEx.replace('#SEARCH_QUERY#', Query);
+		this.pResultTitle.innerHTML = ML_MESS.SearchResultEx.replace('#SEARCH_QUERY#', BX.util.htmlspecialchars(Query));
 
 		// Clean
 		while(this.pResultCont.firstChild)

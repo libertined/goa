@@ -36,13 +36,35 @@ $resultCount = (isset($_REQUEST['RESULT_COUNT']) && is_string($_REQUEST['RESULT_
 if ($resultCount <= 0)
 	$resultCount = 20;
 
+if (defined('ADMIN_SECTION') && ADMIN_SECTION === true)
+{
+	$iblockAccessLevel = 'iblock_admin_display';
+	$filter = array(
+		'CHECK_PERMISSIONS' => 'Y',
+		'MIN_PERMISSION' => 'S'
+	);
+}
+else
+{
+	if ($bSection)
+		$iblockAccessLevel = 'section_read';
+	else
+		$iblockAccessLevel = 'element_read';
+	$filter = array(
+		'CHECK_PERMISSIONS' => 'Y',
+		'MIN_PERMISSION' => 'R'
+	);
+}
+if ($iblockId > 0)
+	$filter['IBLOCK_ID'] = $iblockId;
+
 if ($withoutIblock && $iblockId == 0)
 {
 	$iblockAccess = true;
 }
 elseif ($iblockId >= 0)
 {
-	$iblockAccess = CIBlockRights::UserHasRightTo($iblockId, $iblockId, "iblock_admin_display");
+	$iblockAccess = CIBlockRights::UserHasRightTo($iblockId, $iblockId, $iblockAccessLevel);
 }
 else
 {
@@ -72,14 +94,7 @@ if (isset($_REQUEST['MODE']) && $_REQUEST['MODE'] == 'SEARCH')
 		$matches[2] = (int)$matches[2];
 		if($matches[2] > 0)
 		{
-			$filter = array(
-				'=ID' => $matches[2],
-				'CHECK_PERMISSIONS' => 'Y',
-				'MIN_PERMISSION' => 'R'
-			);
-			if ($iblockId > 0)
-				$filter['IBLOCK_ID'] = $iblockId;
-
+			$filter['=ID'] = $matches[2];
 			if ($bSection)
 				$dbRes = CIBlockSection::GetList(array(), $filter, false, array('ID', 'NAME'));
 			else
@@ -104,13 +119,7 @@ if (isset($_REQUEST['MODE']) && $_REQUEST['MODE'] == 'SEARCH')
 		}
 	}
 
-	$filter = array(
-		'%NAME' => $search,
-		'CHECK_PERMISSIONS' => 'Y',
-		'MIN_PERMISSION' => 'R'
-	);
-	if ($iblockId > 0)
-		$filter['IBLOCK_ID'] = $iblockId;
+	$filter['%NAME'] = $search;
 	if ($bSection)
 		$dbRes = CIBlockSection::GetList(array(), $filter, false, array("ID", "NAME"), array("nTopCount" => $resultCount));
 	else

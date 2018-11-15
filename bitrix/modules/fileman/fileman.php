@@ -186,7 +186,7 @@ class CFileMan
 			if (CSticker::CanDoOperation('sticker_new'))
 			{
 				$arMenu[] = array(
-					"TEXT" => '<div style="float: left; margin: 0 50px 0 0;">'.GetMessage("FMST_PANEL_STICKER_ADD").'</div>'.($useHotKeys ? '<div style="float: right;"><nobr>Ctrl+Shift+S</nobr></div>' : ''),
+					"TEXT" => GetMessage("FMST_PANEL_STICKER_ADD").($useHotKeys ? ' (Ctrl+Shift+S)' : ''),
 					"TITLE" => GetMessage("FMST_PANEL_STICKER_ADD_TITLE"),
 					"ICON" => "",
 					"ACTION" => CSticker::GetScriptStr('add'),
@@ -199,15 +199,14 @@ class CFileMan
 			$curPageCount = CSticker::GetCurPageCount();
 			$arMenu[] = array(
 				"ID" => "bxst-show-sticker-icon",
-				"TEXT" => '<div style="float: left; margin: 0 50px 0 0;">'.GetMessage("FMST_PANEL_STICKERS_SHOW", array("#COUNT#" => $curPageCount)).'</div>'.($useHotKeys ? '<div style="float:right;"><nobr>Ctrl+Shift+X</nobr></div>' : ''),
+				"TEXT" => GetMessage("FMST_PANEL_STICKERS_SHOW", array("#COUNT#" => $curPageCount)).($useHotKeys ? ' (Ctrl+Shift+X)' : ''),
 				"TITLE" => GetMessage("FMST_PANEL_STICKERS_SHOW_TITLE"),
 				"ICON" => CSticker::GetBShowStickers() ? " checked" : "",
 				"ACTION" => CSticker::GetScriptStr('show'),
 				"HK_ID"=>"FMST_PANEL_STICKERS_SHOW",
 			);
 			$arMenu[] = array(
-				//"TEXT" => GetMessage("FMST_PANEL_CUR_STICKER_LIST"),
-				"TEXT" => '<div style="float: left; margin: 0 50px 0 0;">'.GetMessage("FMST_PANEL_CUR_STICKER_LIST").'</div>'.($useHotKeys ? '<div style="float: right;"><nobr>Ctrl+Shift+L</nobr></div>' : ''),
+				"TEXT" => GetMessage("FMST_PANEL_CUR_STICKER_LIST").($useHotKeys ? ' (Ctrl+Shift+L)' : ''),
 				"TITLE" => GetMessage("FMST_PANEL_CUR_STICKER_LIST_TITLE"),
 				"ICON" => "",
 				"ACTION" => CSticker::GetScriptStr('list_cur'),

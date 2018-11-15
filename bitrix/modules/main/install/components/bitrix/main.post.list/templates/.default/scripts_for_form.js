@@ -60,6 +60,8 @@
 					else
 					{
 						res = origRes;
+						var haveWrittenText = author.gender ?
+							BX.message("MPL_HAVE_WRITTEN_"+author.gender) : BX.message("MPL_HAVE_WRITTEN");
 						if (this.handler.oEditor.GetViewMode() == 'wysiwyg') // BB Codes
 						{
 							res = res.replace(/\n/g, '<br/>');
@@ -73,7 +75,7 @@
 								{
 									author = '<span>' + author.name.replace(/</gi, '&lt;').replace(/>/gi, '&gt;') + '</span>';
 								}
-								author = (author !== '' ? (author + BX.message("MPL_HAVE_WRITTEN") + '<br/>') : '');
+								author = (author !== '' ? (author + haveWrittenText + '<br/>') : '');
 
 								res = author + res;
 							}
@@ -90,7 +92,7 @@
 								{
 									author = author.name;
 								}
-								author = (author !== '' ? (author + BX.message("MPL_HAVE_WRITTEN") + '\n') : '');
+								author = (author !== '' ? (author + haveWrittenText + '\n') : '');
 								res = author + res;
 							}
 						}
@@ -184,6 +186,9 @@
 		if (this.eventNode)
 		{
 			BX.addCustomEvent(this.eventNode, 'OnBeforeHideLHE', BX.delegate(function(/*show, obj*/) {
+				BX.removeClass(document.documentElement, 'bx-ios-fix-frame-focus');
+				if (top && top["document"])
+					BX.removeClass(top["document"]["documentElement"], 'bx-ios-fix-frame-focus');
 				if (!!this.id && !!BX('uc-writing-' + this.form.id + '-' + this.id[0]))
 					BX.hide(BX('uc-writing-' + this.form.id + '-' + this.id[0]));
 			}, this));
@@ -214,9 +219,18 @@
 			}, this));
 
 			BX.addCustomEvent(this.eventNode, 'OnBeforeShowLHE', BX.delegate(function(/*show, obj*/) {
+				if (BX.browser.IsIOS() && BX.browser.IsMobile())
+				{
+					BX.addClass(window["document"]["documentElement"], 'bx-ios-fix-frame-focus');
+					if (top && top["document"])
+						BX.addClass(top["document"]["documentElement"], 'bx-ios-fix-frame-focus');
+				}
 				var node = this._getPlacehoder();
+
 				if (node)
 				{
+					BX.removeClass(node, 'feed-com-add-box-no-form');
+					BX.removeClass(node, 'feed-com-add-box-header');
 					BX.show(node);
 				}
 				node = this._getSwitcher();
@@ -227,7 +241,6 @@
 
 				if (!!this.id && !!BX('uc-writing-' + this.form.id + '-' + this.id[0]))
 					BX.hide(BX('uc-writing-' + this.form.id + '-' + this.id[0]));
-
 			}, this));
 			BX.addCustomEvent(this.eventNode, 'OnAfterShowLHE', BX.delegate(function(show, obj){
 				this._checkWrite(show, obj);
@@ -242,6 +255,11 @@
 		}
 		this.id = null;
 		this.jsCommentId = null;
+
+		// Lock the submit button when inserting an image.
+		BX.addCustomEvent(window, 'OnImageDataUriHandle', BX.delegate(this.showWait, this));
+		BX.addCustomEvent(window, 'OnImageDataUriCaughtUploaded', BX.delegate(this.closeWait, this));
+		BX.addCustomEvent(window, 'OnImageDataUriCaughtFailed', BX.delegate(this.closeWait, this));
 	};
 	window.FCForm.prototype = {
 		linkEntity : function(Ent) {
@@ -330,14 +348,25 @@
 		show : function(id, text, data)
 		{
 			if (this.id && !!id && this.id.join('-') == id.join('-'))
+			{
+				var placeholderNode = this._getPlacehoder(id);
+				this.handler.oEditor.Focus();
+				setTimeout(function() {
+						placeholderNode.scrollIntoView(false);
+				}, 100);
 				return true;
+			}
 			else
+			{
 				this.hide(true);
+			}
 
 			this.id = id;
 			this.jsCommentId = BX.util.getRandomString(20);
 
 			var node = this._getPlacehoder();
+			BX.removeClass(node, 'feed-com-add-box-no-form');
+			BX.removeClass(node, 'feed-com-add-box-header');
 			node.appendChild(this.form);
 			BX.onCustomEvent(this.eventNode, 'OnUCFormBeforeShow', [this, text, data]);
 			BX.onCustomEvent(this.eventNode, 'OnShowLHE', ['show']);
@@ -426,9 +455,16 @@
 					BX.remove(res);
 				} while ((res = nodes.pop()) && !!res);
 			}
-			node.insertBefore(BX.create('div', {attrs : {"class": "feed-add-error"},
-				html: '<span class="feed-add-info-text"><span class="feed-add-info-icon"></span>' +
-					'<b>' + BX.message('FC_ERROR') + '</b><br />' + text + '</span>'}),
+
+			BX.addClass(node, (!node.firstChild ? 'feed-com-add-box-no-form' : 'feed-com-add-box-header'));
+
+			node.insertBefore(BX.create(
+				'div', {
+					attrs : {
+						class: "feed-add-error"
+					},
+					html: '<span class="feed-add-info-text"><span class="feed-add-info-icon"></span>' + '<b>' + BX.message('FC_ERROR') + '</b><br />' + text + '</span>'
+				}),
 				node.firstChild);
 
 			BX.show(node);
@@ -444,27 +480,31 @@
 					BX.remove(res);
 				}
 			}
+
+			BX.addClass(node, (!node.firstChild ? 'feed-com-add-box-no-form' : 'feed-com-add-box-header'));
+
 			node.insertBefore(BX.create('div', {attrs : {"class": "feed-add-successfully"},
 				html: '<span class="feed-add-info-text"><span class="feed-add-info-icon"></span>' + text + '</span>'}),
 				node.firstChild);
+			BX.addClass(node, 'comment-deleted');
 			BX.show(node);
 		},
 		showWait : function() {
 			var el = BX('lhe_button_submit_' + this.form.id);
+			this.busy = true;
 			if (!!el)
 			{
-				BX.addClass(el, "feed-add-button-load");
-				BX.addClass(el, "feed-add-button-press");
+				BX.addClass(el, "ui-btn-clock");
 				BX.defer(function(){el.disabled = true})();
 			}
 		},
 		closeWait : function() {
 			var el = BX('lhe_button_submit_' + this.form.id);
+			this.busy = false;
 			if (!!el )
 			{
 				el.disabled = false ;
-				BX.removeClass(el, 'feed-add-button-press');
-				BX.removeClass(el, "feed-add-button-load");
+				BX.removeClass(el, "ui-btn-clock");
 			}
 		},
 		objAnswering : null,
@@ -510,13 +550,16 @@
 												id : (_id + '-user-' + userId),
 												title : name
 											},
-											children : [
-												BX.create('IMG', {
-													attrs : {
-														src : (avatar && avatar.length > 0 ? avatar : '/bitrix/images/1.gif')
-													}
-												})
-											]
+											children : (avatar && avatar.length > 0
+												? [
+													BX.create('IMG', {
+														attrs : {
+															src : (avatar && avatar.length > 0 ? avatar : '/bitrix/images/1.gif')
+														}
+													})
+												]
+												: []
+											)
 										}
 									)
 								]

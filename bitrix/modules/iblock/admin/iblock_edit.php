@@ -251,14 +251,6 @@ function GetPropertyInfo($strPrefix, $ID, $boolUnpack = true, $arHiddenPropField
 				$arResult['SMART_FILTER'] = ('Y' == $arResult['SMART_FILTER'] ? 'Y' : 'N');
 				$arResult['DISPLAY_TYPE'] = substr($arResult['DISPLAY_TYPE'], 0, 1);
 				$arResult['DISPLAY_EXPANDED'] = ('Y' == $arResult['DISPLAY_EXPANDED'] ? 'Y' : 'N');
-				$arResult['FILTER_HINT'] = trim($arResult['FILTER_HINT']);
-				if ($arResult['FILTER_HINT'])
-				{
-					$TextParser = new CBXSanitizer();
-					$TextParser->SetLevel(CBXSanitizer::SECURE_LEVEL_LOW);
-					$TextParser->ApplyHtmlSpecChars(false);
-					$arResult['FILTER_HINT'] = $TextParser->SanitizeHtml($arResult['FILTER_HINT']);
-				}
 				$arResult['MULTIPLE_CNT'] = intval($arResult['MULTIPLE_CNT']);
 				if (0 >= $arResult['MULTIPLE_CNT'])
 					$arResult['MULTIPLE_CNT'] = $arDefPropInfo['MULTIPLE_CNT'];
@@ -520,6 +512,8 @@ if(
 	&& !isset($_POST["propedit"])
 )
 {
+	$adminSidePanelHelper->decodeUriComponent();
+
 	$DB->StartTransaction();
 
 	$arPICTURE = $_FILES["PICTURE"];
@@ -542,7 +536,7 @@ if(
 		"INDEX_ELEMENT"=>$INDEX_ELEMENT,
 		"IBLOCK_TYPE_ID"=>$type,
 		"LID"=>$LID,
-		"SORT"=>$SORT,
+		"SORT"=>$_POST['SORT'],
 		"PICTURE"=>$arPICTURE,
 		"DESCRIPTION"=>$DESCRIPTION,
 		"DESCRIPTION_TYPE"=>$DESCRIPTION_TYPE,
@@ -786,6 +780,7 @@ if(
 			}
 
 			/********************/
+			\CIBlock::disableClearTagCache();
 			$ibp = new CIBlockProperty();
 			foreach($arProperties as $property_id => $arProperty)
 			{
@@ -821,6 +816,9 @@ if(
 					}
 				}
 			}
+			\CIBlock::enableClearTagCache();
+			if (!$bVarsFromForm)
+				\CIBlock::clearIblockTagCache($ID);
 			/*******************************************/
 
 			if(!CIBlockSectionPropertyLink::HasIBlockLinks($ID))
@@ -1115,6 +1113,7 @@ if(
 
 									if (!$bVarsFromForm)
 									{
+										\CIBlock::disableClearTagCache();
 										foreach ($arOfPropList as $arOFProperty)
 										{
 											$arOFProperty['IBLOCK_ID'] = $OF_IBLOCK_ID;
@@ -1125,6 +1124,7 @@ if(
 												$bVarsFromForm = true;
 											}
 										}
+										\CIBlock::enableClearTagCache();
 									}
 								}
 								else
@@ -1317,15 +1317,24 @@ if(
 					}
 				}
 
-				$ob = new CAutoSave();
-				if(strlen($apply)<=0)
+				$reloadUrl = "/bitrix/admin/iblock_edit.php?type=".$type."&tabControl_active_tab=".urlencode($tabControl_active_tab)."&lang=".LANG."&ID=".$ID."&admin=".($_REQUEST["admin"]=="Y"? "Y": "N").(strlen($_REQUEST["return_url"])>0? "&return_url=".urlencode($_REQUEST["return_url"]): "");
+				if ($adminSidePanelHelper->isAjaxRequest())
 				{
-					if(strlen($_REQUEST["return_url"])>0)
-						LocalRedirect($_REQUEST["return_url"]);
-					else
-						LocalRedirect("/bitrix/admin/iblock_admin.php?type=".$type."&lang=".LANG."&admin=".($_REQUEST["admin"]=="Y"? "Y": "N"));
+					$reloadUrl .= "&IFRAME=Y&IFRAME_TYPE=SIDE_SLIDER";
+					$adminSidePanelHelper->sendSuccessResponse("apply", array("ID" => $ID, "reloadUrl" => $reloadUrl));
 				}
-				LocalRedirect("/bitrix/admin/iblock_edit.php?type=".$type."&tabControl_active_tab=".urlencode($tabControl_active_tab)."&lang=".LANG."&ID=".$ID."&admin=".($_REQUEST["admin"]=="Y"? "Y": "N").(strlen($_REQUEST["return_url"])>0? "&return_url=".urlencode($_REQUEST["return_url"]): ""));
+				else
+				{
+					$ob = new CAutoSave();
+					if(strlen($apply)<=0)
+					{
+						if(strlen($_REQUEST["return_url"])>0)
+							LocalRedirect($_REQUEST["return_url"]);
+						else
+							LocalRedirect("/bitrix/admin/iblock_admin.php?type=".$type."&lang=".LANG."&admin=".($_REQUEST["admin"]=="Y"? "Y": "N"));
+					}
+					LocalRedirect($reloadUrl);
+				}
 			}
 		}
 	}
@@ -1353,6 +1362,11 @@ if(
 		LocalRedirect($APPLICATION->GetCurPageParam("", Array("delete_bizproc_template", "sessid")));
 		die();
 	}
+}
+
+if ($adminSidePanelHelper->isAjaxRequest() && $bVarsFromForm && $strWarning)
+{
+	$adminSidePanelHelper->sendJsonErrorResponse($strWarning);
 }
 
 
@@ -1578,7 +1592,7 @@ $u->Show();
 <script>
 	var InheritedPropertiesTemplates = new JCInheritedPropertiesTemplates(
 		'frm',
-		'/bitrix/admin/iblock_templates.ajax.php?ENTITY_TYPE=B&ENTITY_ID=<?echo intval($ID)?>'
+		'iblock_templates.ajax.php?ENTITY_TYPE=B&ENTITY_ID=<?echo intval($ID)?>&bxpublic=y'
 	);
 	BX.ready(function(){
 		setTimeout(function(){
@@ -1747,7 +1761,7 @@ $tabControl->BeginNextTab();
 				<input type="hidden" name="VERSION" value="<?=$str_VERSION?>">
 				<?if($str_VERSION==1)echo GetMessage("IB_E_COMMON_STORAGE")?>
 				<?if($str_VERSION==2)echo GetMessage("IB_E_SEPARATE_STORAGE")?>
-				<br><a href="iblock_convert.php?lang=<?=LANG?>&amp;IBLOCK_ID=<?echo $str_ID?>"><?=$str_LAST_CONV_ELEMENT>0?"<span class=\"required\">".GetMessage("IB_E_CONVERT_CONTINUE"):GetMessage("IB_E_CONVERT_START")."</span>"?></a>
+				<br><a href="/bitrix/admin/iblock_convert.php?lang=<?=LANG?>&amp;IBLOCK_ID=<?echo $str_ID?>"><?=$str_LAST_CONV_ELEMENT>0?"<span class=\"required\">".GetMessage("IB_E_CONVERT_CONTINUE"):GetMessage("IB_E_CONVERT_START")."</span>"?></a>
 			</td>
 		</tr>
 		<tr>
@@ -2420,7 +2434,10 @@ $tabControl->BeginNextTab();
 						echo ($arFields[$FIELD_ID]["DEFAULT_VALUE"]["SCALE"]==="Y")? 'block': 'none';
 					?>"
 				>
-					<?echo GetMessage("IB_E_FIELD_PICTURE_COMPRESSION")?>:&nbsp;<input
+					<?echo GetMessage(
+							"IB_E_FIELD_PICTURE_COMPRESSION_EXT",
+							array('#DEFAULT_VALUE#' => CIBlock::getDefaultJpegQuality())
+						)?>:&nbsp;<input
 						name="FIELDS[<?echo $FIELD_ID?>][DEFAULT_VALUE][COMPRESSION]"
 						type="text"
 						value="<?echo htmlspecialcharsbx($arFields[$FIELD_ID]["DEFAULT_VALUE"]["COMPRESSION"])?>"
@@ -2734,7 +2751,10 @@ $tabControl->BeginNextTab();
 						echo ($arFields[$FIELD_ID]["DEFAULT_VALUE"]["SCALE"]==="Y")? 'block': 'none';
 					?>"
 				>
-					<?echo GetMessage("IB_E_FIELD_PICTURE_COMPRESSION")?>:&nbsp;<input
+					<?echo GetMessage(
+						"IB_E_FIELD_PICTURE_COMPRESSION_EXT",
+						array('#DEFAULT_VALUE#' => CIBlock::getDefaultJpegQuality())
+					)?>:&nbsp;<input
 						name="FIELDS[<?echo $FIELD_ID?>][DEFAULT_VALUE][COMPRESSION]"
 						type="text"
 						value="<?echo htmlspecialcharsbx($arFields[$FIELD_ID]["DEFAULT_VALUE"]["COMPRESSION"])?>"
@@ -3482,7 +3502,10 @@ $tabControl->BeginNextTab();
 						echo ($arFields[$FIELD_ID]["DEFAULT_VALUE"]["SCALE"]==="Y")? 'block': 'none';
 					?>"
 				>
-					<?echo GetMessage("IB_E_FIELD_PICTURE_COMPRESSION")?>:&nbsp;<input
+					<?echo GetMessage(
+						"IB_E_FIELD_PICTURE_COMPRESSION_EXT",
+						array('#DEFAULT_VALUE#' => CIBlock::getDefaultJpegQuality())
+					)?>:&nbsp;<input
 						name="FIELDS[<?echo $FIELD_ID?>][DEFAULT_VALUE][COMPRESSION]"
 						type="text"
 						value="<?echo htmlspecialcharsbx($arFields[$FIELD_ID]["DEFAULT_VALUE"]["COMPRESSION"])?>"
@@ -3796,7 +3819,10 @@ $tabControl->BeginNextTab();
 						echo ($arFields[$FIELD_ID]["DEFAULT_VALUE"]["SCALE"]==="Y")? 'block': 'none';
 					?>"
 				>
-					<?echo GetMessage("IB_E_FIELD_PICTURE_COMPRESSION")?>:&nbsp;<input
+					<?echo GetMessage(
+						"IB_E_FIELD_PICTURE_COMPRESSION_EXT",
+						array('#DEFAULT_VALUE#' => CIBlock::getDefaultJpegQuality())
+					)?>:&nbsp;<input
 						name="FIELDS[<?echo $FIELD_ID?>][DEFAULT_VALUE][COMPRESSION]"
 						type="text"
 						value="<?echo htmlspecialcharsbx($arFields[$FIELD_ID]["DEFAULT_VALUE"]["COMPRESSION"])?>"

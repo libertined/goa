@@ -649,6 +649,50 @@ BX.ajax.post = function(url, data, callback)
 	});
 };
 
+/**
+ * BX.ajax with BX.Promise
+ *
+ * @param config
+ * @returns {BX.Promise|false}
+ */
+BX.ajax.promise = function(config)
+{
+	var result = new BX.Promise();
+
+	config.onsuccess = function(data)
+	{
+		result.fulfill(data);
+	};
+	config.onfailure = function(reason, data)
+	{
+		result.reject({
+			reason: reason,
+			data: data
+		});
+	};
+	config.onprogress = function(data)
+	{
+		if (data.position == 0 && data.totalSize == 0)
+		{
+			result.reject({
+				reason: 'progress',
+				data: data
+			});
+		}
+	};
+
+	var xhr = BX.ajax(config);
+	if (!xhr)
+	{
+		result.reject({
+			reason: "init",
+			data: false
+		});
+	}
+
+	return result;
+};
+
 /* load and execute external file script with onload emulation */
 BX.ajax.loadScriptAjax = function(script_src, callback, bPreload)
 {
@@ -724,6 +768,195 @@ BX.ajax.loadJSON = function(url, data, callback, callback_failure)
 		'url': url,
 		'onsuccess': callback,
 		'onfailure': callback_failure
+	});
+};
+
+
+var prepareAjaxGetParameters = function(config)
+{
+	var getParameters = {};
+	if (typeof config.analyticsLabel !== 'undefined')
+	{
+		getParameters.analyticsLabel = config.analyticsLabel;
+	}
+	if (typeof config.mode !== 'undefined')
+	{
+		getParameters.mode = config.mode;
+	}
+	if (config.navigation && config.navigation.page)
+	{
+		getParameters.nav = 'page-' + config.navigation.page;
+	}
+
+	return getParameters;
+};
+
+var prepareAjaxConfig = function(config)
+{
+	config = BX.type.isPlainObject(config) ? config : {};
+
+	if (config.data instanceof FormData)
+	{
+		config.preparePost = false;
+
+		config.data.append('sessid', BX.bitrix_sessid());
+		if (BX.message.SITE_ID)
+		{
+			config.data.append('SITE_ID', BX.message.SITE_ID);
+		}
+		if (typeof config.signedParameters !== 'undefined')
+		{
+			config.data.append('signedParameters', config.signedParameters);
+		}
+	}
+	else
+	{
+		config.data = BX.type.isPlainObject(config.data) ? config.data : {};
+		if (BX.message.SITE_ID)
+		{
+			config.data.SITE_ID = BX.message.SITE_ID;
+		}
+		config.data.sessid = BX.bitrix_sessid();
+		if (typeof config.signedParameters !== 'undefined')
+		{
+			config.data.signedParameters = config.signedParameters;
+		}
+	}
+
+	if (!config.method)
+	{
+		config.method = 'POST'
+	}
+
+	return config;
+};
+
+var buildAjaxPromiseToRestoreCsrf = function(config, withoutRestoringCsrf)
+{
+	withoutRestoringCsrf = withoutRestoringCsrf || false;
+	var originalConfig = BX.clone(config);
+	var promise = BX.ajax.promise(config);
+
+	return promise.then(function(response) {
+		if (!withoutRestoringCsrf && BX.type.isPlainObject(response) && BX.type.isArray(response.errors))
+		{
+			var csrfProblem = false;
+			response.errors.forEach(function(error) {
+				if (error.code === 'invalid_csrf' && error.customData.csrf)
+				{
+					BX.message({'bitrix_sessid': error.customData.csrf});
+					originalConfig.data.sessid = BX.bitrix_sessid();
+
+					csrfProblem = true;
+				}
+			});
+
+			if (csrfProblem)
+			{
+				return buildAjaxPromiseToRestoreCsrf(originalConfig, true);
+			}
+		}
+
+		if (!BX.type.isPlainObject(response) || response.status !== 'success')
+		{
+			var errorPromise = new BX.Promise();
+			errorPromise.reject(response);
+
+			return errorPromise;
+		}
+
+		return response;
+	}).catch(function(data) {
+		var ajaxReject = new BX.Promise();
+
+		if (BX.type.isPlainObject(data) && data.status && data.hasOwnProperty('data'))
+		{
+			ajaxReject.reject(data);
+		}
+		else
+		{
+			ajaxReject.reject({
+				status: 'error',
+				data: {
+					ajaxRejectData: data
+				},
+				errors: [
+					{
+						code: 'NETWORK_ERROR',
+						message: 'Network error'
+					}
+				]
+			});
+		}
+
+		return ajaxReject;
+	});
+};
+
+/**
+ *
+ * @param {string} action
+ * @param {Object} config
+ * @param {?string} [config.analyticsLabel]
+ * @param {string} [config.method='POST']
+ * @param {Object} [config.data]
+ * @param {?Object} [config.headers]
+ * @param {?Object} [config.timeout]
+ * @param {Object} [config.navigation]
+ * @param {number} [config.navigation.page]
+ */
+BX.ajax.runAction = function(action, config)
+{
+	config = prepareAjaxConfig(config);
+	var getParameters = prepareAjaxGetParameters(config);
+	getParameters.action = action;
+
+	var url = BX.util.add_url_param('/bitrix/services/main/ajax.php', getParameters);
+
+	return buildAjaxPromiseToRestoreCsrf({
+		method: config.method,
+		dataType: 'json',
+		url: url,
+		data: config.data,
+		timeout: config.timeout,
+		preparePost: config.preparePost,
+		headers: config.headers
+	});
+};
+
+/**
+ *
+ * @param {string} component
+ * @param {string} action
+ * @param {Object} config
+ * @param {?string} [config.analyticsLabel]
+ * @param {?string} [config.signedParameters]
+ * @param {string} [config.method='POST']
+ * @param {string} [config.mode='ajax'] Ajax or class.
+ * @param {Object} [config.data]
+ * @param {?array} [config.headers]
+ * @param {?number} [config.timeout]
+ * @param {Object} [config.navigation]
+ */
+BX.ajax.runComponentAction = function (component, action, config)
+{
+	config = prepareAjaxConfig(config);
+	config.mode = config.mode || 'ajax';
+
+	var getParameters = prepareAjaxGetParameters(config);
+	getParameters.c = component;
+	getParameters.action = action;
+
+	var url = BX.util.add_url_param('/bitrix/services/main/ajax.php', getParameters);
+
+	return buildAjaxPromiseToRestoreCsrf({
+		method: config.method,
+		dataType: 'json',
+		url: url,
+		data: config.data,
+		timeout: config.timeout,
+		preparePost: config.preparePost,
+		headers: config.headers
 	});
 };
 
@@ -935,12 +1168,21 @@ BX.ajax.prepareForm = function(obForm, data)
 		}
 
 		i = 0; length = 0;
-		var current = data, name, rest, pp;
+		var current = data, name, rest, pp, tmpKey;
 
 		while(i < _data.length)
 		{
 			var p = _data[i].name.indexOf('[');
-			if (p == -1) {
+			if (tmpKey)
+			{
+				current[_data[i].name] = {};
+				current[_data[i].name][tmpKey.replace(/\[|\]/gi, '')] = _data[i].value;
+				current = data;
+				tmpKey = null;
+				i++;
+			}
+			else if (p == -1)
+			{
 				current[_data[i].name] = _data[i].value;
 				current = data;
 				i++;
@@ -965,6 +1207,8 @@ BX.ajax.prepareForm = function(obForm, data)
 					//No index specified - so take the next integer
 					current = current[name];
 					_data[i].name = '' + current.length;
+					if (rest.substring(pp+1).indexOf('[') === 0)
+						tmpKey = rest.substring(0, pp) + rest.substring(pp+1);
 				}
 				else
 				{
@@ -1232,7 +1476,17 @@ BX.userOptions.__get = function()
 				prevParam = aOpt[0]+'.'+aOpt[1];
 			}
 
-			sParam += '&p['+n+'][v]['+BX.util.urlencode(aOpt[2])+']='+BX.util.urlencode(aOpt[3]);
+			var valueName = aOpt[2];
+			var value = aOpt[3];
+
+			if (valueName === null)
+			{
+				sParam += '&p['+n+'][v]='+BX.util.urlencode(value);
+			}
+			else
+			{
+				sParam += '&p['+n+'][v]['+BX.util.urlencode(valueName)+']='+BX.util.urlencode(value);
+			}
 		}
 	}
 

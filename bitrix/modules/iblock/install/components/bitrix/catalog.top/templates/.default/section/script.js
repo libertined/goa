@@ -4,7 +4,8 @@
 	if (!!window.JCCatalogTopComponent)
 		return;
 
-	window.JCCatalogTopComponent = function(params) {
+	window.JCCatalogTopComponent = function(params)
+	{
 		this.formPosting = false;
 		this.siteId = params.siteId || '';
 		this.ajaxId = params.ajaxId || '';
@@ -12,18 +13,8 @@
 		this.componentPath = params.componentPath || '';
 		this.parameters = params.parameters || '';
 
-		if (params.navParams)
-		{
-			this.navParams = {
-				NavNum: params.navParams.NavNum || 1,
-				NavPageNomer: parseInt(params.navParams.NavPageNomer) || 1,
-				NavPageCount: parseInt(params.navParams.NavPageCount) || 1
-			};
-		}
-
 		this.bigData = params.bigData || {enabled: false};
-		this.container = document.querySelector('[data-entity="container-' + this.navParams.NavNum + '"]');
-		this.showMoreButton = null;
+		this.container = document.querySelector('[data-entity="' + params.container + '"]');
 
 		if (this.bigData.enabled && BX.util.object_keys(this.bigData.rows).length > 0)
 		{
@@ -31,89 +22,22 @@
 			BX.cookie_domain = this.bigData.js.cookieDomain || '';
 			BX.current_server_time = this.bigData.js.serverTime;
 
-			BX.ready(BX.proxy(this.bigDataLoad, this));
+			BX.ready(BX.delegate(this.bigDataLoad, this));
+		}
+
+		if (params.initiallyShowHeader)
+		{
+			BX.ready(BX.delegate(this.showHeader, this));
 		}
 
 		if (params.deferredLoad)
 		{
-			BX.ready(BX.proxy(this.deferredLoad, this));
-		}
-
-		if (params.lazyLoad)
-		{
-			this.showMoreButton = document.querySelector('[data-use="show-more-' + this.navParams.NavNum + '"]');
-			BX.bind(this.showMoreButton, 'click', BX.proxy(this.showMore, this));
-		}
-
-		if (params.loadOnScroll)
-		{
-			BX.bind(window, 'scroll', BX.proxy(this.loadOnScroll, this));
+			BX.ready(BX.delegate(this.deferredLoad, this));
 		}
 	};
 
 	window.JCCatalogTopComponent.prototype =
 	{
-		checkButton: function()
-		{
-			if (this.showMoreButton)
-			{
-				if (this.navParams.NavPageNomer == this.navParams.NavPageCount)
-				{
-					BX.remove(this.showMoreButton);
-				}
-				else
-				{
-					this.container.appendChild(this.showMoreButton);
-				}
-			}
-		},
-
-		enableButton: function()
-		{
-			if (this.showMoreButton)
-			{
-				BX.removeClass(this.showMoreButton, 'disabled');
-				this.showMoreButton.innerHTML = BX.message('BTN_MESSAGE_LAZY_LOAD');
-			}
-		},
-
-		disableButton: function()
-		{
-			if (this.showMoreButton)
-			{
-				BX.addClass(this.showMoreButton, 'disabled');
-				this.showMoreButton.innerHTML = BX.message('BTN_MESSAGE_LAZY_LOAD_WAITER');
-			}
-		},
-
-		loadOnScroll: function()
-		{
-			var scrollTop = BX.GetWindowScrollPos().scrollTop,
-				containerBottom = BX.pos(this.container).bottom;
-
-			if (scrollTop + window.innerHeight > containerBottom)
-			{
-				this.showMore();
-			}
-		},
-
-		showMore: function()
-		{
-			if (this.navParams.NavPageNomer < this.navParams.NavPageCount)
-			{
-				var data = {};
-				data['action'] = 'showMore';
-				data['PAGEN_' + this.navParams.NavNum] = this.navParams.NavPageNomer + 1;
-
-				if (!this.formPosting)
-				{
-					this.formPosting = true;
-					this.disableButton();
-					this.sendRequest(data);
-				}
-			}
-		},
-
 		bigDataLoad: function()
 		{
 			var url = 'https://analytics.bitrix.info/crecoms/v1_0/recoms.php',
@@ -124,13 +48,14 @@
 				url += (url.indexOf('?') !== -1 ? '&' : '?') + data;
 			}
 
-			var onReady = BX.proxy(function(result){
+			var onReady = BX.delegate(function(result){
 				this.sendRequest({
 					action: 'deferredLoad',
 					bigData: 'Y',
-					items: result.items || [],
-					rid: result.id,
+					items: result && result.items || [],
+					rid: result && result.id,
 					count: this.bigData.count,
+					rowsRange: this.bigData.rowsRange,
 					shownIds: this.bigData.shownIds
 				});
 			}, this);
@@ -169,14 +94,14 @@
 				dataType: 'json',
 				timeout: 60,
 				data: BX.merge(defaultData, data),
-				onsuccess: BX.proxy(function(result){
+				onsuccess: BX.delegate(function(result){
 					if (!result || !result.JS)
 						return;
 
 					BX.ajax.processScripts(
 						BX.processHTML(result.JS).SCRIPT,
 						false,
-						BX.proxy(function(){this.showAction(result, data);}, this)
+						BX.delegate(function(){this.showAction(result, data);}, this)
 					);
 				}, this)
 			});
@@ -189,26 +114,9 @@
 
 			switch (data.action)
 			{
-				case 'showMore':
-					this.processShowMoreAction(result);
-					break;
 				case 'deferredLoad':
 					this.processDeferredLoadAction(result, data.bigData === 'Y');
 					break;
-			}
-		},
-
-		processShowMoreAction: function(result)
-		{
-			this.formPosting = false;
-			this.enableButton();
-
-			if (result)
-			{
-				this.navParams.NavPageNomer++;
-				this.processItems(result.items);
-				this.processPagination(result.pagination);
-				this.checkButton();
 			}
 		},
 
@@ -237,6 +145,8 @@
 
 			if (items.length)
 			{
+				this.showHeader(true);
+
 				for (k in items)
 				{
 					if (items.hasOwnProperty(k))
@@ -284,17 +194,39 @@
 			BX.ajax.processScripts(processed.SCRIPT);
 		},
 
-		processPagination: function(paginationHtml)
+		showHeader: function(animate)
 		{
-			if (!paginationHtml)
-				return;
+			var parentNode = BX.findParent(this.container, {attr: {'data-entity': 'parent-container'}}),
+				header;
 
-			var pagination = document.querySelectorAll('[data-pagination-num="' + this.navParams.NavNum + '"]');
-			for (var k in pagination)
+			if (parentNode && BX.type.isDomNode(parentNode))
 			{
-				if (pagination.hasOwnProperty(k))
+				header = parentNode.querySelector('[data-entity="header"');
+
+				if (header && header.getAttribute('data-showed') != 'true')
 				{
-					pagination[k].innerHTML = paginationHtml;
+					header.style.display = '';
+
+					if (animate)
+					{
+						new BX.easing({
+							duration: 2000,
+							start: {opacity: 0},
+							finish: {opacity: 100},
+							transition: BX.easing.makeEaseOut(BX.easing.transitions.quad),
+							step: function(state){
+								header.style.opacity = state.opacity / 100;
+							},
+							complete: function(){
+								header.removeAttribute('style');
+								header.setAttribute('data-showed', 'true');
+							}
+						}).animate();
+					}
+					else
+					{
+						header.style.opacity = 100;
+					}
 				}
 			}
 		}

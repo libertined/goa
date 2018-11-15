@@ -18,11 +18,38 @@
 	 * @event Grid::headerPinned
 	 * @event Grid::headerUnpinned
 	 * @event Grid::beforeRequest
-	 * @param containerId
-	 * @param userOptions
-	 * @param userOptionsActions
-	 * @param userOptionsHandlerUrl
-	 * @returns {Grid}
+	 * @param {string} containerId
+	 * @param {object} arParams
+	 * @param {boolean} arParams.ALLOW_COLUMNS_SORT
+	 * @param {boolean} arParams.ALLOW_ROWS_SORT
+	 * @param {boolean} arParams.ALLOW_COLUMNS_RESIZE
+	 * @param {boolean} arParams.SHOW_ROW_CHECKBOXES
+	 * @param {boolean} arParams.ALLOW_HORIZONTAL_SCROLL
+	 * @param {boolean} arParams.ALLOW_PIN_HEADER
+	 * @param {boolean} arParams.SHOW_ACTION_PANEL
+	 * @param {boolean} arParams.PRESERVE_HISTORY
+	 * @param {boolean} arParams.BACKEND_URL
+	 * @param {boolean} arParams.ALLOW_CONTEXT_MENU
+	 * @param {object} arParams.DEFAULT_COLUMNS
+	 * @param {boolean} arParams.ENABLE_COLLAPSIBLE_ROWS
+	 * @param {object} arParams.EDITABLE_DATA
+	 * @param {string} arParams.SETTINGS_TITLE
+	 * @param {string} arParams.APPLY_SETTINGS
+	 * @param {string} arParams.CANCEL_SETTINGS
+	 * @param {string} arParams.CONFIRM_APPLY
+	 * @param {string} arParams.CONFIRM_CANCEL
+	 * @param {string} arParams.CONFIRM_MESSAGE
+	 * @param {string} arParams.CONFIRM_FOR_ALL_MESSAGE
+	 * @param {string} arParams.CONFIRM_RESET_MESSAGE
+	 * @param {string} arParams.RESET_DEFAULT
+	 * @param {object} userOptions
+	 * @param {object} userOptionsActions
+	 * @param {object} userOptionsHandlerUrl
+	 * @param {object} panelActions
+	 * @param {object} panelTypes
+	 * @param {object} editorTypes
+	 * @param {object} messageTypes
+	 * @constructor
 	 */
 	BX.Main.grid = function(
 		containerId,
@@ -32,7 +59,8 @@
 		userOptionsHandlerUrl,
 		panelActions,
 		panelTypes,
-		editorTypes
+		editorTypes,
+		messageTypes
 	)
 	{
 		this.settings = null;
@@ -67,22 +95,22 @@
 			userOptionsHandlerUrl,
 			panelActions,
 			panelTypes,
-			editorTypes
+			editorTypes,
+			messageTypes
 		);
 	};
 
+	BX.Main.grid.isNeedResourcesReady = function(container)
+	{
+		return BX.hasClass(container, 'main-grid-load-animation');
+	};
+
 	BX.Main.grid.prototype = {
-		init: function(
-			containerId,
-			arParams,
-			userOptions,
-			userOptionsActions,
-			userOptionsHandlerUrl,
-			panelActions,
-			panelTypes,
-			editorTypes
-		)
+		init: function(containerId, arParams, userOptions, userOptionsActions, userOptionsHandlerUrl, panelActions, panelTypes, editorTypes, messageTypes)
 		{
+			this.baseUrl = window.location.pathname + window.location.search;
+			this.container = BX(containerId);
+
 			if (!BX.type.isNotEmptyString(containerId))
 			{
 				throw 'BX.Main.grid.init: parameter containerId is empty';
@@ -101,13 +129,15 @@
 			this.containerId = containerId;
 			this.userOptions = new BX.Grid.UserOptions(this, userOptions, userOptionsActions, userOptionsHandlerUrl);
 			this.gridSettings = new BX.Grid.SettingsWindow(this);
+			this.messages = new BX.Grid.Message(this, messageTypes);
 
 			if (this.getParam('ALLOW_PIN_HEADER'))
 			{
 				this.pinHeader = new BX.Grid.PinHeader(this);
-				this.bindOnCheckAll();
-				BX.addCustomEvent(window, 'Grid::headerPinned', BX.delegate(this.bindOnCheckAll, this));
+				BX.addCustomEvent(window, 'Grid::headerUpdated', BX.proxy(this.bindOnCheckAll, this));
 			}
+
+			this.bindOnCheckAll();
 
 			if (this.getParam('ALLOW_HORIZONTAL_SCROLL'))
 			{
@@ -115,16 +145,11 @@
 			}
 
 			this.pageSize = new BX.Grid.Pagesize(this);
-
-			if (this.getParam('SHOW_ACTION_PANEL'))
-			{
-				this.actionPanel = new BX.Grid.ActionPanel(this, panelActions, panelTypes);
-			}
-
 			this.editor = new BX.Grid.InlineEditor(this, editorTypes);
 
 			if (this.getParam('SHOW_ACTION_PANEL'))
 			{
+				this.actionPanel = new BX.Grid.ActionPanel(this, panelActions, panelTypes);
 				this.pinPanel = new BX.Grid.PinPanel(this);
 			}
 
@@ -140,10 +165,7 @@
 				throw 'BX.Main.grid.init: Failed to find table';
 			}
 
-			if (this.getParam('SHOW_ROW_CHECKBOXES'))
-			{
-				this.bindOnRowEvents();
-			}
+			this.bindOnRowEvents();
 
 			if (this.getParam('ALLOW_COLUMNS_RESIZE'))
 			{
@@ -164,33 +186,82 @@
 				this.initColsDragAndDrop();
 			}
 
-			this.bindOnClickOnRowActionsMenu();
 			this.getRows().initSelected();
 			this.adjustEmptyTable(this.getRows().getSourceBodyChild());
 			BX.onCustomEvent(this.getContainer(), 'Grid::ready', [this]);
-			BX.addCustomEvent(window, 'Grid::unselectRow', BX.delegate(this._onUnselectRows, this));
-			BX.addCustomEvent(window, 'Grid::unselectRows', BX.delegate(this._onUnselectRows, this));
-			BX.addCustomEvent(window, 'Grid::allRowsUnselected', BX.delegate(this._onUnselectRows, this));
+			BX.addCustomEvent(window, 'Grid::unselectRow', BX.proxy(this._onUnselectRows, this));
+			BX.addCustomEvent(window, 'Grid::unselectRows', BX.proxy(this._onUnselectRows, this));
+			BX.addCustomEvent(window, 'Grid::allRowsUnselected', BX.proxy(this._onUnselectRows, this));
+			BX.addCustomEvent(window, 'Grid::updated', BX.proxy(this._onGridUpdated, this));
+			window.frames[this.getFrameId()].onresize = BX.throttle(this._onFrameResize, 20, this);
+
+			this.initStickedColumns();
+
+		},
+
+		destroy: function()
+		{
+			BX.removeCustomEvent(window, 'Grid::unselectRow', BX.proxy(this._onUnselectRows, this));
+			BX.removeCustomEvent(window, 'Grid::unselectRows', BX.proxy(this._onUnselectRows, this));
+			BX.removeCustomEvent(window, 'Grid::allRowsUnselected', BX.proxy(this._onUnselectRows, this));
+			BX.removeCustomEvent(window, 'Grid::headerPinned', BX.proxy(this.bindOnCheckAll, this));
+			this.getPinHeader() && this.getPinHeader().destroy();
+			this.getFader() && this.getFader().destroy();
+			this.getResize() && this.getResize().destroy();
+			this.getColsSortable() && this.getColsSortable().destroy();
+			this.getRowsSortable() && this.getRowsSortable().destroy();
+			this.getSettingsWindow() && this.getSettingsWindow().destroy();
+		},
+
+		_onFrameResize: function()
+		{
+			BX.onCustomEvent(window, 'Grid::resize', [this]);
+		},
+
+		_onGridUpdated: function()
+		{
+			this.initStickedColumns();
+			this.adjustFadePosition(this.getFadeOffset());
+		},
+
+		/**
+		 * @private
+		 * @return {string}
+		 */
+		getFrameId: function()
+		{
+			return "main-grid-tmp-frame-"+this.getContainerId();
 		},
 
 		enableActionsPanel: function()
 		{
-			var panel = this.getActionsPanel().getPanel();
-
-			if (BX.type.isDomNode(panel))
+			if (this.getParam('SHOW_ACTION_PANEL'))
 			{
-				BX.removeClass(panel, this.settings.get('classDisable'));
+				var panel = this.getActionsPanel().getPanel();
+
+				if (BX.type.isDomNode(panel))
+				{
+					BX.removeClass(panel, this.settings.get('classDisable'));
+				}
 			}
 		},
 
 		disableActionsPanel: function()
 		{
-			var panel = this.getActionsPanel().getPanel();
-
-			if (BX.type.isDomNode(panel))
+			if (this.getParam('SHOW_ACTION_PANEL'))
 			{
-				BX.addClass(panel, this.settings.get('classDisable'));
+				var panel = this.getActionsPanel().getPanel();
+
+				if (BX.type.isDomNode(panel))
+				{
+					BX.addClass(panel, this.settings.get('classDisable'));
+				}
 			}
+		},
+
+		getSettingsWindow: function()
+		{
+			return this.gridSettings;
 		},
 
 		_onUnselectRows: function()
@@ -210,6 +281,39 @@
 			}
 		},
 
+		/**
+		 * @return {boolean}
+		 */
+		isIE: function()
+		{
+			if (!BX.type.isBoolean(this.ie))
+			{
+				this.ie = BX.hasClass(document.documentElement, 'bx-ie');
+			}
+
+			return this.ie;
+		},
+
+
+		/**
+		 * @return {boolean}
+		 */
+		isTouch: function()
+		{
+			if (!BX.type.isBoolean(this.touch))
+			{
+				this.touch = BX.hasClass(document.documentElement, 'bx-touch');
+			}
+
+			return this.touch;
+		},
+
+
+		/**
+		 * @param {string} paramName
+		 * @param {*} [defaultValue]
+		 * @return {*}
+		 */
 		getParam: function(paramName, defaultValue)
 		{
 			if(defaultValue === undefined)
@@ -219,6 +323,10 @@
 			return (this.arParams.hasOwnProperty(paramName) ? this.arParams[paramName] : defaultValue);
 		},
 
+
+		/**
+		 * @return {HTMLElement[]}
+		 */
 		getCounterTotal: function()
 		{
 			return BX.Grid.Utils.getByClass(this.getContainer(), this.settings.get('classCounterTotal'), true);
@@ -229,6 +337,10 @@
 			return ('action_button_' + this.getId());
 		},
 
+
+		/**
+		 * @return {?BX.Grid.PinHeader}
+		 */
 		getPinHeader: function()
 		{
 			if (this.getParam('ALLOW_PIN_HEADER'))
@@ -239,6 +351,10 @@
 			return this.pinHeader;
 		},
 
+
+		/**
+		 * @return {BX.Grid.Resize}
+		 */
 		getResize: function()
 		{
 			if (!(this.resize instanceof BX.Grid.Resize) && this.getParam('ALLOW_COLUMNS_RESIZE'))
@@ -284,7 +400,6 @@
 							self.disableForAllCounter();
 							self.updateCounterDisplayed();
 							self.updateCounterSelected();
-							self.disableActionsPanel();
 						}
 					}
 				);
@@ -313,6 +428,75 @@
 			this.reloadTable('POST', data);
 		},
 
+		getForAllKey: function()
+		{
+			return 'action_all_rows_' + this.getId();
+		},
+
+		updateRow: function(id, data, url, callback)
+		{
+			var row = this.getRows().getById(id);
+
+			if (row instanceof BX.Grid.Row)
+			{
+				row.update(data, url, callback);
+			}
+		},
+
+		removeRow: function(id, data, url, callback)
+		{
+			var row = this.getRows().getById(id);
+
+			if (row instanceof BX.Grid.Row)
+			{
+				row.remove(data, url, callback);
+			}
+		},
+
+		addRow: function(data, url, callback)
+		{
+			var action = this.getUserOptions().getAction('GRID_ADD_ROW');
+			var rowData = {action: action, data: data};
+			var self = this;
+
+			this.tableFade();
+			this.getData().request(url, 'POST', rowData, null, function() {
+				var bodyRows = this.getBodyRows();
+				self.getUpdater().updateBodyRows(bodyRows);
+				self.tableUnfade();
+				self.getRows().reset();
+				self.getUpdater().updateFootRows(this.getFootRows());
+				self.getUpdater().updatePagination(this.getPagination());
+				self.getUpdater().updateMoreButton(this.getMoreButton());
+				self.getUpdater().updateCounterTotal(this.getCounterTotal());
+				self.bindOnRowEvents();
+				self.adjustEmptyTable(bodyRows);
+
+				self.bindOnMoreButtonEvents();
+				self.bindOnClickPaginationLinks();
+				self.updateCounterDisplayed();
+				self.updateCounterSelected();
+
+				if (self.getParam('ALLOW_COLUMNS_SORT'))
+				{
+					self.colsSortable.reinit();
+				}
+
+				if (self.getParam('ALLOW_ROWS_SORT'))
+				{
+					self.rowsSortable.reinit();
+				}
+
+				BX.onCustomEvent(window, 'Grid::rowAdded', [{data: data, grid: self, response: this}]);
+				BX.onCustomEvent(window, 'Grid::updated', []);
+
+				if (BX.type.isFunction(callback))
+				{
+					callback({data: data, grid: self, response: this});
+				}
+			});
+		},
+
 		editSelectedCancel: function()
 		{
 			this.getRows().editSelectedCancel();
@@ -321,7 +505,9 @@
 		removeSelected: function()
 		{
 			var data = { 'ID': this.getRows().getSelectedIds() };
+			var values = this.getActionsPanel().getValues();
 			data[this.getActionKey()] = 'delete';
+			data[this.getForAllKey()] = this.getForAllKey() in values ? values[this.getForAllKey()] : 'N';
 			this.reloadTable('POST', data);
 		},
 
@@ -337,9 +523,12 @@
 			this.reloadTable('POST', data);
 		},
 
+
+		/**
+		 * @return {?BX.Grid.ActionPanel}
+		 */
 		getActionsPanel: function()
 		{
-			this.actionPanel = this.actionPanel || new BX.Grid.ActionPanel(this);
 			return this.actionPanel;
 		},
 
@@ -370,43 +559,49 @@
 
 		adjustEmptyTable: function(rows)
 		{
-			function adjustEmptyBlockPosition(event) {
-				var target = event.currentTarget;
-				BX.Grid.Utils.requestAnimationFrame(function() {
-					BX.style(emptyBlock, 'transform', 'translate3d(' + BX.scrollLeft(target) + 'px, 0px, 0');
-				});
-			}
+			requestAnimationFrame(function() {
+				function adjustEmptyBlockPosition(event) {
+					var target = event.currentTarget;
+					BX.Grid.Utils.requestAnimationFrame(function() {
+						BX.style(emptyBlock, 'transform', 'translate3d(' + BX.scrollLeft(target) + 'px, 0px, 0');
+					});
+				}
 
-			if (!BX.hasClass(document.documentElement, 'bx-ie') &&
-				BX.type.isArray(rows) && rows.length === 1 &&
-				BX.hasClass(rows[0], this.settings.get('classEmptyRows')))
-			{
-				var gridRect = BX.pos(this.getContainer());
-				var scrollBottom = BX.scrollTop(window) + BX.height(window);
-				var diff = gridRect.bottom - scrollBottom;
-				var panelsHeight = BX.height(this.getPanels());
-				var emptyBlock = this.getEmptyBlock();
-				var containerWidth = BX.width(this.getContainer());
-
-				BX.width(emptyBlock, containerWidth);
-				BX.style(emptyBlock, 'transform', 'translate3d(' + BX.scrollLeft(this.getScrollContainer()) + 'px, 0px, 0');
-
-				BX.unbind(this.getScrollContainer(), 'scroll', adjustEmptyBlockPosition);
-				BX.bind(this.getScrollContainer(), 'scroll', adjustEmptyBlockPosition);
-
-				if (diff > 0)
+				if (!BX.hasClass(document.documentElement, 'bx-ie') &&
+					BX.type.isArray(rows) && rows.length === 1 &&
+					BX.hasClass(rows[0], this.settings.get('classEmptyRows')))
 				{
-					BX.style(this.getTable(), 'min-height', (gridRect.height - diff - panelsHeight) + 'px');
+					var gridRect = BX.pos(this.getContainer());
+					var scrollBottom = BX.scrollTop(window) + BX.height(window);
+					var diff = gridRect.bottom - scrollBottom;
+					var panelsHeight = BX.height(this.getPanels());
+					var emptyBlock = this.getEmptyBlock();
+					var containerWidth = BX.width(this.getContainer());
+
+					if (containerWidth)
+					{
+						BX.width(emptyBlock, containerWidth);
+					}
+
+					BX.style(emptyBlock, 'transform', 'translate3d(' + BX.scrollLeft(this.getScrollContainer()) + 'px, 0px, 0');
+
+					BX.unbind(this.getScrollContainer(), 'scroll', adjustEmptyBlockPosition);
+					BX.bind(this.getScrollContainer(), 'scroll', adjustEmptyBlockPosition);
+
+					if (diff > 0)
+					{
+						BX.style(this.getTable(), 'min-height', (gridRect.height - diff - panelsHeight) + 'px');
+					}
+					else
+					{
+						BX.style(this.getTable(), 'min-height', (gridRect.height + Math.abs(diff) - panelsHeight) + 'px');
+					}
 				}
 				else
 				{
-					BX.style(this.getTable(), 'min-height', (gridRect.height + Math.abs(diff) - panelsHeight) + 'px');
+					BX.style(this.getTable(), 'min-height', '');
 				}
-			}
-			else
-			{
-				BX.style(this.getTable(), 'min-height', '');
-			}
+			}.bind(this));
 		},
 
 		reloadTable: function(method, data, callback, url)
@@ -432,7 +627,7 @@
 			}
 
 			this.getData().request(url, method, data, '', function() {
-				self.rows = null;
+				self.getRows().reset();
 				bodyRows = this.getBodyRows();
 				self.getUpdater().updateHeadRows(this.getHeadRows());
 				self.getUpdater().updateBodyRows(bodyRows);
@@ -443,10 +638,7 @@
 
 				self.adjustEmptyTable(bodyRows);
 
-				if (self.getParam('SHOW_ROW_CHECKBOXES'))
-				{
-					self.bindOnRowEvents();
-				}
+				self.bindOnRowEvents();
 
 				self.bindOnMoreButtonEvents();
 				self.bindOnClickPaginationLinks();
@@ -456,7 +648,11 @@
 				self.updateCounterSelected();
 				self.disableActionsPanel();
 				self.disableForAllCounter();
-				self.getActionsPanel().resetForAllCheckbox();
+
+				if (self.getParam('SHOW_ACTION_PANEL'))
+				{
+					self.getUpdater().updateGroupActions(this.getActionPanel());
+				}
 
 				if (self.getParam('ALLOW_COLUMNS_SORT'))
 				{
@@ -468,7 +664,6 @@
 					self.rowsSortable.reinit();
 				}
 
-				self.bindOnClickOnRowActionsMenu();
 				self.tableUnfade();
 
 				BX.onCustomEvent(window, 'Grid::updated', []);
@@ -536,17 +731,29 @@
 			return this.pageSize;
 		},
 
+
+		/**
+		 * @return {?BX.Grid.Fader}
+		 */
 		getFader: function()
 		{
 			return this.fader;
 		},
 
+
+		/**
+		 * @return {BX.Grid.Data}
+		 */
 		getData: function()
 		{
 			this.data = this.data || new BX.Grid.Data(this);
 			return this.data;
 		},
 
+
+		/**
+		 * @return {BX.Grid.Updater}
+		 */
 		getUpdater: function()
 		{
 			this.updater = this.updater || new BX.Grid.Updater(this);
@@ -560,6 +767,13 @@
 			);
 		},
 
+		isNoSortableHeader: function(item)
+		{
+			return (
+				BX.hasClass(item, this.settings.get('classHeaderNoSortable'))
+			);
+		},
+
 		bindOnClickHeader: function()
 		{
 			var self = this;
@@ -568,8 +782,9 @@
 			BX.bind(this.getContainer(), 'click', function(event) {
 				cell = BX.findParent(event.target, {tag: 'th'}, true, false);
 
-				if (cell && self.isSortableHeader(cell))
+				if (cell && self.isSortableHeader(cell) && !self.preventSortableClick)
 				{
+					self.preventSortableClick = false;
 					self._clickOnSortableHeader(cell, event);
 				}
 			});
@@ -590,29 +805,238 @@
 			return this.isEditMode;
 		},
 
-		_clickOnSortableHeader: function(header, event)
+		getColumnHeaderCellByName: function(name)
 		{
-			var self = this;
-			event.preventDefault();
+			return BX.Grid.Utils.getBySelector(
+				this.getContainer(),
+				'#'+this.getId()+' th[data-name="'+name+'"]',
+				true
+			);
+		},
 
-			if (!BX.hasClass(header, this.settings.get('classLoad')))
+		getColumnByName: function(name)
+		{
+			var columns = this.getParam('DEFAULT_COLUMNS');
+			return !!name && name in columns ? columns[name] : null;
+		},
+
+		adjustIndex: function(index)
+		{
+			var fixedCells = this.getAllRows()[0]
+				.querySelectorAll('.main-grid-fixed-column').length;
+			return (index + fixedCells);
+		},
+
+		getColumnByIndex: function(index)
+		{
+			index = this.adjustIndex(index);
+
+			return this.getAllRows()
+				.reduce(function(accumulator, row) {
+					if (!row.classList.contains('main-grid-row-custom') && !row.classList.contains('main-grid-row-empty'))
+					{
+						accumulator.push(row.children[index]);
+					}
+
+					return accumulator;
+				}, []);
+		},
+
+		getAllRows: function()
+		{
+			var rows = [].slice.call(this.getTable().rows);
+			var fixedTable = this.getContainer().parentElement.querySelector(".main-grid-fixed-bar table");
+
+			if (fixedTable)
 			{
-				BX.addClass(header, this.settings.get('classLoad'));
+				rows.push(fixedTable.rows[0]);
+			}
+
+			return rows;
+		},
+
+		initStickedColumns: function()
+		{
+			[].slice.call(this.getAllRows()[0].children).forEach(function(cell, index) {
+				if (cell.classList.contains('main-grid-sticked-column'))
+				{
+					this.stickyColumnByIndex(index);
+				}
+			}, this);
+
+			this.getResize().destroy();
+			this.getResize().init(this);
+		},
+
+		stickyColumnByIndex: function(index)
+		{
+			var column = this.getColumnByIndex(index);
+			var cellWidth = column[0].clientWidth;
+
+			var heights = column.map(function(cell) {
+				return BX.height(cell);
+			});
+
+			column.forEach(function(cell, cellIndex) {
+				var clone = BX.clone(cell);
+
+				cell.style.minWidth = cellWidth + 'px';
+				cell.style.width = cellWidth + 'px';
+				cell.style.minHeight = heights[cellIndex] + 'px';
+
+				var lastStickyCell = this.getLastStickyCellFromRowByIndex(cellIndex);
+
+				if (lastStickyCell)
+				{
+					var lastStickyCellLeft = parseInt(BX.style(lastStickyCell, 'left'));
+					var lastStickyCellWidth = parseInt(BX.style(lastStickyCell, 'width'));
+
+					lastStickyCellLeft = isNaN(lastStickyCellLeft) ? 0 : lastStickyCellLeft;
+					lastStickyCellWidth = isNaN(lastStickyCellWidth) ? 0 : lastStickyCellWidth;
+
+					cell.style.left = (lastStickyCellLeft + lastStickyCellWidth) + 'px';
+				}
+
+				cell.classList.add('main-grid-fixed-column');
+				cell.classList.add('main-grid-cell-static');
+				clone.classList.add('main-grid-cell-static');
+
+				if (this.getColsSortable())
+				{
+					this.getColsSortable().unregister(cell);
+					this.getColsSortable().unregister(clone);
+				}
+
+				BX.insertAfter(clone, cell);
+
+			}, this);
+
+			this.adjustFadePosition(this.getFadeOffset());
+		},
+
+		adjustFixedColumnsPosition: function()
+		{
+			var fixedCells = this.getAllRows()[0]
+				.querySelectorAll('.main-grid-fixed-column').length;
+
+			var columnsPosition = [].slice.call(this.getAllRows()[0].children)
+				.reduce(function(accumulator, cell, index, columns) {
+					var cellLeft;
+					var cellWidth;
+
+					if (columns[index-1] && columns[index-1].classList.contains('main-grid-fixed-column'))
+					{
+						cellLeft = parseInt(BX.style(columns[index-1], 'left'));
+						cellWidth = parseInt(BX.style(columns[index-1], 'width'));
+
+						cellLeft = isNaN(cellLeft) ? 0 : cellLeft;
+						cellWidth = isNaN(cellWidth) ? 0 : cellWidth;
+
+						accumulator.push({index: index+1, left: (cellLeft + cellWidth)});
+					}
+
+					return accumulator;
+				}, []);
+
+			columnsPosition
+				.forEach(function(item) {
+					var column = this.getColumnByIndex(item.index - fixedCells);
+
+					column.forEach(function(cell) {
+						if (item.index !== columnsPosition[columnsPosition.length-1].index)
+						{
+							cell.style.left = item.left + 'px';
+						}
+					});
+				}, this);
+
+			this.getAllRows()
+				.forEach(function(row) {
+					var height = BX.height(row);
+					var cells = [].slice.call(row.children);
+
+					cells.forEach(function(cell) {
+						cell.style.minHeight = height + 'px';
+					});
+				});
+		},
+
+		getLastStickyCellFromRowByIndex: function(index)
+		{
+			return [].slice.call(this.getAllRows()[index].children)
+				.reduceRight(function(accumulator, cell) {
+					if (!accumulator && cell.classList.contains('main-grid-fixed-column'))
+					{
+						accumulator = cell;
+					}
+
+					return accumulator;
+				}, null);
+		},
+
+		getFadeOffset: function()
+		{
+			var fadeOffset = 0;
+			var lastStickyCell = this.getLastStickyCellFromRowByIndex(0);
+
+			if (lastStickyCell)
+			{
+				var lastStickyCellLeft = parseInt(BX.style(lastStickyCell, 'left'));
+				var lastStickyCellWidth = lastStickyCell.offsetWidth;
+
+				lastStickyCellLeft = isNaN(lastStickyCellLeft) ? 0 : lastStickyCellLeft;
+				lastStickyCellWidth = isNaN(lastStickyCellWidth) ? 0 : lastStickyCellWidth;
+
+				fadeOffset = lastStickyCellLeft + lastStickyCellWidth;
+			}
+
+			return fadeOffset;
+		},
+
+		adjustFadePosition: function(offset)
+		{
+			var earLeft = this.getFader().getEarLeft();
+			var shadowLeft = this.getFader().getShadowLeft();
+
+			earLeft.style.left = offset + 'px';
+			shadowLeft.style.left = offset + 'px';
+		},
+
+		/**
+		 * @param {string|object} column
+		 */
+		sortByColumn: function(column)
+		{
+			var headerCell = null;
+			var header = null;
+
+			if (!BX.type.isPlainObject(column))
+			{
+				headerCell = this.getColumnHeaderCellByName(column);
+				header = this.getColumnByName(column);
+			}
+			else
+			{
+				header = column;
+				header.sort_url = this.prepareSortUrl(column);
+			}
+
+			if (header && (!!headerCell && !BX.hasClass(headerCell, this.settings.get('classLoad')) || !headerCell))
+			{
+				!!headerCell && BX.addClass(headerCell, this.settings.get('classLoad'));
 				this.tableFade();
 
-				this.getUserOptions().setSort(BX.data(header, 'sort-by'), BX.data(header, 'sort-order'), function() {
-					self.getData().request(BX.data(header, 'sort-url'), null, null, 'sort', function() {
+				var self = this;
+
+				this.getUserOptions().setSort(header.sort_by, header.sort_order, function() {
+					self.getData().request(header.sort_url, null, null, 'sort', function() {
 						self.rows = null;
-						BX.removeClass(header, self.settings.get('classLoad'));
 						self.getUpdater().updateHeadRows(this.getHeadRows());
 						self.getUpdater().updateBodyRows(this.getBodyRows());
 						self.getUpdater().updatePagination(this.getPagination());
 						self.getUpdater().updateMoreButton(this.getMoreButton());
 
-						if (self.getParam('SHOW_ROW_CHECKBOXES'))
-						{
-							self.bindOnRowEvents();
-						}
+						self.bindOnRowEvents();
 
 						self.bindOnMoreButtonEvents();
 						self.bindOnClickPaginationLinks();
@@ -622,7 +1046,11 @@
 						self.updateCounterSelected();
 						self.disableActionsPanel();
 						self.disableForAllCounter();
-						self.getActionsPanel().resetForAllCheckbox();
+
+						if (self.getParam('SHOW_ACTION_PANEL'))
+						{
+							self.getActionsPanel().resetForAllCheckbox();
+						}
 
 						if (self.getParam('ALLOW_ROWS_SORT'))
 						{
@@ -634,13 +1062,36 @@
 							self.colsSortable.reinit();
 						}
 
-						self.bindOnClickOnRowActionsMenu();
-						BX.onCustomEvent(self.getContainer(), 'Grid::dataSorted', [self.parent]);
+						BX.onCustomEvent(window, 'BX.Main.grid:sort', [header, self]);
 						BX.onCustomEvent(window, 'Grid::updated', []);
 						self.tableUnfade();
 					});
 				});
 			}
+		},
+
+		prepareSortUrl: function(header)
+		{
+			var url = window.location.toString();
+
+			if ('sort_by' in header)
+			{
+				url = BX.util.add_url_param(url, {by: header.sort_by});
+			}
+
+			if ('sort_order' in header)
+			{
+				url = BX.util.add_url_param(url, {order: header.sort_order});
+			}
+
+			return url;
+		},
+
+		_clickOnSortableHeader: function(header, event)
+		{
+			event.preventDefault();
+
+			this.sortByColumn(BX.data(header, 'name'));
 		},
 
 		getObserver: function()
@@ -658,11 +1109,19 @@
 			this.colsSortable = new BX.Grid.ColsSortable(this);
 		},
 
+
+		/**
+		 * @return {BX.Grid.RowsSortable}
+		 */
 		getRowsSortable: function()
 		{
 			return this.rowsSortable;
 		},
 
+
+		/**
+		 * @return {BX.Grid.ColsSortable}
+		 */
 		getColsSortable: function()
 		{
 			return this.colsSortable;
@@ -673,6 +1132,10 @@
 			return this.userOptionsHandlerUrl || '';
 		},
 
+
+		/**
+		 * @return {BX.Grid.UserOptions}
+		 */
 		getUserOptions: function()
 		{
 			return this.userOptions;
@@ -698,6 +1161,13 @@
 			this.getCheckAllCheckboxes().forEach(function(current) {
 				current.getNode().checked = false;
 			});
+		},
+
+		adjustCheckAllCheckboxes: function()
+		{
+			var total = this.getRows().getBodyChild().filter(function(row) { return row.isShown(); }).length;
+			var selected = this.getRows().getSelected().filter(function(row) { return row.isShown(); }).length;
+			total === selected ? this.selectAllCheckAllCheckboxes() : this.unselectAllCheckAllCheckboxes();
 		},
 
 		bindOnCheckAll: function()
@@ -764,35 +1234,36 @@
 
 		bindOnRowEvents: function()
 		{
-			var self = this;
+			var observer = this.getObserver();
+			var showCheckboxes = this.getParam('SHOW_ROW_CHECKBOXES');
+			var enableCollapsibleRows = this.getParam('ENABLE_COLLAPSIBLE_ROWS');
 
 			this.getRows().getBodyChild().forEach(function(current) {
-				current.getObserver().add(
-					current.getNode(),
-					'click',
-					self._onClickOnRow,
-					self
-				);
-				current.getObserver().add(
-					current.getNode(),
-					'dblclick',
-					self._onRowDblclick,
-					self
-				);
-			});
+				showCheckboxes && observer.add(current.getNode(), 'click', this._onClickOnRow, this);
+				current.getDefaultAction() && observer.add(current.getNode(), 'dblclick', this._onRowDblclick, this);
+				current.getActionsButton() && observer.add(current.getActionsButton(), 'click', this._clickOnRowActionsButton, this);
+				enableCollapsibleRows && current.getCollapseButton() && observer.add(current.getCollapseButton(), 'click', this._onCollapseButtonClick, this);
+			}, this);
 		},
 
-		bindOnClickOnRowActionsMenu: function()
+		_onCollapseButtonClick: function(event)
 		{
-			var self = this;
-			this.getRows().getBodyChild().forEach(function(current) {
-				this.getObserver().add(
-					current.getActionsButton(),
-					'click',
-					this._clickOnRowActionsButton,
-					this
-				);
-			}, this);
+			event.preventDefault();
+			event.stopPropagation();
+
+			var row = this.getRows().get(event.currentTarget);
+			row.toggleChildRows();
+
+			if (row.isCustom())
+			{
+				this.getUserOptions().setCollapsedGroups(this.getRows().getIdsCollapsedGroups());
+			}
+			else
+			{
+				this.getUserOptions().setExpandedRows(this.getRows().getIdsExpandedRows());
+			}
+
+			BX.fireEvent(document.body, 'click');
 		},
 
 		_clickOnRowActionsButton: function(event)
@@ -862,7 +1333,7 @@
 
 					contentContainer = row.getContentContainer(event.target);
 
-					if (BX.type.isDomNode(contentContainer))
+					if (BX.type.isDomNode(contentContainer) && event.target.nodeName !== 'TD' && event.target !== contentContainer)
 					{
 						isPrevent = BX.data(contentContainer, 'prevent-default') === 'true';
 					}
@@ -873,7 +1344,15 @@
 						{
 							rows = [];
 
-							this.currentIndex = row.getIndex();
+							this.currentIndex = 0;
+
+							this.getRows().getRows().forEach(function(currentRow, index) {
+								if (currentRow === row)
+								{
+									this.currentIndex = index;
+								}
+							}, this);
+
 							this.lastIndex = this.lastIndex || this.currentIndex;
 
 							if (!event.shiftKey)
@@ -886,7 +1365,6 @@
 								else
 								{
 									row.unselect();
-									this.unselectAllCheckAllCheckboxes();
 									BX.onCustomEvent(window, 'Grid::unselectRow', [row, this]);
 								}
 							}
@@ -897,7 +1375,7 @@
 
 								while (min <= max)
 								{
-									rows.push(this.getRows().getByIndex(min));
+									rows.push(this.getRows().getRows()[min]);
 									min++;
 								}
 
@@ -925,23 +1403,24 @@
 							this.lastIndex = this.currentIndex;
 						}
 
-						if (this.getRows().isSelected())
-						{
-							BX.onCustomEvent(window, 'Grid::thereSelectedRows', []);
-							this.enableActionsPanel();
-						}
-						else
-						{
-							BX.onCustomEvent(window, 'Grid::noSelectedRows', []);
-							this.disableActionsPanel();
-						}
-
-						if (this.getRows().isAllSelected())
-						{
-							this.selectAllCheckAllCheckboxes();
-						}
+						this.adjustRows();
+						this.adjustCheckAllCheckboxes();
 					}
 				}
+			}
+		},
+
+		adjustRows: function()
+		{
+			if (this.getRows().isSelected())
+			{
+				BX.onCustomEvent(window, 'Grid::thereSelectedRows', []);
+				this.enableActionsPanel();
+			}
+			else
+			{
+				BX.onCustomEvent(window, 'Grid::noSelectedRows', []);
+				this.disableActionsPanel();
 			}
 		},
 
@@ -958,11 +1437,13 @@
 		tableFade: function()
 		{
 			BX.addClass(this.getTable(), this.settings.get('classTableFade'));
+			this.getLoader().show();
 		},
 
 		tableUnfade: function()
 		{
 			BX.removeClass(this.getTable(), this.settings.get('classTableFade'));
+			this.getLoader().hide();
 		},
 
 		_clickOnPaginationLink: function(event)
@@ -974,6 +1455,8 @@
 
 			if (!link.isLoad())
 			{
+				this.getUserOptions().resetExpandedRows();
+
 				link.load();
 				this.tableFade();
 
@@ -984,11 +1467,7 @@
 					self.getUpdater().updateMoreButton(this.getMoreButton());
 					self.getUpdater().updatePagination(this.getPagination());
 
-					if (self.getParam('SHOW_ROW_CHECKBOXES'))
-					{
-						self.bindOnRowEvents();
-					}
-
+					self.bindOnRowEvents();
 					self.bindOnMoreButtonEvents();
 					self.bindOnClickPaginationLinks();
 					self.bindOnClickHeader();
@@ -997,7 +1476,11 @@
 					self.updateCounterSelected();
 					self.disableActionsPanel();
 					self.disableForAllCounter();
-					self.getActionsPanel().resetForAllCheckbox();
+
+					if (self.getParam('SHOW_ACTION_PANEL'))
+					{
+						self.getActionsPanel().resetForAllCheckbox();
+					}
 
 					if (self.getParam('ALLOW_ROWS_SORT'))
 					{
@@ -1011,7 +1494,6 @@
 
 					link.unload();
 					self.tableUnfade();
-					self.bindOnClickOnRowActionsMenu();
 
 					BX.onCustomEvent(window, 'Grid::updated', []);
 				});
@@ -1033,11 +1515,7 @@
 				self.getUpdater().updatePagination(this.getPagination());
 
 				self.getRows().reset();
-
-				if (self.getParam('SHOW_ROW_CHECKBOXES'))
-				{
-					self.bindOnRowEvents();
-				}
+				self.bindOnRowEvents();
 
 				self.bindOnMoreButtonEvents();
 				self.bindOnClickPaginationLinks();
@@ -1056,7 +1534,6 @@
 					self.colsSortable.reinit();
 				}
 
-				self.bindOnClickOnRowActionsMenu();
 				self.unselectAllCheckAllCheckboxes();
 			});
 		},
@@ -1111,10 +1588,7 @@
 
 			thisNavPanel.innerHTML = newNavPanel.innerHTML;
 
-			if (this.getParam('SHOW_ROW_CHECKBOXES'))
-			{
-				this.bindOnRowEvents();
-			}
+			this.bindOnRowEvents();
 
 			this.bindOnMoreButtonEvents();
 			this.bindOnClickPaginationLinks();
@@ -1274,6 +1748,10 @@
 			return BX.Grid.Utils.getByTag(this.getContainer(), 'tfoot', true);
 		},
 
+
+		/**
+		 * @return {BX.Grid.Rows}
+		 */
 		getRows: function()
 		{
 			if (!(this.rows instanceof BX.Grid.Rows))
@@ -1287,6 +1765,149 @@
 		{
 			var node = BX.Grid.Utils.getByClass(this.getContainer(), this.settings.get('classMoreButton'), true);
 			return new BX.Grid.Element(node, this);
+		},
+
+
+		/**
+		 * Gets loader instance
+		 * @return {BX.Grid.Loader}
+		 */
+		getLoader: function()
+		{
+			if (!(this.loader instanceof BX.Grid.Loader))
+			{
+				this.loader = new BX.Grid.Loader(this);
+			}
+
+			return this.loader;
+		},
+
+		blockSorting: function()
+		{
+			var headerCells = BX.Grid.Utils.getByClass(
+				this.getContainer(),
+				this.settings.get('classHeadCell')
+			);
+
+			headerCells.forEach(function(header) {
+				if (this.isSortableHeader(header))
+				{
+					BX.removeClass(header, this.settings.get('classHeaderSortable'));
+					BX.addClass(header, this.settings.get('classHeaderNoSortable'));
+				}
+			}, this);
+		},
+
+		unblockSorting: function()
+		{
+			var headerCells = BX.Grid.Utils.getByClass(
+				this.getContainer(),
+				this.settings.get('classHeadCell')
+			);
+
+			headerCells.forEach(function(header) {
+				if (this.isNoSortableHeader(header) && header.dataset.sortBy)
+				{
+					BX.addClass(header, this.settings.get('classHeaderSortable'));
+					BX.removeClass(header, this.settings.get('classHeaderNoSortable'));
+				}
+			}, this);
+		},
+
+		confirmDialog: function(action, then, cancel)
+		{
+			var dialog, popupContainer, applyButton, cancelButton;
+
+			if ('CONFIRM' in action && action.CONFIRM)
+			{
+				action.CONFIRM_MESSAGE = action.CONFIRM_MESSAGE || this.arParams.CONFIRM_MESSAGE;
+				action.CONFIRM_APPLY_BUTTON = action.CONFIRM_APPLY_BUTTON || this.arParams.CONFIRM_APPLY;
+				action.CONFIRM_CANCEL_BUTTON = action.CONFIRM_CANCEL_BUTTON || this.arParams.CONFIRM_CANCEL;
+
+				dialog = new BX.PopupWindow(
+					this.getContainerId() + '-confirm-dialog',
+					null,
+					{
+						content: '<div class="main-grid-confirm-content">'+action.CONFIRM_MESSAGE+'</div>',
+						titleBar: 'CONFIRM_TITLE' in action ? action.CONFIRM_TITLE : '',
+						autoHide: false,
+						zIndex: 9999,
+						overlay: 0.4,
+						offsetTop: -100,
+						closeIcon : true,
+						closeByEsc : true,
+						events: {
+							onClose: function()
+							{
+								BX.unbind(window, 'keydown', hotKey);
+							}
+						},
+						buttons: [
+							new BX.PopupWindowButton({
+								text: action.CONFIRM_APPLY_BUTTON,
+								id: this.getContainerId() + '-confirm-dialog-apply-button',
+								events: {
+									click: function()
+									{
+										BX.type.isFunction(then) ? then() : null;
+										this.popupWindow.close();
+										this.popupWindow.destroy();
+										BX.onCustomEvent(window, 'Grid::confirmDialogApply', [this]);
+										BX.unbind(window, 'keydown', hotKey);
+									}
+								}
+							}),
+							new BX.PopupWindowButtonLink({
+								text: action.CONFIRM_CANCEL_BUTTON,
+								id: this.getContainerId() + '-confirm-dialog-cancel-button',
+								events: {
+									click: function()
+									{
+										BX.type.isFunction(cancel) ? cancel() : null;
+										this.popupWindow.close();
+										this.popupWindow.destroy();
+										BX.onCustomEvent(window, 'Grid::confirmDialogCancel', [this]);
+										BX.unbind(window, 'keydown', hotKey);
+									}
+								}
+							})
+						]
+					}
+				);
+
+				if (!dialog.isShown())
+				{
+					dialog.show();
+					popupContainer = dialog.popupContainer;
+					BX.removeClass(popupContainer, this.settings.get('classCloseAnimation'));
+					BX.addClass(popupContainer, this.settings.get('classShowAnimation'));
+					applyButton = BX(this.getContainerId() + '-confirm-dialog-apply-button');
+					cancelButton = BX(this.getContainerId() + '-confirm-dialog-cancel-button');
+
+					BX.bind(window, 'keydown', hotKey);
+				}
+			}
+			else
+			{
+				BX.type.isFunction(then) ? then() : null;
+			}
+
+			function hotKey(event)
+			{
+				if (event.code === 'Enter')
+				{
+					event.preventDefault();
+					event.stopPropagation();
+					BX.fireEvent(applyButton, 'click');
+				}
+
+				if (event.code === 'Escape')
+				{
+					event.preventDefault();
+					event.stopPropagation();
+					BX.fireEvent(cancelButton, 'click');
+				}
+			}
 		}
 	};
 })();

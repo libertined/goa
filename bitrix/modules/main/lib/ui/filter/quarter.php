@@ -5,6 +5,10 @@ namespace Bitrix\Main\UI\Filter;
 use Bitrix\Main\Type\Date;
 
 
+/**
+ * Works with quarters
+ * @package Bitrix\Main\UI\Filter
+ */
 class Quarter
 {
 	const Q1 = 1;
@@ -23,7 +27,6 @@ class Quarter
 
 	/**
 	 * Gets current number of quarter
-	 *
 	 * @return int
 	 */
 	public static function getCurrent()
@@ -36,7 +39,6 @@ class Quarter
 	/**
 	 * Gets number of quarter by Bitrix\Main\Type\Date object
 	 * @param Date $date
-	 *
 	 * @return int
 	 */
 	public static function get(Date $date)
@@ -65,9 +67,8 @@ class Quarter
 
 	/**
 	 * Gets start date of quarter
-	 * @param $quarter
-	 * @param $year
-	 *
+	 * @param int $quarter
+	 * @param int $year
 	 * @return string
 	 */
 	public static function getStartDate($quarter, $year)
@@ -82,17 +83,14 @@ class Quarter
 
 	/**
 	 * Gets end date of quarter
-	 * @param $quarter
-	 * @param $year
-	 *
+	 * @param int $quarter
+	 * @param int $year
 	 * @return string
 	 */
 	public static function getEndDate($quarter, $year)
 	{
-		$startDate = new Date(self::getStartDate($quarter, $year));
-		$endDate = $startDate->add("3 months - 1 day");
-		$endDateString = $endDate->toString();
-
-		return $endDateString;
+		$date = Date::createFromTimestamp(\MakeTimeStamp(self::getStartDate($quarter, $year)));
+		$date->add("3 months");
+		return $date->toString();
 	}
 }

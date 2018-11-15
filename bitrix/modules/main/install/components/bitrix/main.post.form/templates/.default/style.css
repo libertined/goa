@@ -244,7 +244,7 @@
 	-moz-box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
 	box-shadow: 0 0 2px rgba(137, 137, 137, 0.3);
-	display: inline-block;
+	display: block;
 	text-align: center;
 	padding: 4px;
 	position: relative;
@@ -266,6 +266,17 @@
 	top: 1px;
 	right: 1px;
 	width: 22px;
+}
+
+.feed-add-photo-block .feed-add-post-del-but {
+	background-color: #fff;
+	background-position: 8px -19px;
+	cursor: pointer;
+	right: 0;
+	top: 0;
+	height: 20px;
+	position: absolute;
+	width: 20px;
 }
 
 .feed-add-photo-block .feed-add-close-icon:hover {
@@ -366,8 +377,10 @@
 }
 
 .feed-add-post-form {
+	background-color: #fff;
 	margin-bottom: 12px;
 	position: relative;
+	overflow: hidden;
 	zoom: 1;
 }
 
@@ -389,7 +402,8 @@
 	margin-bottom: 0;
 }
 
-.feed-add-close-icon {
+.feed-add-close-icon,
+.feed-add-post-del-but {
 	background: url("images/sprite_mpf_5.png") no-repeat 9px -17px;
 	cursor: pointer;
 	height: 25px;
@@ -414,6 +428,11 @@
 	background-color: #ffffff;
 	padding-right: 0;
 }
+
+.feed-com-add-block .urlpreview.urlpreview__edit {
+	padding: 0 13px 12px 18px;
+}
+
 .feed-add-post-form-but-wrap:empty{
 	display: none;
 }
@@ -423,13 +442,13 @@
 	display: inline-block;
 	margin-right: 15px;
 	height: 25px;
-	opacity: 0.5;
+	opacity: 0.35;
 	width: 25px;
 	position: relative;
 }
 
 .feed-add-post-form-but:hover {
-	opacity: 1;
+	opacity: .85;
 }
 
 .feed-add-file {
@@ -494,7 +513,7 @@
 	background-repeat: no-repeat !important;
 	display: inline-block;
 	margin: 0 15px 0 0 !important;
-	opacity: 0.5;
+	opacity: 0.35;
 	filter: alpha(opacity=50);
 	width: 25px;
 	height: 25px;
@@ -505,7 +524,7 @@
 }
 
 .feed-add-post-form-but-cnt .bxhtmled-top-bar-btn:hover {
-	opacity: 1;
+	opacity: .7;
 }
 
 .feed-add-post-form-but-cnt .bxhtmled-top-bar-btn-disabled {
@@ -572,7 +591,8 @@
 }
 
 .feed-add-post-form-but-more-open {
-	right: 10px;
+	/*right: 10px;*/
+	right: 7px;
 	top: 3px;
 	position: absolute;
 }
@@ -702,7 +722,8 @@
 	padding-right: 30px;
 }
 
-.feed-add-post-del-but {
+.feed-add-post-destination .feed-add-post-del-but,
+ .feed-add-post-tags .feed-add-post-del-but {
 	background: url("images/sprite_mpf_5.png") no-repeat;
 	cursor: pointer;
 	right: 0;
@@ -747,19 +768,18 @@
 	background-color: #86e2ff;
 }
 
-.feed-add-post-destination-sonetgroups {
-	background-color: #ffd5d5;
-	color: #b54827 !important;
+.feed-add-post-destination-wrap .feed-add-post-destination-sonetgroups {
+	background-color: #ADE7E4;
+	color: #116F6B !important;
 }
 
 .feed-add-post-destination-sonetgroups .feed-add-post-del-but {
 	background-position: -47px -61px;
 }
 
-.feed-add-post-destination-hover.feed-add-post-destination-sonetgroups {
-	background-color: #ffb0af;
+.feed-add-post-destination-wrap .feed-add-post-destination-hover.feed-add-post-destination-sonetgroups {
+	background-color: #8CDDDA;
 }
-
 
 .feed-add-post-destination-department,
 .feed-add-post-destination-crm {
@@ -1094,7 +1114,7 @@
 	content: '';
 	height: 7px;
 	position: absolute;
-	top: 18px;
+	top: 23px;
 	left: 50%;
 	width: 1px;
 	-webkit-transform-origin: 0 100%;
@@ -1105,7 +1125,7 @@
 }
 
 .feed-add-com-button.feed-add-button-load:after {
-	top: 14px;
+	top: 19px;
 }
 
 .feed-add-button-transparent.feed-add-button-load {
@@ -1398,4 +1418,7 @@ div.lhe-list-item-cont[title="xx-large"] span.lhe-list-font-span {
 .feed-add-post-destination.feed-add-post-destination-email::before {
 	background-position: -33px -92px;
 
+}
+html.bx-ios.bx-ios-fix-frame-focus, html.bx-ios.bx-ios-fix-frame-focus iframe, .bx-ios.bx-ios-fix-frame-focus body {
+	-webkit-overflow-scrolling: touch;
 }

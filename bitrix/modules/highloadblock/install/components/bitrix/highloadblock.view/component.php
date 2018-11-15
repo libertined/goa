@@ -47,10 +47,15 @@ if ($arResult['ERROR'] == '')
 {
 	$entity = HL\HighloadBlockTable::compileEntity($hlblock);
 
+	if (!isset($arParams['ROW_KEY']) || trim($arParams['ROW_KEY']) == '')
+	{
+		$arParams['ROW_KEY'] = 'ID';
+	}
+
 	// row data
 	$main_query = new Entity\Query($entity);
 	$main_query->setSelect(array('*'));
-	$main_query->setFilter(array('=ID' => $arParams['ROW_ID']));
+	$main_query->setFilter(array('='.trim($arParams['ROW_KEY']) => $arParams['ROW_ID']));
 
 	$result = $main_query->exec();
 	$result = new CDBResult($result);
@@ -64,7 +69,7 @@ if ($arResult['ERROR'] == '')
 
 	if (empty($row))
 	{
-		$arResult['ERROR'] = sprintf(GetMessage('HLBLOCK_VIEW_NO_ROW'), $arParams['ROW_ID']);
+		$arResult['ERROR'] = GetMessage('HLBLOCK_VIEW_NO_ROW');
 	}
 
 	$arResult['fields'] = $fields;

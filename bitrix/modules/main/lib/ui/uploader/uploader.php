@@ -229,6 +229,11 @@ class Uploader
 		return $this;
 	}
 
+	public function setControlId($controlId)
+	{
+		$this->controlId = $controlId;
+	}
+
 	public function setHandler($name, $callback)
 	{
 		AddEventHandler(self::EVENT_NAME, $name, $callback);
@@ -319,10 +324,11 @@ class Uploader
 			define("NO_AGENT_CHECK", true);
 		if (!defined("DisableEventsCheck"))
 			define("DisableEventsCheck", true);
-		require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
-		$GLOBALS["APPLICATION"]->RestartBuffer();
-		while(ob_end_clean());
+		require_once(\Bitrix\Main\Application::getInstance()->getContext()->getServer()->getDocumentRoot()."/bitrix/modules/main/include/prolog_before.php");
+		global $APPLICATION;
+
+		$APPLICATION->RestartBuffer();
 
 		$version = IsIE();
 		if ( !(0 < $version && $version < 10) )
@@ -503,4 +509,39 @@ class Uploader
 		$cid = FileInputUtility::instance()->registerControl($this->getRequest("CID"), $this->controlId);
 		File::deleteFile($cid, $hash, $this->path);
 	}
+
+	/**
+	 * @param string $tmpName
+	 * @return false|array
+	 */
+	public static function getPaths($tmpName)
+	{
+		$docRoot = null;
+		$io = \CBXVirtualIo::GetInstance();
+		if (($tempRoot = \CTempFile::GetAbsoluteRoot()) && ($strFilePath = $tempRoot.$tmpName) &&
+			$io->FileExists($strFilePath) && ($url = File::getUrlFromRelativePath($tmpName)))
+		{
+			return array(
+				"tmp_url" => $url,
+				"tmp_name" => $strFilePath
+			);
+		}
+		else if ((($docRoot = \Bitrix\Main\Application::getInstance()->getContext()->getServer()->getDocumentRoot()) && $strFilePath = $docRoot.$tmpName) && $io->FileExists($strFilePath))
+		{
+			return array(
+				"tmp_url" => $tmpName,
+				"tmp_name" => $strFilePath
+			);
+		}
+		else if ($io->FileExists($tmpName) && ($docRoot = \Bitrix\Main\Application::getInstance()->getContext()->getServer()->getDocumentRoot()) &&
+			strpos($tmpName, $docRoot) === 0)
+		{
+			return array(
+				"tmp_url" => str_replace("//", "/", "/".substr($tmpName, strlen($docRoot))),
+				"tmp_name" => $tmpName
+			);
+		}
+		return false;
+	}
+
 }

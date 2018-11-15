@@ -10,6 +10,12 @@ $arComponentParameters = array(
 			'TYPE' => 'TEXT',
 			'DEFAULT' => '={$_REQUEST[\'BLOCK_ID\']}'
 		),
+		'ROW_KEY' => array(
+			'PARENT' => 'BASE',
+			'NAME' => GetMessage('HLVIEW_COMPONENT_KEY_PARAM'),
+			'TYPE' => 'TEXT',
+			'DEFAULT' => 'ID'
+		),
 		'ROW_ID' => array(
 			'PARENT' => 'BASE',
 			'NAME' => GetMessage('HLVIEW_COMPONENT_ID_PARAM'),

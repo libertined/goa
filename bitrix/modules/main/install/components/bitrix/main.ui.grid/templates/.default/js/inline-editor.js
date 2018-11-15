@@ -67,7 +67,7 @@
 
 			if (editObject.TYPE === this.types.CHECKBOX)
 			{
-				className = [className, this.parent.settings.get('classEditorCheckbox')].join(' ');
+				className = this.parent.settings.get('classEditorCheckbox');
 				attrs.type = 'checkbox';
 				attrs.checked = (attrs.value == 'Y');
 			}
@@ -104,6 +104,22 @@
 					id: editObject.NAME + '_control'
 				},
 				attrs: attrs
+			});
+		},
+
+		createCustom: function(editObject)
+		{
+			var className = this.parent.settings.get('classEditorCustom');
+			className = [this.parent.settings.get('classEditor'), className].join(' ');
+
+			return BX.create('div', {
+				props: {
+					className: className
+				},
+				attrs: {
+					'data-name': editObject.NAME
+				},
+				html: editObject.VALUE || ""
 			});
 		},
 
@@ -149,7 +165,10 @@
 					'data-items': JSON.stringify(editObject.DATA.ITEMS),
 					'data-value': valueItem.VALUE
 				},
-				html: valueItem.NAME
+				children: [BX.create('span', {
+					props: {className: 'main-dropdown-inner'},
+					html: valueItem.NAME
+				})]
 			});
 
 		},
@@ -160,7 +179,8 @@
 				BX.type.isPlainObject(editObject) &&
 				('TYPE' in editObject) &&
 				('NAME' in editObject) &&
-				('VALUE' in editObject)
+				('VALUE' in editObject) &&
+				(!('items' in editObject) || (BX.type.isArray(editObject.items) && editObject.items.length))
 			);
 		},
 
@@ -253,6 +273,27 @@
 
 					case this.types.DROPDOWN : {
 						control = this.createDropdown(editObject);
+						break;
+					}
+
+					case this.types.CUSTOM : {
+						control = this.createCustom(editObject);
+
+						requestAnimationFrame(function() {
+							if (editObject.HTML)
+							{
+								var res = BX.processHTML(editObject.HTML);
+
+								res.SCRIPT.forEach(function(item) {
+									if (item.isInternal && item.JS)
+									{
+										BX.evalGlobal(item.JS);
+									}
+								})
+							}
+						});
+
+						BX.bind(control, 'click', function(event) { event.stopPropagation(); });
 						break;
 					}
 

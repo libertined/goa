@@ -98,7 +98,7 @@ if(!defined("BX_COMP_MANAGED_CACHE") && COption::GetOptionString("main", "compon
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/filter_tools.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/ajax_tools.php");
 
-/*ZDUyZmZZTEyYjgxMmI5YzFmYjZlYjBmNTY4NTE0MmU3OGE3OTA=*/$GLOBALS['____1646674222']= array(base64_decode('ZG'.'VmaW5l'));; function ___1397066115($_1499463461){static $_1726265732= false; if($_1726265732 == false) $_1726265732=array(''.'R'.'U5DT'.'0RF','WQ='.'=');return base64_decode($_1726265732[$_1499463461]);};  class CBXFeatures{ public static function IsFeatureEnabled($_1379829778){ return true;} public static function IsFeatureEditable($_1379829778){ return true;} public static function SetFeatureEnabled($_1379829778, $_1001935629= true){} public static function SaveFeaturesSettings($_1695549179, $_1703590688){} public static function GetFeaturesList(){ return array();} public static function InitiateEditionsSettings($_2041751048){} public static function ModifyFeaturesSettings($_2041751048, $_247791712){} public static function IsFeatureInstalled($_1379829778){ return true;}} $GLOBALS['____1646674222'][0](___1397066115(0), ___1397066115(1));/**/			//Do not remove this
+/*ZDUyZmZOTQwYTliNmY4NmVmZDcwZjQ2ZTlhYmRmNTk3ZDQ1MWI=*/$GLOBALS['____568723056']= array(base64_decode('ZGVmaW5l'));if(!function_exists(__NAMESPACE__.'\\___929503301')){function ___929503301($_920286106){static $_1698501335= false; if($_1698501335 == false) $_1698501335=array('RU5DT0'.'RF','WQ'.'==');return base64_decode($_1698501335[$_920286106]);}};class CBXFeatures{ public static function IsFeatureEnabled($_91746054){ return true;} public static function IsFeatureEditable($_91746054){ return true;} public static function SetFeatureEnabled($_91746054, $_894990112= true){} public static function SaveFeaturesSettings($_265453112, $_956097564){} public static function GetFeaturesList(){ return array();} public static function InitiateEditionsSettings($_808758857){} public static function ModifyFeaturesSettings($_808758857, $_214469890){} public static function IsFeatureInstalled($_91746054){ return true;}} $GLOBALS['____568723056'][0](___929503301(0), ___929503301(1));/**/			//Do not remove this
 
 //component 2.0 template engines
 $GLOBALS["arCustomTemplateEngines"] = array();
@@ -176,11 +176,13 @@ require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/ur
 		"CAdminInformer" => "classes/general/admin_informer.php",
 		"CSiteCheckerTest" => "classes/general/site_checker.php",
 		"CSqlUtil" => "classes/general/sql_util.php",
-		"CHTMLPagesCache" => "classes/general/cache_html.php",
 		"CFileUploader" => "classes/general/uploader.php",
 		"LPA" => "classes/general/lpa.php",
 		"CAdminFilter" => "interface/admin_filter.php",
 		"CAdminList" => "interface/admin_list.php",
+		"CAdminUiList" => "interface/admin_ui_list.php",
+		"CAdminUiResult" => "interface/admin_ui_list.php",
+		"CAdminUiContextMenu" => "interface/admin_ui_list.php",
 		"CAdminListRow" => "interface/admin_list.php",
 		"CAdminTabControl" => "interface/admin_tabcontrol.php",
 		"CAdminForm" => "interface/admin_form.php",
@@ -192,6 +194,23 @@ require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/ur
 		"CAdminCalendar" => "interface/admin_calendar.php",
 		"CAdminViewTabControl" => "interface/admin_viewtabcontrol.php",
 		"CAdminTabEngine" => "interface/admin_tabengine.php",
+		"CCaptcha" => "classes/general/captcha.php",
+		"CMpNotifications" => "classes/general/mp_notifications.php",
+
+		//deprecated
+		"CHTMLPagesCache" => "lib/composite/helper.php",
+		"StaticHtmlMemcachedResponse" => "lib/composite/responder.php",
+		"StaticHtmlFileResponse" => "lib/composite/responder.php",
+		"Bitrix\\Main\\Page\\Frame" => "lib/composite/engine.php",
+		"Bitrix\\Main\\Page\\FrameStatic" => "lib/composite/staticarea.php",
+		"Bitrix\\Main\\Page\\FrameBuffered" => "lib/composite/bufferarea.php",
+		"Bitrix\\Main\\Page\\FrameHelper" => "lib/composite/bufferarea.php",
+		"Bitrix\\Main\\Data\\StaticHtmlCache" => "lib/composite/page.php",
+		"Bitrix\\Main\\Data\\StaticHtmlStorage" => "lib/composite/data/abstractstorage.php",
+		"Bitrix\\Main\\Data\\StaticHtmlFileStorage" => "lib/composite/data/filestorage.php",
+		"Bitrix\\Main\\Data\\StaticHtmlMemcachedStorage" => "lib/composite/data/memcachedstorage.php",
+		"Bitrix\\Main\\Data\\StaticCacheProvider" => "lib/composite/data/cacheprovider.php",
+		"Bitrix\\Main\\Data\\AppCacheManifest" => "lib/composite/appcache.php",
 	)
 );
 
@@ -207,38 +226,6 @@ if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/class
 	$US_HOST_PROCESS_MAIN = False;
 	include($_fname);
 }
-
-$GLOBALS["APPLICATION"]->AddJSKernelInfo(
-	'main',
-	array(
-		'/bitrix/js/main/core/core.js', '/bitrix/js/main/core/core_ajax.js', '/bitrix/js/main/json/json2.min.js',
-		'/bitrix/js/main/core/core_ls.js', '/bitrix/js/main/core/core_popup.js', '/bitrix/js/main/core/core_tooltip.js',
-		'/bitrix/js/main/core/core_date.js','/bitrix/js/main/core/core_timer.js', '/bitrix/js/main/core/core_fx.js',
-		'/bitrix/js/main/core/core_window.js', '/bitrix/js/main/core/core_autosave.js', '/bitrix/js/main/rating_like.js',
-		'/bitrix/js/main/session.js', '/bitrix/js/main/dd.js', '/bitrix/js/main/utils.js',
-		'/bitrix/js/main/core/core_dd.js', '/bitrix/js/main/core/core_webrtc.js'
-	)
-);
-
-
-$GLOBALS["APPLICATION"]->AddCSSKernelInfo(
-	'main',
-	array(
-		'/bitrix/js/main/core/css/core.css', '/bitrix/js/main/core/css/core_popup.css',
-		'/bitrix/js/main/core/css/core_tooltip.css', '/bitrix/js/main/core/css/core_date.css'
-	)
-);
-
-//Park core uploader
-$GLOBALS["APPLICATION"]->AddJSKernelInfo(
-	'coreuploader',
-	array(
-		'/bitrix/js/main/core/core_uploader/common.js',
-		'/bitrix/js/main/core/core_uploader/uploader.js',
-		'/bitrix/js/main/core/core_uploader/file.js',
-		'/bitrix/js/main/core/core_uploader/queue.js',
-	)
-);
 
 if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"]."/bitrix/init.php")))
 	include_once($_fname);
@@ -263,15 +250,6 @@ if((!(defined("STATISTIC_ONLY") && STATISTIC_ONLY && substr($GLOBALS["APPLICATIO
 if(COption::GetOptionString("main", "set_p3p_header", "Y")=="Y")
 	header("P3P: policyref=\"/bitrix/p3p.xml\", CP=\"NON DSP COR CUR ADM DEV PSA PSD OUR UNR BUS UNI COM NAV INT DEM STA\"");
 
-//licence key
-$LICENSE_KEY = "";
-if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"].BX_ROOT."/license_key.php")))
-	include($_fname);
-if($LICENSE_KEY == "" || strtoupper($LICENSE_KEY) == "DEMO")
-	define("LICENSE_KEY", "DEMO");
-else
-	define("LICENSE_KEY", $LICENSE_KEY);
-
 header("X-Powered-CMS: Bitrix Site Manager (".(LICENSE_KEY == "DEMO"? "DEMO" : md5("BITRIX".LICENSE_KEY."LICENCE")).")");
 if (COption::GetOptionString("main", "update_devsrv", "") == "Y")
 	header("X-DevSrv-CMS: Bitrix");
@@ -292,8 +270,10 @@ if(COption::GetOptionString("main", "check_agents", "Y")=="Y")
 //session initialization
 ini_set("session.cookie_httponly", "1");
 
-if($domain = $GLOBALS["APPLICATION"]->GetCookieDomain())
+if(($domain = \Bitrix\Main\Web\Cookie::getCookieDomain()) <> '')
+{
 	ini_set("session.cookie_domain", $domain);
+}
 
 if(COption::GetOptionString("security", "session", "N") === "Y"	&& CModule::IncludeModule("security"))
 	CSecuritySession::Init();
@@ -343,7 +323,7 @@ if(
 	||
 	(
 		//session manually expired, e.g. in $User->LoginHitByHash
-	isSessionExpired()
+		isSessionExpired()
 	)
 )
 {
@@ -480,7 +460,7 @@ if(!defined("NOT_CHECK_PERMISSIONS") || NOT_CHECK_PERMISSIONS!==true)
 					//store cookies for next hit (see CMain::GetSpreadCookieHTML())
 					$GLOBALS["APPLICATION"]->StoreCookies();
 					$_SESSION['BX_ADMIN_LOAD_AUTH'] = true;
-					echo '<script type="text/javascript">window.onload=function(){top.BX.AUTHAGENT.setAuthResult(false);};</script>';
+					CMain::FinalActions('<script type="text/javascript">window.onload=function(){top.BX.AUTHAGENT.setAuthResult(false);};</script>');
 					die();
 				}
 			}
@@ -492,6 +472,16 @@ if(!defined("NOT_CHECK_PERMISSIONS") || NOT_CHECK_PERMISSIONS!==true)
 		//Authorize by unique URL
 		$GLOBALS["USER"]->LoginHitByHash();
 	}
+}
+
+//logout or re-authorize the user if something importand has changed
+$GLOBALS["USER"]->CheckAuthActions();
+
+//magic short URI
+if(defined("BX_CHECK_SHORT_URI") && BX_CHECK_SHORT_URI && CBXShortUri::CheckUri())
+{
+	//local redirect inside
+	die();
 }
 
 //application password scope control
@@ -572,14 +562,7 @@ if($GLOBALS["USER"]->IsAuthorized())
 }
 
 //magic cache
-\Bitrix\Main\Page\Frame::shouldBeEnabled();
-
-//magic short URI
-if(defined("BX_CHECK_SHORT_URI") && BX_CHECK_SHORT_URI && CBXShortUri::CheckUri())
-{
-	//local redirect inside
-	die();
-}
+\Bitrix\Main\Composite\Engine::shouldBeEnabled();
 
 foreach(GetModuleEvents("main", "OnBeforeProlog", true) as $arEvent)
 	ExecuteModuleEventEx($arEvent);

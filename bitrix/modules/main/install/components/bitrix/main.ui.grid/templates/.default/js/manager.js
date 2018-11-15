@@ -59,6 +59,38 @@
 			{
 				instance.reload(url);
 			}
+		},
+
+		getDataIndex: function(id)
+		{
+			var result = null;
+			this.data.forEach(function(item, index) {
+				if (item.id === id)
+				{
+					result = index;
+				}
+			});
+
+			return result;
+		},
+
+		destroy: function(id)
+		{
+			if (BX.type.isNotEmptyString(id))
+			{
+				var grid = this.getInstanceById(id);
+
+				if (grid instanceof BX.Main.grid)
+				{
+					grid.destroy();
+					var index = this.getDataIndex(id);
+
+					if (index !== null)
+					{
+						delete this.data[index];
+					}
+				}
+			}
 		}
 	};
 })();

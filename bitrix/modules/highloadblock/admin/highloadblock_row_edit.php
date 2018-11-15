@@ -257,7 +257,12 @@ $context->Show();
 
 if (!empty($errors))
 {
+	$bVarsFromForm = true;
 	CAdminMessage::ShowMessage(join("\n", $errors));
+}
+else
+{
+	$bVarsFromForm = false;
 }
 
 $tabControl->BeginPrologContent();
@@ -271,10 +276,10 @@ $tabControl->BeginEpilogContent();
 ?>
 
 	<?=bitrix_sessid_post()?>
-	<input type='hidden' name='ID' value='<?=htmlspecialcharsbx(!empty($row)?$row['ID']:'')?>'>
-	<input type='hidden' name='ENTITY_ID' value='<?=htmlspecialcharsbx($hlblock['ID'])?>'>
-	<input type='hidden' name='lang' value='<?=LANGUAGE_ID?>'>
-	<input type='hidden' name='action' value='<?=$action?>'>
+	<input type="hidden" name="ID" value="<?= htmlspecialcharsbx(!empty($row) ? $row['ID'] : '')?>">
+	<input type="hidden" name="ENTITY_ID" value="<?= htmlspecialcharsbx($hlblock['ID'])?>">
+	<input type="hidden" name="lang" value="<?= LANGUAGE_ID?>">
+	<input type="hidden" name="action" value="<?= $action?>">
 
 <?$tabControl->EndEpilogContent();?>
 
@@ -310,7 +315,7 @@ $tabControl->BeginEpilogContent();
 		}
 	}
 
-	echo $tabControl->ShowUserFieldsWithReadyData('HLBLOCK_'.$hlblock['ID'], $row, false, 'ID');
+	echo $tabControl->ShowUserFieldsWithReadyData('HLBLOCK_'.$hlblock['ID'], $row, $bVarsFromForm, 'ID');
 	?>
 
 	<?

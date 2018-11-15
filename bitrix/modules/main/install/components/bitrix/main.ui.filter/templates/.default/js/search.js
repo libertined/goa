@@ -15,6 +15,8 @@
 		this.input = null;
 		this.preset = null;
 		this.buttonsContainer = null;
+		this.delay = 800;
+		this.timeout = null;
 		this.init(parent);
 	};
 	BX.Filter.Search.prototype = {
@@ -25,13 +27,31 @@
 
 			if (this.parent.getParam('ENABLE_LIVE_SEARCH'))
 			{
-				BX.bind(this.getInput(), 'input', BX.debounce(this._onInput, 250, this));
+				BX.bind(this.getInput(), 'input', BX.debounce(this._onInput, this.delay, this));
 			}
 
 			BX.bind(this.getInput(), 'keydown', BX.delegate(this._onKeyDown, this));
 			BX.bind(this.getFindButton(), 'click', BX.delegate(this._onSearchClick, this));
+			BX.bind(this.getContainer(), 'click', BX.delegate(this._onSearchContainerClick, this));
+			this.removeAutofocus();
 			this.firstInit = true;
 		},
+
+
+		/**
+		 * Removes autofocus attr from search input
+		 */
+		removeAutofocus: function()
+		{
+			var input = this.getInput();
+
+			if (!!input)
+			{
+				input.blur();
+				input.autofocus = null;
+			}
+		},
+
 
 		getFindButton: function()
 		{
@@ -45,148 +65,514 @@
 
 		_onSearchClick: function()
 		{
-			this.parent.applyFilter(null, true);
+			this.apply();
 		},
 
-		getCode: function(event)
+		selectSquare: function(square)
 		{
-			var code = '';
+			!!square && BX.addClass(square, this.parent.settings.classSquareSelected);
+		},
 
-			if ('code' in event && event.code)
+		selectSquares: function()
+		{
+			this.getSquares().forEach(this.selectSquare, this);
+		},
+
+		unselectSquare: function(square)
+		{
+			!!square && BX.removeClass(square, this.parent.settings.classSquareSelected);
+		},
+
+		unselectSquares: function()
+		{
+			this.getSquares().forEach(this.unselectSquare, this);
+		},
+
+		removeSquares: function()
+		{
+			this.getSquares().forEach(this.removeSquare, this);
+		},
+
+		isSquaresSelected: function()
+		{
+			var squares = this.getSquares();
+			return squares.length && squares.every(this.isSquareSelected, this);
+		},
+
+		isSquareSelected: function(square)
+		{
+			return !!square && BX.hasClass(square, this.parent.settings.classSquareSelected);
+		},
+
+		getLastSquare: function()
+		{
+			var squares = this.getSquares();
+			return !!squares ? squares[squares.length-1] : null;
+		},
+
+		isTextSelected: function()
+		{
+			var searchStringLength = this.getSearchString().length;
+			var searchInput = this.getInput();
+			var selectionStart = searchInput.selectionStart;
+			var selectionEnd = searchInput.selectionEnd;
+
+			return selectionStart === 0 && selectionEnd !== 0 && selectionEnd === searchStringLength;
+		},
+
+		isSelectionStart: function()
+		{
+			var searchInput = this.getInput();
+			var selectionStart = searchInput.selectionStart;
+			var selectionEnd = searchInput.selectionEnd;
+
+			return selectionStart === 0 && selectionEnd === 0;
+		},
+
+		isSquareRemoveButton: function(node)
+		{
+			return !!node && BX.hasClass(node, this.parent.settings.classSquareDelete);
+		},
+
+		isClearButton: function(node)
+		{
+			return !!node && BX.hasClass(node, this.parent.settings.classClearSearchValueButton);
+		},
+
+		isSearchButton: function(node)
+		{
+			return !!node && BX.hasClass(node, this.parent.settings.classSearchButton);
+		},
+
+
+		/**
+		 * Adjust focus on search input
+		 */
+		adjustFocus: function()
+		{
+			if (!BX.browser.IsMobile())
 			{
-				code = event.code;
+				var searchInput = this.getInput();
+
+				if (document.activeElement !== searchInput && window.scrollY < BX.pos(searchInput).top)
+				{
+					//Puts cursor after last character
+					//noinspection SillyAssignmentJS
+					searchInput.value = searchInput.value;
+					searchInput.blur();
+					searchInput.focus();
+				}
 			}
-			else if ('keyCode' in event && event.keyCode)
+		},
+
+		findSquareByChild: function(childNode)
+		{
+			return BX.findParent(childNode, {className: this.parent.settings.classSquare}, true, false);
+		},
+
+		/**
+		 * @param {HTMLElement} square
+		 */
+		getSquareData: function(square)
+		{
+			var rawData = BX.data(square, 'item');
+			return !!square && !!rawData ? JSON.parse(rawData) : null;
+		},
+
+		/**
+		 * @param {HTMLElement} square
+		 * @return {boolean}
+		 */
+		isSquareControl: function(square)
+		{
+			var squareData = this.getSquareData(square);
+			return !!squareData && (squareData.type === 'control' || BX.type.isArray(squareData));
+		},
+
+		onPresetSquareRemove: function()
+		{
+			var Filter = this.parent;
+			var Preset = Filter.getPreset();
+			var currentPresetId = Preset.getCurrentPresetId();
+			var isResetToDefaultMode = Filter.getParam('RESET_TO_DEFAULT_MODE');
+			var isValueRequiredModeMail = Filter.getParam('VALUE_REQUIRED');
+			var isPinned = Preset.isPinned(currentPresetId);
+			var squares = this.getSquares();
+
+			if (squares.length === 1)
 			{
-				var keyCode = event.keyCode;
-				var keysMap = {
-					27: 'Escape',
-					9: 'Tab',
-					40: 'ArrowDown',
-					38: 'ArrowUp',
-					8: 'Backspace',
-					13: 'Enter',
-					65: 'KeyA'
-				};
+				if (isValueRequiredModeMail && isPinned)
+				{
+					this.parent.showPopup();
+					this.adjustPlaceholder();
+					this.parent.getPreset().deactivateAllPresets();
+				}
+				else
+				{
+					if ((isResetToDefaultMode && isPinned) || !isResetToDefaultMode)
+					{
+						var resetWithoutSearch = true;
+						this.lastPromise = Filter.resetFilter(resetWithoutSearch);
+						Filter.closePopup();
+					}
+				}
 
-				code = keyCode in keysMap ? keysMap[keyCode] : '';
+				if (isResetToDefaultMode && !isPinned)
+				{
+					this.lastPromise = Filter.getPreset().applyPinnedPreset();
+				}
+
+
 			}
 
-			return code;
+			if (squares.length > 1)
+			{
+				var currentPreset = Preset.getPreset(Preset.getCurrentPresetId());
+				var tmpPreset = Preset.getPreset('tmp_filter');
+
+				tmpPreset.FIELDS = BX.clone(currentPreset.ADDITIONAL);
+				currentPreset.ADDITIONAL = [];
+				Preset.deactivateAllPresets();
+				Preset.applyPreset('tmp_filter');
+				Filter.applyFilter();
+			}
+		},
+
+		onControlSquareRemove: function(square)
+		{
+			var Filter = this.parent;
+			var Preset = Filter.getPreset();
+			var isResetToDefaultMode = Filter.getParam('RESET_TO_DEFAULT_MODE');
+			var isValueRequiredModeMail = Filter.getParam('VALUE_REQUIRED');
+			var squareData;
+
+			if (isResetToDefaultMode && this.getSquares().length === 1)
+			{
+				if (isValueRequiredModeMail)
+				{
+					squareData = this.getSquareData(square);
+					Filter.clearControls(squareData);
+
+					this.parent.showPopup();
+					this.adjustPlaceholder();
+					this.parent.getPreset().deactivateAllPresets();
+				}
+				else
+				{
+					this.lastPromise = Filter.getPreset().applyPinnedPreset();
+				}
+			}
+			else
+			{
+				squareData = this.getSquareData(square);
+				Filter.clearControls(squareData);
+				Filter.closePopup();
+
+				if (BX.type.isArray(squareData))
+				{
+					squareData.forEach(function(square) {
+						Preset.removeAdditionalField(square.name);
+					});
+				}
+
+				if (BX.type.isPlainObject(squareData))
+				{
+					Preset.removeAdditionalField(squareData.name);
+				}
+
+				this.apply();
+			}
+		},
+
+		onValueRequiredSquareRemove: function()
+		{
+			var Filter = this.parent;
+			Filter.getPreset().deactivateAllPresets();
+			Filter.showPopup();
+			this.adjustPlaceholder();
+		},
+
+		/**
+		 * @param {HTMLElement} square
+		 */
+		complexSquareRemove: function(square)
+		{
+			var isValueRequiredMode = this.parent.getParam('VALUE_REQUIRED_MODE');
+			var isPresetSquare = !this.isSquareControl(square);
+
+			if (isValueRequiredMode)
+			{
+				this.onValueRequiredSquareRemove();
+			}
+			else
+			{
+				if (isPresetSquare)
+				{
+					this.onPresetSquareRemove();
+				}
+				else
+				{
+					this.onControlSquareRemove(square);
+				}
+			}
+
+			this.removeSquare(square);
+			this.adjustClearButton();
+		},
+
+		adjustClearButton: function()
+		{
+			!!this.getLastSquare() ? this.showClearButton() : this.hideClearButton();
+		},
+
+		/**
+		 * @param {HTMLElement} square
+		 */
+		removeSquare: function(square)
+		{
+			!!square && BX.remove(square);
+		},
+
+		_onSearchContainerClick: function(event)
+		{
+			var Filter = this.parent;
+
+			if (this.isClearButton(event.target))
+			{
+				if (!Filter.getParam('VALUE_REQUIRED'))
+				{
+					if (!Filter.getParam('VALUE_REQUIRED_MODE'))
+					{
+						if (Filter.getParam('RESET_TO_DEFAULT_MODE'))
+						{
+							this.clearInput();
+							this.lastPromise = Filter.getPreset().applyPinnedPreset();
+						}
+						else
+						{
+							Filter.resetFilter();
+						}
+
+						Filter.closePopup();
+						this.adjustFocus();
+					}
+					else
+					{
+						this.removeSquares();
+						Filter.showPopup();
+						this.adjustPlaceholder();
+						this.hideClearButton();
+						Filter.getPreset().deactivateAllPresets();
+					}
+				}
+				else
+				{
+					var isPinned = Filter.getPreset().isPinned(
+						Filter.getPreset().getCurrentPresetId()
+					);
+
+					if (isPinned || Filter.getPreset().getCurrentPresetId() === 'tmp_filter')
+					{
+						this.removeSquares();
+						Filter.showPopup();
+						this.adjustPlaceholder();
+						this.hideClearButton();
+						Filter.getPreset().deactivateAllPresets();
+					}
+					else
+					{
+						if (Filter.getParam('RESET_TO_DEFAULT_MODE'))
+						{
+							this.lastPromise = Filter.getPreset().applyPinnedPreset();
+						}
+						else
+						{
+							Filter.resetFilter();
+						}
+
+						Filter.closePopup();
+						this.adjustFocus();
+					}
+
+					this.clearInput();
+				}
+			}
+
+			else if (this.isSearchButton(event.target))
+			{
+				this.apply();
+				this.adjustFocus();
+			}
+
+			else if (this.isSquareRemoveButton(event.target))
+			{
+				var square = this.findSquareByChild(event.target);
+				this.complexSquareRemove(square);
+				this.adjustFocus();
+			}
+
+			else
+			{
+				if (!Filter.getPopup().isShown())
+				{
+					Filter.showPopup();
+				}
+				else
+				{
+					var input = this.getInput();
+					var start = input.selectionStart;
+					var end = input.selectionEnd;
+					var searchLength = this.getSearchString().length;
+
+					if (!(searchLength && start === 0 && end === searchLength))
+					{
+						if (Filter.getParam('VALUE_REQUIRED'))
+						{
+							if (!this.getSquares().length)
+							{
+								this.lastPromise = Filter.getPreset().applyPinnedPreset();
+							}
+							else
+							{
+								Filter.closePopup();
+							}
+						}
+						else
+						{
+							Filter.closePopup();
+
+							if (Filter.getParam('VALUE_REQUIRED_MODE'))
+							{
+								Filter.restoreRemovedPreset();
+							}
+						}
+					}
+				}
+			}
 		},
 
 		_onKeyDown: function(event)
 		{
-			var square = BX.Filter.Utils.getByClass(event.target.parentNode, this.parent.settings.classSquare, true);
-			var deleteButton;
+			var utils = BX.Filter.Utils;
+			var parent = this.parent;
 
-			if (this.getCode(event) === 'Enter')
+			if (utils.isKey(event, 'enter'))
 			{
-				this.parent.applyFilter(null, true);
-
-				if (this.parent.getPopup().isShown())
+				if (parent.getParam('VALUE_REQUIRED'))
 				{
-					this.parent.closePopup();
-				}
-
-				this.isAllSelected = false;
-			}
-			else if (this.getCode(event) === 'Tab' || this.getCode(event) === 'ArrowDown')
-			{
-				if (!this.parent.getPopup().isShown())
-				{
-					this.parent.showPopup();
-					this.parent.adjustFocus();
-				}
-
-				if (this.isAllSelected)
-				{
-					square.forEach(function(current) {
-						BX.removeClass(current, this.parent.settings.classSquareSelected);
-					}, this);
-				}
-
-				this.isAllSelected = false;
-			}
-			else if (this.getCode(event) === 'ArrowUp')
-			{
-				if (this.parent.getPopup().isShown())
-				{
-					this.parent.closePopup();
-
-					if (this.parent.getParam('VALUE_REQUIRED_MODE'))
+					if (!this.getSquares().length)
 					{
-						this.parent.restoreRemovedPreset();
+						this.parent.getPreset().applyPinnedPreset();
 					}
 				}
-
-				this.isAllSelected = false;
-			}
-			else if (this.getCode(event) === 'KeyA' && event.metaKey || this.getCode(event) === 'KeyA' && event.ctrlKey)
-			{
-				if (BX.type.isArray(square))
+				else
 				{
-					square.forEach(function(current) {
-						BX.addClass(current, this.parent.settings.classSquareSelected)
-					}, this);
+					this.apply();
+					this.firstInit = false;
+					this.lastSearchString = this.getSearchString();
 				}
 
-				this.isAllSelected = true;
+				parent.closePopup();
 			}
-			else if (this.getCode(event) === 'Backspace' && event.currentTarget.selectionStart === 0 && this.isAllSelected)
-			{
-				this.parent.resetFilter();
-				this.isAllSelected = false;
-			}
-			else if (this.getCode(event) === 'Backspace' && event.currentTarget.selectionStart === 0 && event.currentTarget.selectionEnd === 0 && !this.isAllSelected)
-			{
-				square = BX.type.isArray(square) && square.length ? square[square.length-1] : null;
 
-				if (BX.type.isDomNode(square))
+			if (utils.isKey(event, 'tab') || utils.isKey(event, 'downArrow'))
+			{
+				parent.showPopup();
+				parent.adjustFocus();
+				this.unselectSquares();
+			}
+
+			if (utils.isKey(event, 'upArrow'))
+			{
+				parent.closePopup();
+
+				if (parent.getParam('VALUE_REQUIRED_MODE'))
 				{
-					if (BX.hasClass(square, this.parent.settings.classSquareSelected))
-					{
-						deleteButton = BX.Filter.Utils.getByClass(square, this.parent.settings.classSquareDelete);
+					this.parent.restoreRemovedPreset();
+				}
 
-						if (BX.type.isDomNode(deleteButton))
-						{
-							BX.fireEvent(deleteButton, 'click');
-						}
+				if (parent.getParam('VALUE_REQUIRED'))
+				{
+					if (!this.getSquares().length)
+					{
+						this.parent.getPreset().applyPinnedPreset();
+					}
+				}
+			}
+
+			if (utils.isKey(event, 'a') && event.metaKey || utils.isKey(event, 'a') && event.ctrlKey)
+			{
+				this.selectSquares();
+			}
+
+			if (utils.isKey(event, 'backspace') && this.isTextSelected() && this.isSquaresSelected())
+			{
+				clearTimeout(this.timeout);
+
+				if (this.parent.getParam('VALUE_REQUIRED'))
+				{
+					var isPinned = this.parent.getPreset().isPinned(
+						this.parent.getPreset().getCurrentPresetId()
+					);
+
+					if (isPinned)
+					{
+						this.removeSquares();
+						this.parent.showPopup();
+						this.adjustPlaceholder();
+						this.hideClearButton();
+						this.parent.getPreset().deactivateAllPresets();
 					}
 					else
 					{
-						BX.addClass(square, this.parent.settings.classSquareSelected);
+						if (this.parent.getParam('RESET_TO_DEFAULT_MODE'))
+						{
+							this.lastPromise = this.parent.getPreset().applyPinnedPreset();
+						}
+						else
+						{
+							this.parent.resetFilter();
+						}
+
+						this.parent.closePopup();
+						this.adjustFocus();
 					}
+
+					this.clearInput();
+				}
+				else
+				{
+					if (this.parent.getParam('RESET_TO_DEFAULT_MODE'))
+					{
+						this.lastPromise = this.parent.getPreset().applyPinnedPreset();
+					}
+					else
+					{
+						this.lastPromise = this.parent.resetFilter();
+					}
+
+					this.parent.closePopup();
 				}
 			}
-			else if (BX.type.isArray(square) && square.length &&
-				event.key !== 'Meta' &&
-				event.key !== 'CapsLock' &&
-				event.key !== 'Shift' &&
-				event.key !== 'Alt' &&
-				event.key !== 'Escape' &&
-				event.key !== 'F1' &&
-				event.key !== 'F2' &&
-				event.key !== 'F3' &&
-				event.key !== 'F4' &&
-				event.key !== 'F5' &&
-				event.key !== 'F6' &&
-				event.key !== 'F7' &&
-				event.key !== 'F8' &&
-				event.key !== 'F9' &&
-				event.key !== 'F10' &&
-				event.key !== 'F11' &&
-				event.key !== 'F12')
+
+			if (utils.isKey(event, 'backspace') && this.isSelectionStart())
 			{
-				square.forEach(function(current) {
-					BX.removeClass(current, this.parent.settings.classSquareSelected);
-				}, this);
+				clearTimeout(this.timeout);
+				var square = this.getLastSquare();
+
+				this.isSquareSelected(square) ? this.complexSquareRemove(square) : this.selectSquare(square);
+			}
+
+			if (!utils.isKey(event, 'backspace') && !event.metaKey && this.isSquaresSelected())
+			{
+				this.unselectSquares();
 			}
 		},
 
-		getSearchString: function(e)
+		getSearchString: function()
 		{
-			return e && (e.currentTarget || e.target) ? (e.currentTarget || e.target).value : '';
+			var input = this.getInput();
+			return !!input ? input.value : '';
 		},
 
 		getSquares: function()
@@ -196,17 +582,64 @@
 
 		adjustPlaceholder: function()
 		{
-			this.setInputPlaceholder(this.parent.getParam('MAIN_UI_FILTER__PLACEHOLDER' + (this.parent.getParam("DISABLE_SEARCH") ? '' : '_DEFAULT')));
+			this.setInputPlaceholder(this.parent.getParam('MAIN_UI_FILTER__PLACEHOLDER' + (this.parent.getParam("DISABLE_SEARCH") || !this.parent.settings.get('SEARCH') ? '' : '_DEFAULT')));
 		},
 
-		_onInputWithoutDebounce: function(event)
+		isResolvedRequest: function()
 		{
-			var searchString = this.getSearchString(event);
+			return !this.lastPromise || !!this.lastPromise && this.lastPromise.state;
+		},
 
-			if (searchString != this.lastSearchString &&
-				(!BX.hasClass(document.documentElement, 'bx-ie') || !this.firstInit))
+		/**
+		 * Calls BX.Main.Filter.applyFilter
+		 * @return {BX.Promise}
+		 */
+		apply: function()
+		{
+			if (this.isResolvedRequest())
 			{
-				this.parent.grid && this.parent.grid.tableFade();
+				this.lastPromise = this.parent._onFindButtonClick();
+			}
+
+			return this.lastPromise;
+		},
+
+		/**
+		 * Calls BX.Main.Filter.resetFilter()
+		 * @return {BX.Promise}
+		 */
+		reset: function()
+		{
+			if (this.isResolvedRequest())
+			{
+				this.parent.getSearch().removePreset();
+				this.parent.getPreset().deactivateAllPresets();
+				this.parent.getPreset().resetPreset(true);
+
+				this.timeout = setTimeout(BX.delegate(function() {
+					this.lastPromise = this.parent.resetFilter();
+				}, this), this.delay);
+			}
+
+			return this.lastPromise;
+		},
+
+		_onInputWithoutDebounce: function()
+		{
+			clearTimeout(this.timeout);
+
+			var searchString = this.getSearchString();
+			this.lastSearchString = !!this.lastSearchString ? this.lastSearchString : searchString;
+
+			if (searchString !== this.lastSearchString &&
+				(!this.parent.isIe() || !this.firstInit))
+			{
+				if (this.parent.getParam('ENABLE_LIVE_SEARCH'))
+				{
+					this.parent.showGridAnimation();
+					BX.onCustomEvent(window, 'BX.Filter.Search:input', [this.parent.params.FILTER_ID, searchString]);
+				}
+
 				this.parent.getPopup().isShown() && this.parent.closePopup();
 			}
 
@@ -222,38 +655,19 @@
 					this.adjustPlaceholder();
 				}
 			}
-
-			this.lastSearchString = searchString;
 		},
 
-		_onInput: function(event)
+		_onInput: function()
 		{
-			var parent = this.parent;
-			var searchString = this.getSearchString(event);
+			var searchString = this.getSearchString();
 
-			if (!BX.hasClass(document.documentElement, 'bx-ie') || !this.firstInit)
+			if (searchString !== this.lastSearchString && (!this.parent.isIe() || !this.firstInit))
 			{
-				if (searchString.length && this.lastValue != searchString)
-				{
-					parent.applyFilter(null, true);
-					this.lastValue = searchString;
-					this.isClear = false;
-				}
-				else
-				{
-					if (!this.isClear)
-					{
-						this.isClear = true;
-						parent.applyFilter(true, true);
-					}
-					else
-					{
-						this.parent.grid && this.parent.grid.tableUnfade();
-					}
-				}
+				this.apply();
 			}
 
 			this.firstInit = false;
+			this.lastSearchString = searchString;
 		},
 
 		getButtonsContainer: function()
@@ -351,7 +765,14 @@
 					else
 					{
 						var lastSquare = BX.Filter.Utils.getByClass(this.getContainer(), this.parent.settings.classSquare);
-						BX.insertAfter(square, lastSquare);
+						if (lastSquare)
+						{
+							BX.insertAfter(square, lastSquare);
+						}
+						else
+						{
+							BX.prepend(square, container);
+						}
 					}
 
 					tmpSquare = square;
@@ -426,6 +847,10 @@
 				squares = BX.Filter.Utils.getByClass(container, this.parent.settings.classSquare, true);
 				squares.forEach(BX.remove);
 
+				presetData = BX.clone(presetData);
+				presetData.ADDITIONAL = presetData.ADDITIONAL || [];
+				BX.onCustomEvent(window, 'BX.Filter.Search:beforeSquaresUpdate', [presetData, this]);
+
 				if (presetData.ID !== 'default_filter' && presetData.ID !== 'tmp_filter')
 				{
 					square = BX.decl({
@@ -449,6 +874,31 @@
 				}
 				else
 				{
+					if ('ADDITIONAL' in presetData && BX.type.isArray(presetData.ADDITIONAL) && presetData.ADDITIONAL.length)
+					{
+						presetData.ADDITIONAL.forEach(function(current, index) {
+							if (!('ID' in current))
+							{
+								current.ID = 'ADDITIONAL_ID_'+index;
+							}
+
+							if (!('NAME' in current))
+							{
+								current.NAME = 'ADDITIONAL_NAME_'+index;
+							}
+
+							if (!('TYPE' in current))
+							{
+								current.TYPE = 'STRING';
+							}
+
+							if ('LABEL' in current && 'LABEL' in current)
+							{
+								presetData.FIELDS.push(current);
+							}
+						});
+					}
+
 					if (BX.type.isArray(presetData.FIELDS) && presetData.FIELDS.length)
 					{
 						squaresResult = this.squares(presetData.FIELDS, 2);
@@ -460,7 +910,6 @@
 					}
 				}
 
-
 				if (squaresResult && BX.type.isArray(squaresResult.squaresData) && squaresResult.squaresData.length || (presetData.ID !== 'default_filter' && presetData.ID !== 'tmp_filter'))
 				{
 					this.setInputPlaceholder(this.parent.getParam('MAIN_UI_FILTER__PLACEHOLDER_WITH_FILTER'));
@@ -468,7 +917,7 @@
 				}
 				else
 				{
-					if (this.parent.getParam("DISABLE_SEARCH"))
+					if (this.parent.getParam("DISABLE_SEARCH") || !this.parent.settings.get('SEARCH'))
 					{
 						this.setInputPlaceholder(this.parent.getParam('MAIN_UI_FILTER__PLACEHOLDER'));
 					}
@@ -556,6 +1005,26 @@
 							}
 						}
 
+
+						if ((current.SUB_TYPE.VALUE === this.parent.dateTypes.NEXT_DAYS ||
+							current.SUB_TYPE.VALUE === this.parent.dateTypes.PREV_DAYS) &&
+							!BX.type.isNumber(parseInt(current.VALUES._days)))
+						{
+							value = null;
+						}
+
+						if (current.SUB_TYPE.VALUE === this.parent.dateTypes.NEXT_DAYS &&
+							BX.type.isNumber(parseInt(current.VALUES._days)))
+						{
+							value = current.LABEL + ': ' + this.parent.getParam('MAIN_UI_FILTER__DATE_NEXT_DAYS_LABEL').replace('#N#', current.VALUES._days);
+						}
+
+						if (current.SUB_TYPE.VALUE === this.parent.dateTypes.PREV_DAYS &&
+							BX.type.isNumber(parseInt(current.VALUES._days)))
+						{
+							value = current.LABEL + ': ' + this.parent.getParam('MAIN_UI_FILTER__DATE_PREV_DAYS_LABEL').replace('#N#', current.VALUES._days);
+						}
+
 						if (current.SUB_TYPE.VALUE === this.parent.dateTypes.NONE)
 						{
 							value = null;
@@ -564,8 +1033,20 @@
 						break;
 					}
 
+					case this.parent.types.CUSTOM_DATE : {
+						if (
+							(BX.type.isArray(current.VALUE.days) && current.VALUE.days.length) ||
+							(BX.type.isArray(current.VALUE.months) && current.VALUE.months.length) ||
+							(BX.type.isArray(current.VALUE.years) && current.VALUE.years.length)
+						)
+						{
+							value = current.LABEL;
+						}
+						break;
+					}
+
 					case this.parent.types.SELECT : {
-						if (BX.type.isPlainObject(current.VALUE) && current.VALUE.VALUE)
+						if ((BX.type.isPlainObject(current.VALUE) && current.VALUE.VALUE) || current.STRICT)
 						{
 							value = current.LABEL + ': ' + current.VALUE.NAME;
 						}
@@ -654,11 +1135,36 @@
 					}
 
 					case this.parent.types.CUSTOM_ENTITY : {
-						if (BX.type.isNotEmptyString(current.VALUES._value) &&
-							BX.type.isNotEmptyString(current.VALUES._label))
+						if (current.MULTIPLE)
 						{
-							value = current.LABEL + ': ';
-							value += current.VALUES._label;
+							var label = !!current.VALUES._label ? current.VALUES._label : [];
+
+							if (BX.type.isPlainObject(label))
+							{
+								label = Object.keys(label).map(function(key) {
+									return label[key];
+								});
+							}
+
+							if (!BX.type.isArray(label))
+							{
+								label = [ label ];
+							}
+
+							if (label.length > 0)
+							{
+								value = current.LABEL + ': ';
+								value += label.join(', ');
+							}
+						}
+						else
+						{
+							if (BX.type.isNotEmptyString(current.VALUES._value) &&
+								BX.type.isNotEmptyString(current.VALUES._label))
+							{
+								value = current.LABEL + ': ';
+								value += current.VALUES._label;
+							}
 						}
 						break;
 					}
@@ -714,7 +1220,7 @@
 			{
 				BX.remove(preset);
 
-				if (this.parent.getParam("DISABLE_SEARCH"))
+				if (this.parent.getParam("DISABLE_SEARCH") || !this.parent.settings.get('SEARCH'))
 				{
 					this.setInputPlaceholder(this.parent.getParam('MAIN_UI_FILTER__PLACEHOLDER'));
 				}

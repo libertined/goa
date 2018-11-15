@@ -46,6 +46,17 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		ShowError(GetMessage("IBLOCK_MODULE_NOT_INSTALLED"));
 		return;
 	}
+
+	$existIblock = Iblock\IblockSiteTable::getList(array(
+		'select' => array('IBLOCK_ID'),
+		'filter' => array('=IBLOCK_ID' => $arParams['IBLOCK_ID'], '=SITE_ID' => SITE_ID, '=IBLOCK.ACTIVE' => 'Y')
+	))->fetch();
+	if (empty($existIblock))
+	{
+		$this->abortResultCache();
+		return;
+	}
+
 	$arFilter = array(
 		"ACTIVE" => "Y",
 		"GLOBAL_ACTIVE" => "Y",
@@ -155,18 +166,8 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	$rsSections->SetUrlTemplates("", $arParams["SECTION_URL"]);
 	while($arSection = $rsSections->GetNext())
 	{
-		$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arSection["IBLOCK_ID"], $arSection["ID"]);
-		$arSection["IPROPERTY_VALUES"] = $ipropValues->getValues();
+		\Bitrix\Iblock\InheritedProperty\SectionValues::queue($arSection["IBLOCK_ID"], $arSection["ID"]);
 
-		if ($boolPicture)
-		{
-			Iblock\Component\Tools::getFieldImageData(
-				$arSection,
-				array('PICTURE'),
-				Iblock\Component\Tools::IPROPERTY_ENTITY_SECTION,
-				'IPROPERTY_VALUES'
-			);
-		}
 		$arSection['RELATIVE_DEPTH_LEVEL'] = $arSection['DEPTH_LEVEL'] - $intSectionDepth;
 
 		$arButtons = CIBlock::GetPanelButtons(
@@ -180,6 +181,23 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 
 		$arResult["SECTIONS"][]=$arSection;
 	}
+
+	foreach ($arResult["SECTIONS"] as &$arSection)
+	{
+		$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arSection["IBLOCK_ID"], $arSection["ID"]);
+		$arSection["IPROPERTY_VALUES"] = $ipropValues->getValues();
+
+		if ($boolPicture)
+		{
+			\Bitrix\Iblock\Component\Tools::getFieldImageData(
+				$arSection,
+				array('PICTURE'),
+				\Bitrix\Iblock\Component\Tools::IPROPERTY_ENTITY_SECTION,
+				'IPROPERTY_VALUES'
+			);
+		}
+	}
+	unset($arSection);
 
 	$arResult["SECTIONS_COUNT"] = count($arResult["SECTIONS"]);
 
