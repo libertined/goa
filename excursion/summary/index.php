@@ -1,9 +1,9 @@
 <?php require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("description", "В данном разделе представлена сводная таблица с ценами на все предлагаемые нашей компанией экскурсии на Гоа. Детальное описание, программу, фотографии и стоимость по каждой экскурсии Гоа вы можете посмотреть, кликнув на соответствующее название.");
-$APPLICATION->SetPageProperty("keywords", "цены на экскурсии в Гоа, экскурсии гоа, экскурсии на гоа, цены на экскурсии по Гоа, экскурсии гоа 2019, экскурсии гоа 2018, экскурсии в индии");
+$APPLICATION->SetPageProperty("keywords", "цены на экскурсии в Гоа, экскурсии гоа, экскурсии на гоа, цены на экскурсии по Гоа, экскурсии гоа 2019, экскурсии гоа 2020, экскурсии в индии, индия экскурсия");
 $APPLICATION->SetPageProperty("title", "Сводная таблица цен на экскурсии в Гоа и Индии 2019");
 $APPLICATION->SetPageProperty("MAIN_TITLE", "Сводная таблица цен на экскурсии в Гоа и Индии");
-$APPLICATION->SetTitle("Сводная таблица цен на экскурсии в Гоа и Индии, сезон 2018-2019");
+$APPLICATION->SetTitle("Сводная таблица цен на экскурсии в Гоа и Индии, сезон 2019-2020");
 $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>Сводная таблица цен на экскурсии по Гоа и Индии - незабываемые впечатления по привлекательным ценам.</h2>
 <p class="summary__description">
 	* Заказывая экскурсии по Гоа и Индии на сайте вы получаете скидку (по сравнению с ценой в офисе)
@@ -87,19 +87,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 1 день
 	</td>
 	<td class="summary__text">
-		50$<br>
+		60$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		60$<br>
+		70$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		30$<br>
+		40$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>
@@ -112,19 +112,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 1 день
 	</td>
 	<td class="summary__text">
-		40$<br>
+		35$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		45$<br>
+		40$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		25$<br>
+		20$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>
@@ -399,19 +399,19 @@ $APPLICATION->SetPageProperty("PAGE_IMAGE", "/upload/images/bg_exs.jpg");?><h2>�
 		 2 дня / 1 ночь
 	</td>
 	<td class="summary__text">
-		170$<br>
+		220$<br>
 		<span class="summary__text--smaller">при заказе через сайт</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		190$<br>
+		200$<br>
 		<span class="summary__text--smaller">при заказе в Гоа</span>
 	</td>
 </tr>
 <tr class="summary__row">
 	<td class="summary__text summary__text--col">
-		90$<br>
+		150$<br>
 		<span class="summary__text--smaller">дети до 12 лет</span>
 	</td>
 </tr>

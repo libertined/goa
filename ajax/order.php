@@ -9,6 +9,9 @@
  */
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include.php");
+if($_POST['surname_textfield'] != '') {
+    die('die bot');
+}
 
 /*
  * $_REQUEST["subject"] - only bot can fill this hidden field
